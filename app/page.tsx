@@ -12,7 +12,7 @@ export default function Home() {
 			<div className="inline-block max-w-lg text-center justify-center">
 				<PoppyIconLarge size={500} />
 				<h1 className={title()}>The best&nbsp;</h1>
-				<h1 className={title({ color: "violet" })}>air quality&nbsp;</h1>
+				<h1 className={title({ color: "yellow" })}>air quality&nbsp;</h1>
 				<br />
 				<h1 className={title()}>
 					insights for your space
@@ -24,9 +24,8 @@ export default function Home() {
 
 			<div className="flex gap-3">
 				<Link
-					isExternal
-					href={siteConfig.links.home}
-					className={buttonStyles({ color: "primary", radius: "full", variant: "shadow" })}
+					href='/viewer'
+					className={buttonStyles({ color: "primary", radius: "full" })}
 				>
 					Example Site
 				</Link>
@@ -35,7 +34,7 @@ export default function Home() {
 					className={buttonStyles({ variant: "bordered", radius: "full" })}
 					href={siteConfig.links.home}
 				>
-					<PoppyIconSmall size={24}/> Poppy Home Page
+					<PoppyIconSmall size={24} /> Poppy Home Page
 				</Link>
 			</div>
 
