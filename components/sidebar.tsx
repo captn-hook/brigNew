@@ -3,7 +3,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { SidebarProps } from '@/types';
 
 export const Sidebar = (props: SidebarProps) => {
-    const [sidebarWidth, setSidebarWidth] = useState(250);
+    const initialWidth = localStorage.getItem('sidebarWidth') ? parseInt(localStorage.getItem('sidebarWidth')!) : 250;
+    const [sidebarWidth, setSidebarWidth] = useState(initialWidth);
     const [dragging, setDragging] = useState(false);
     const dragHandler = useRef<HTMLDivElement>(null);
 
@@ -33,6 +34,10 @@ export const Sidebar = (props: SidebarProps) => {
             window.removeEventListener('mouseup', stopDrag);
         };
     }, [dragging]);
+
+    useEffect(() => {
+        localStorage.setItem('sidebarWidth', sidebarWidth.toString());
+    }, [sidebarWidth]);
 
     return (
         <div style={{ display: 'flex', flexDirection: 'row', ...props.style }} className={props.className}>

@@ -1,9 +1,24 @@
-import { title } from "@/components/primitives";
+import { Sidebar } from "@/components/sidebar";
+import { Viewport, ViewportControl } from "@/components/viewport";
+import { SpreadSheet, SpreadSheetControl, SpreadSheetEditor} from "@/components/spreadsheet";
+import { EditorTools } from "@/components/editorTools";
 
 export default function EditorPage() {
 	return (
-		<div>
-			<h1 className={title()}>Editor</h1>
-		</div>
+		<Sidebar
+			className="h-screen"
+			firstChild={
+				<div>
+					<ViewportControl />
+					<SpreadSheetControl />
+					<SpreadSheet />
+					<SpreadSheetEditor />
+					<EditorTools />
+				</div>
+			}
+			secondChild={
+				<Viewport />
+			}			
+		/>
 	);
 }

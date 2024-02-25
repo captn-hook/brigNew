@@ -65,3 +65,17 @@ export const SpreadSheetControl = () => {
         </div>
     );
 }
+
+export const SpreadSheetEditor = () => {
+    return (
+        <div>
+            <h1 style={{ textAlign: 'center' }}>Spreadsheet Editor</h1>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('add row')}>Add Row</Button>
+                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('remove row')}>Remove Row</Button>
+                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('add column')}>Add Column</Button>
+                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('remove column')}>Remove Column</Button>
+            </div>
+        </div>
+    );
+}
