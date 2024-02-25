@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents/{doc}/{all=**} {
+    allow read: if doc == request.auth.uid;
+  }
+
+  match /databases/{database}/documents/{site}/{data} {
+    allow read: if get(/databases/$(database)/documents/$(request.auth.uid)/$(site)).data.access == true;
+  }
+
+  match /{allPaths=**} {
+    allow read, write: if request.auth.token.email.matches('.*@poppy[.]com');
+	}
+  
+  match /{allPaths=**} {
+    allow read, write: if request.auth.token.email.matches('tristanskyhook@gmail[.]com');
+	}
+}
