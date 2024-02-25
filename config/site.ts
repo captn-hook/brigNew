@@ -5,42 +5,38 @@ export const siteConfig = {
 	description: "See insights into your spaces and their air quality",
 	navItems: [
 		{
-			label: "Home",
-			href: "/",
-		},
-		{
 			label: "Viewer",
 			href: "/viewer",
+			tooltip: "View your data on a site",
 		},
 		{
 			label: "Editor",
 			href: "/editor",
+			tooltip: "Edit your data on a site",
 		},
 		{
 			label: "Creator",
 			href: "/creator",
+			tooltip: "Create a new site",
 		},
 		{
 			label: "Manager",
 			href: "/manager",
+			tooltip: "Manage your sites",
 		}
 	],
 	navMenuItems: [
 		{
-			label: "Profile",
-			href: "/profile",
+			label: "Account",
+			href: "/account",
 		},
 		{
-			label: "Settings",
-			href: "/settings",
+			label: "Logout",
+			href: "/log",
 		},
 		{
 			label: "Help & Feedback",
 			href: "/help-feedback",
-		},
-		{
-			label: "Logout",
-			href: "/logout",
 		},
 	],
 	links: {

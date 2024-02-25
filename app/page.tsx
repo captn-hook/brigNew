@@ -27,7 +27,7 @@ export default function Home() {
 					href='/viewer'
 					className={buttonStyles({ color: "primary", radius: "full" })}
 				>
-					Example Site
+					View the Example Site
 				</Link>
 				<Link
 					isExternal
