@@ -1,4 +1,4 @@
-export default function ManagerLayout({
+export default function LogLayout({
 	children,
 }: {
 	children: React.ReactNode;

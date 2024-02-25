@@ -1,9 +1,9 @@
 import { title } from "@/components/primitives";
 
-export default function CreatorPage() {
+export default function LogPage() {
 	return (
 		<div>
-			<h1 className={title()}>Creator</h1>
+			<h1 className={title()}>Log</h1>
 		</div>
 	);
 }
