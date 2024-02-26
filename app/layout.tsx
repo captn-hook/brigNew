@@ -6,6 +6,8 @@ import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar";
 import clsx from "clsx";
 
+import { AuthListener } from "@/components/auth";
+
 export const viewport = {
     themeColor: [
         { media: "(prefers-color-scheme: light)", color: "white" },
@@ -26,11 +28,13 @@ export const metadata: Metadata = {
     },
 };
 
+
 export default function RootLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
+
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head />
@@ -41,6 +45,7 @@ export default function RootLayout({
 				)}
 			>
 				<Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+					<AuthListener />
 					<div className="relative flex flex-col h-screen">
 						<Navbar />
 						<main>
