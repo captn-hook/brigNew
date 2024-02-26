@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Button } from "@nextui-org/button";
+import { Button, ButtonGroup } from "@nextui-org/button";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/table";
 
 interface Item {
@@ -29,22 +29,24 @@ export const SpreadSheet = () => {
 
 
     return (
-        <Table>
-            <TableHeader>
-                {headerColumns.map((column) => (
-                    <TableColumn key={column.uid}>{column.name}</TableColumn>
-                ))}
-            </TableHeader>
-            <TableBody>
-                {items.map((item) => (
-                    <TableRow key={item.id}>
-                        {headerColumns.map((column) => (
-                            <TableCell key={column.uid}>{item[column.uid]}</TableCell>
-                        ))}
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+        <div  style={{ marginTop: '10px' }}>
+            <Table>
+                <TableHeader>
+                    {headerColumns.map((column) => (
+                        <TableColumn key={column.uid}>{column.name}</TableColumn>
+                    ))}
+                </TableHeader>
+                <TableBody>
+                    {items.map((item) => (
+                        <TableRow key={item.id}>
+                            {headerColumns.map((column) => (
+                                <TableCell key={column.uid}>{item[column.uid]}</TableCell>
+                            ))}
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
     );
 }
 
@@ -52,16 +54,17 @@ export const SpreadSheetControl = () => {
     return (
         <div>
             <h1 style={{ textAlign: 'center' }}>Spreadsheet Controls</h1>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('toggle selection')}>Toggle Selection</Button>
-                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('flip selection')}>Flip Selection</Button>
-                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('clear selection')}>Clear Selection</Button>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('toggle all')}>Toggle All</Button>
-                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('flip all')}>Flip All</Button>
-                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('flip selected')}>Flip Selected</Button>
-            </div>
+            <ButtonGroup>
+                <Button radius="full" onPress={() => console.log('toggle selection')}>Toggle Selection</Button>
+                <Button radius="full" onPress={() => console.log('flip selection')}>Flip Selection</Button>
+                <Button radius="full" onPress={() => console.log('clear selection')}>Clear Selection</Button>
+            </ButtonGroup>
+            <br />
+            <ButtonGroup style={{ marginTop: '10px' }}>
+                <Button radius="full" onPress={() => console.log('toggle all')}>Toggle All</Button>
+                <Button radius="full" onPress={() => console.log('flip all')}>Flip All</Button>
+                <Button radius="full" onPress={() => console.log('flip selected')}>Flip Selected</Button>
+            </ButtonGroup>
         </div>
     );
 }
@@ -70,12 +73,12 @@ export const SpreadSheetEditor = () => {
     return (
         <div>
             <h1 style={{ textAlign: 'center' }}>Spreadsheet Editor</h1>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('add row')}>Add Row</Button>
-                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('remove row')}>Remove Row</Button>
-                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('add column')}>Add Column</Button>
-                <Button radius="full" style={{ margin : '5px' }} onPress={() => console.log('remove column')}>Remove Column</Button>
-            </div>
+            <ButtonGroup>
+                <Button radius="full" onPress={() => console.log('add row')}>Add Row</Button>
+                <Button radius="full" onPress={() => console.log('remove row')}>Remove Row</Button>
+                <Button radius="full" onPress={() => console.log('add column')}>Add Column</Button>
+                <Button radius="full" onPress={() => console.log('remove column')}>Remove Column</Button>
+            </ButtonGroup>
         </div>
     );
 }
