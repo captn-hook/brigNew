@@ -1,6 +1,7 @@
 "use client";
 import { IconImgProps } from "@/types";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 
 
 export const PoppyIconSmall = (props: IconImgProps) => {
@@ -11,7 +12,7 @@ export const PoppyIconSmall = (props: IconImgProps) => {
 	const darkLogo = "/logoSmallDark.png";
 
 	return (
-		<img
+		<Image
 			alt="Small logo"
 			src={theme === "light" ? darkLogo : lightLogo}
 			width={props.size}
@@ -28,7 +29,7 @@ export const PoppyIconLarge = (props: IconImgProps) => {
 	const darkLogo = "/logoDark.png";
 
 	return (
-		<img
+		<Image
 			alt="Large logo"
 			src={theme === "light" ? darkLogo : lightLogo}
 			width={props.size}
