@@ -7,7 +7,7 @@ export default function AccountPage() {
 		<div>
 			<h1 className={title()}>Account</h1>
 			
-			<ButtonGroup>
+			<ButtonGroup className="content-center">
 				<Button onPress={() => console.log('Change Password')}>Change Password</Button>
 				<Button onPress={() => console.log('Change Email')}>Change Email</Button>
 				<Button onPress={() => console.log('Delete Account')}>Delete Account</Button>

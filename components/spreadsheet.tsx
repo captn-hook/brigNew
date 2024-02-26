@@ -52,8 +52,8 @@ export const SpreadSheet = () => {
 
 export const SpreadSheetControl = () => {
     return (
-        <div>
-            <h1 style={{ textAlign: 'center' }}>Spreadsheet Controls</h1>
+        <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+            <h1>Spreadsheet Controls</h1>
             <ButtonGroup>
                 <Button radius="full" onPress={() => console.log('toggle selection')}>Toggle Selection</Button>
                 <Button radius="full" onPress={() => console.log('flip selection')}>Flip Selection</Button>
@@ -71,7 +71,7 @@ export const SpreadSheetControl = () => {
 
 export const SpreadSheetEditor = () => {
     return (
-        <div>
+        <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
             <h1 style={{ textAlign: 'center' }}>Spreadsheet Editor</h1>
             <ButtonGroup>
                 <Button radius="full" onPress={() => console.log('add row')}>Add Row</Button>

@@ -10,8 +10,8 @@ export const Viewport = () => {
 }
 export const ViewportControl = () => {
     return (
-        <div>
-            <h1 style={{ textAlign: 'center' }}>Viewport Controls</h1>
+        <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+            <h1>Viewport Controls</h1>
             <ButtonGroup>
                 <Button radius="full" onPress={() => console.log('camera mode')}>Camera</Button>
                 <Button radius="full" onPress={() => console.log('values mode')}>Values</Button>

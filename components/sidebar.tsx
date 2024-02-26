@@ -3,7 +3,13 @@ import React, { useRef, useState, useEffect } from 'react';
 import { SidebarProps } from '@/types';
 
 export const Sidebar = (props: SidebarProps) => {
-    const initialWidth = localStorage.getItem('sidebarWidth') ? parseInt(localStorage.getItem('sidebarWidth')!) : 250;
+    //const initialWidth = localStorage.getItem('sidebarWidth') ? parseInt(localStorage.getItem('sidebarWidth')!) : 250;
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('sidebarWidth')) {
+        var initialWidth = parseInt(localStorage.getItem('sidebarWidth')!);
+    } else {
+        var initialWidth = 300;
+    }
+
     const [sidebarWidth, setSidebarWidth] = useState(initialWidth);
     const [dragging, setDragging] = useState(false);
     const dragHandler = useRef<HTMLDivElement>(null);
@@ -12,16 +18,16 @@ export const Sidebar = (props: SidebarProps) => {
         setDragging(true);
     };
 
-    const doDrag = (e: MouseEvent) => {
-        if (!dragging) return;
-        setSidebarWidth(e.clientX);
-    };
-
-    const stopDrag = () => {
-        setDragging(false);
-    };
-
     useEffect(() => {
+        
+        const doDrag = (e: MouseEvent) => {
+            if (!dragging) return;
+            setSidebarWidth(e.clientX);
+        };
+    
+        const stopDrag = () => {
+            setDragging(false);
+        };
         if (dragging) {
             window.addEventListener('mousemove', doDrag);
             window.addEventListener('mouseup', stopDrag);
@@ -41,7 +47,7 @@ export const Sidebar = (props: SidebarProps) => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'row', ...props.style }} className={props.className}>
-            <div style={{ flex: `0 0 ${sidebarWidth}px`, overflow: 'hidden' }}>
+            <div style={{ flex: `0 0 ${sidebarWidth}px`, overflow: 'hidden' }} className='content-center'>
                 {props.firstChild}
             </div>
             <div ref={dragHandler} onMouseDown={startDrag} style={{ cursor: 'col-resize', padding: '2px', background: dragging ? '#555' : '#888' }} />
