@@ -20,6 +20,8 @@ import { ThemeSwitch } from "@/components/theme-switch";
 
 import { PoppyIconSmall } from "@/components/images";
 
+import { SmallAccountStatus } from "@/components/auth";
+
 export const Navbar = () => {
 	const [isMenuOpen, setIsMenuOpen] = React.useReducer((current) => !current, false);
 
@@ -50,6 +52,7 @@ export const Navbar = () => {
 				</ul>
 			</NavbarContent>
 			<NavbarContent className="basis-1 pl-4" justify="end">
+				<SmallAccountStatus />
 				<ThemeSwitch />
 				<NavbarMenuToggle />
 			</NavbarContent>
