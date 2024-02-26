@@ -31,12 +31,16 @@ export const siteConfig = {
 			href: "/account",
 		},
 		{
-			label: "Logout",
-			href: "/log",
+			label: "Admin",
+			href: "/admin",
 		},
 		{
 			label: "Help & Feedback",
 			href: "/help-feedback",
+		},
+		{
+			label: "Logout",
+			href: "/log",
 		},
 	],
 	links: {
