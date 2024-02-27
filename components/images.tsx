@@ -1,6 +1,7 @@
 "use client";
 import { IconImgProps } from "@/types";
 import { useTheme } from "next-themes";
+
 //import Image from "next/image";
 
 
@@ -32,6 +33,20 @@ export const PoppyIconLarge = (props: IconImgProps) => {
 		<img
 			alt="Large logo"
 			src={theme === "light" ? darkLogo : lightLogo}
+			width={props.size}
+			height={props.size}
+			{...props}
+		/>
+	);
+}
+
+export const GoogleIcon = (props: IconImgProps) => {
+	const googleSvg = "/google.svg";
+
+	return (
+		<img
+			alt="Google logo"
+			src={googleSvg}
 			width={props.size}
 			height={props.size}
 			{...props}

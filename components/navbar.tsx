@@ -22,6 +22,8 @@ import { PoppyIconSmall } from "@/components/images";
 
 import { SmallAccountStatus } from "@/components/auth";
 
+import { SignOutListener } from "@/components/auth";
+
 export const Navbar = () => {
 	const [isMenuOpen, setIsMenuOpen] = React.useReducer((current) => !current, false);
 
@@ -71,7 +73,12 @@ export const Navbar = () => {
 								}
 								href={item.href}
 								size="lg"
-								onClick={() => setIsMenuOpen()}
+								onClick={() => {
+									setIsMenuOpen()
+									if (item.label === "Logout") {
+										SignOutListener();
+									}
+								}}
 							>
 								{item.label}
 							</Link>

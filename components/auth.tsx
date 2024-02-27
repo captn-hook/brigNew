@@ -11,10 +11,13 @@ import {
     signInWithPopup,
     signOut,
 } from "firebase/auth";
+
 import { User as FirebaseUser } from "firebase/auth";
 
 import { firebaseConfig } from "../app/key.js"
 
+import { GoogleIcon } from './images';
+import { NoUserIcon, UserIcon } from './icons';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
@@ -48,20 +51,31 @@ export const SmallAccountStatus = () => {
         });
     }, []);
 
-    const handleSignOut = async () => {
-        await signOut(auth);
-    }
-
     return (
         <div className="flex gap-2">
             {user ? (
                 <div className="flex gap-2">
+                    <UserIcon size={24} />
                     <p>{user.displayName}</p>
-                    <button onClick={handleSignOut}>Sign Out</button>
                 </div>
             ) : (
-                <button onClick={() => signInWithPopup(auth, provider)}>Sign in with Google</button>
+                <div className="flex gap-2">
+                    <NoUserIcon size={24} />
+                    <button onClick={() => signInWithPopup(auth, provider)}>
+                        <GoogleIcon size={22} />
+                    </button>
+                </div>
             )}
         </div>
     );
+}
+
+export const SignOutListener = () => {
+    //returns a function that can be used as a listener
+    return signOut(auth).then(() => {
+        // reload the homepage
+        window.location.reload();
+    }).catch((error) => {
+        console.error(error);
+    });
 }
