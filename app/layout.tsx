@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar";
 import clsx from "clsx";
 
-import { AuthListener } from "@/components/auth";
+import { AuthListener } from "@/components/authClient";
 
 export const viewport = {
     themeColor: [
