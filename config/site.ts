@@ -40,7 +40,7 @@ export const siteConfig = {
 		},
 		{
 			label: "Logout",
-			href: "/log",
+			href: "/",
 		},
 	],
 	links: {
