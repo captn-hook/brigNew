@@ -20,7 +20,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 
 import { PoppyIconSmall } from "@/components/images";
 
-import { SmallAccountStatus } from "@/components/auth";
+import { SmallAccountStatus } from "@/components/authClient";
 
 import { SignOutListener } from "@/components/auth";
 
