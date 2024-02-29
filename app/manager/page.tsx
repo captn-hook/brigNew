@@ -1,6 +1,7 @@
 "use client";
 import { title } from "@/components/primitives";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/table";
+import { SiteList } from "@/components/sitelist";
 
 export default function ManagerPage() {
 	
@@ -60,7 +61,8 @@ export default function ManagerPage() {
 	return (
 		<div>
 			<h1 className={title()}>Site Manager</h1>
-			<Table>
+			<SiteList />
+			{/* <Table>
 				<TableHeader>
 					<TableColumn>Site Name</TableColumn>
 					<TableColumn>Site X</TableColumn>
@@ -75,7 +77,7 @@ export default function ManagerPage() {
 						</TableRow>
 					))}
 				</TableBody>
-			</Table>
+			</Table> */}
 		</div>
 	);
 }
