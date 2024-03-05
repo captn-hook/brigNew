@@ -1,5 +1,5 @@
 import { Sidebar } from "@/components/sidebar";
-import { Viewport, ViewportControl } from "@/components/viewport";
+import { Viewport, ViewportControl } from "@/components/viewer/viewport";
 import { SpreadSheet, SpreadSheetControl, SpreadSheetEditor} from "@/components/spreadsheet";
 import { EditorTools } from "@/components/editorTools";
 
