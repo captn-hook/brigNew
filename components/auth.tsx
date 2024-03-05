@@ -12,7 +12,7 @@ import {
     getDocs,
 } from "firebase/firestore";
 
-import { getStorage } from "firebase/storage";
+import { getStorage, ref, getBlob } from "firebase/storage";
 
 import { firebaseConfig } from "../app/key.js"
 
@@ -61,3 +61,10 @@ export async function userSites() {
     });
 }
 
+export function refe(path: string) {
+    return ref(storage, path);
+}
+
+export function getBlobe(path: string) {
+    return getBlob(ref(storage, path));
+}
