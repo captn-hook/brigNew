@@ -1,6 +1,6 @@
-// import {
-//     parse
-// } from '@vanillaes/csv'
+import {
+    parse
+} from '@vanillaes/csv'
 
 import {
     Point2d

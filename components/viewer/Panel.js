@@ -1,5 +1,5 @@
 class Panel {
-    constructor() {
+    constructor(c) {
         this.state = {
             0: 'spreadsheet',
             1: 'groups',

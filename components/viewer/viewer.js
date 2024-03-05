@@ -1,4 +1,3 @@
-
 import {
     PerspectiveCamera,
     Vector3,
@@ -9,9 +8,9 @@ import {
     Clock
 } from 'three';
 
-import {
-    OrbitControls
-} from 'three/examples/jsm/controls/OrbitControls.js';
+// import {
+//     default as html
+// } from './viewer.html';
 
 import {
     Data,
@@ -25,23 +24,35 @@ import {
 } from './ScreenSizes';
 
 import {
-    Area
-} from './Area';
+    OrbitControls
+} from 'three/examples/jsm/controls/OrbitControls.js';
 
-// import {
-//     handleModels
-// } from './modelHandler';
 
 import {
     Panel
 } from './Panel';
 
-// NEEDS
-// html + css
-// get blob from storage by ref
-// getFirestore, getStorage, ref, getBlob
-// defaultPage
+import {
+    getBlobe
+} from '../auth';
 
+// import {
+//     getStorage,
+//     ref,
+//     getBlob,
+// } from 'firebase/storage';
+
+// import {
+//     getFirestore,
+// } from 'firebase/firestore';
+
+import {
+    Area
+} from './Area';
+
+// import {
+//     default as defaultPage
+// } from '../index/DefaultPage';
 
 export var ms = []
 export var ts = []
@@ -62,7 +73,6 @@ export const state = {
 }
 
 export var renderer;
-//should be innerWidth and innerHeight not 1 / 1    
 export const camera = new PerspectiveCamera(75, 1 / 1, 1, 500);
 
 // three Scene
@@ -71,17 +81,17 @@ export var dropd;
 export var textbox;
 export var camFree = false;
 
-export function open(state, firebaseEnv) {
-    // document.body.innerHTML = html;
+export function open(props) {
+    //document.body.innerHTML = html;
 
-    return cont(state, firebaseEnv);
+    return cont(props);
 }
 
 export var leftPanel;
 export var sizes;
 export var scene;
 
-export function siteList(s) {
+export function siteList(props) {
     //empty dropdown
     while (dropd.firstChild) {
         dropd.removeChild(dropd.firstChild);
@@ -92,13 +102,13 @@ export function siteList(s) {
     def.text = defaultDropd;
     dropd.add(def);
 
-    s.forEach((site) => {
+    props.sitlist.forEach((site) => {
         var option = document.createElement('option');
         option.text = site;
         dropd.add(option);
 
-        if (window.location.hash != '' && window.location.hash[1] != '&') {
-            if (window.location.hash.split('&')[0].substring(1) == dropd.options[dropd.length - 1].text) {
+        if (props.window.location.hash != '' && props.window.location.hash[1] != '&') {
+            if (props.window.location.hash.split('&')[0].substring(1) == dropd.options[dropd.length - 1].text) {
                 dropd.selectedIndex = dropd.length - 1;
             }
         }
@@ -151,17 +161,16 @@ export function reloadPanel(bool = undefined) {
     }
 }
 
-export function cont(pp, firebaseEnv) {
-
+export function cont(props) {
     //defaultPage();
     //console.log('viewer open', pp);
     //console.log('WITH: ', pp.params);
     // if (firebaseEnv.auth.currentUser) {
-    //     import('../shared/LoginStyle.js').then((module) => { module.default(); });
+    //     import('./LoginStyle.js').then((module) => { module.default(); });
     // }
     //firebase
-    let app, auth, provider, db, storage  = import('../auth').then((module) => {
-        return module.app, module.auth, module.provider, module.db, module.storage;
+    let db, storage = import('../auth').then((module) => {
+        return module.db, module.storage;
     });
     
     const light = new AmbientLight(0xffffff, 1.3);
@@ -174,7 +183,7 @@ export function cont(pp, firebaseEnv) {
 
     //console.log('viewer cont', light);
 
-    leftPanel = new Panel(document.getElementById('left'));
+    leftPanel = new Panel(document.getElementById('spreadsheet'));
 
     leftPanel.ms = ms;
     leftPanel.ts = ts;
@@ -190,7 +199,7 @@ export function cont(pp, firebaseEnv) {
 
     var alpha = true;
 
-    var bw = pp.params.darkTheme;
+    var bw = props.darkTheme;
 
     var stupid = null;
 
@@ -200,7 +209,7 @@ export function cont(pp, firebaseEnv) {
     var lastai = -1;
 
 
-    window.dispatchEvent(new Event('hashchange'));
+    props.window.dispatchEvent(new Event('hashchange'));
 
     sizes = new ScreenSizes();
     // Lights
@@ -220,7 +229,7 @@ export function cont(pp, firebaseEnv) {
 
 
     renderer.setSize(sizes.width, sizes.height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(props.window.devicePixelRatio, 2));
 
     const clock = new Clock();
 
@@ -257,7 +266,7 @@ export function cont(pp, firebaseEnv) {
 
             loadSite(targ);
 
-            var modelRef = ref(storage, '/Sites/' + targ + '/' + targ + '.glb');
+            var modelRef = '/Sites/' + targ + '/' + targ + '.glb';
             
             loadRefAndDoc(modelRef, targ);
         } else {
@@ -266,9 +275,9 @@ export function cont(pp, firebaseEnv) {
             /*
             load example
             */
-            var modelRef = ref(storage, '/Example/example.glb');
+            var modelRef = '/Example/example.glb';
 
-            var dataRef = ref(storage, '/Example/data.csv');
+            var dataRef = '/Example/data.csv';
 
             // .glb, load model
 
@@ -283,7 +292,7 @@ export function cont(pp, firebaseEnv) {
             leftPanel.siteheader = 'Example';
         }
 
-        //window.location.hash = leftPanel.siteheader + '&';
+        //props.window.location.hash = leftPanel.siteheader + '&';
 
     })
 
@@ -310,15 +319,15 @@ export function cont(pp, firebaseEnv) {
 
     const root = document.getElementById('root');
 
-    if (pp.params.site) {
+    if (props.site) {
         //LOAD
-        ('LOADING SITE: ', pp.params.site);
+        ('LOADING SITE: ', props.site);
     } else {
         interpHash();
     }
 
-    if (pp.params.siteList) {//have to wait for resolve
-        siteList(pp.params.siteList);
+    if (props.siteList) {//have to wait for resolve
+        siteList();
     }
 
     vs.addEventListener('click', valueButton);
@@ -598,7 +607,7 @@ export function cont(pp, firebaseEnv) {
 
     function loadRefAndDoc(ref, doc) {
 
-        getBlob(ref)
+        getBlobe(ref)
             .then((blob) => {
                 import('../viewer/modelHandler.js').then((module) => {
                     console.log('model transfered RD, loading...');
@@ -634,7 +643,7 @@ export function cont(pp, firebaseEnv) {
 
     function loadRefs(ref1, ref2) {
 
-        getBlob(ref1)
+        getBlobe(ref1)
             .then((blob) => {
                 import('../viewer/modelHandler.js').then((module) => {
                     console.log('model transfered, loading...');
@@ -649,7 +658,7 @@ export function cont(pp, firebaseEnv) {
 
         // .csv, load data
 
-        getBlob(ref2)
+        getBlobe(ref2)
             .then((blob) => {
                 handleFiles(blob);
             })
@@ -664,20 +673,20 @@ export function cont(pp, firebaseEnv) {
     })
 
     //canvas
-    document.getElementById('title').addEventListener('click', (e) => {
+    // document.getElementById('title').addEventListener('click', (e) => {
 
-        bw = !bw;
+    //     bw = !bw;
 
-        leftPanel.setbw(bw)
+    //     leftPanel.setbw(bw)
 
-        if (bw) {
-            e.target.innerHTML = 'Light Mode';
-            scene.background = new Color(0x000000);
-        } else {
-            e.target.innerHTML = 'Dark Mode';
-            scene.background = new Color(0xffffff);
-        }
-    })
+    //     if (bw) {
+    //         e.target.innerHTML = 'Light Mode';
+    //         scene.background = new Color(0x000000);
+    //     } else {
+    //         e.target.innerHTML = 'Dark Mode';
+    //         scene.background = new Color(0xffffff);
+    //     }
+    // })
 
 
     function stoplookin() {
@@ -709,7 +718,7 @@ export function cont(pp, firebaseEnv) {
         var pos = String('P=' + Math.round(camera.position.x * 100) / 100) + '/' + String(Math.round(camera.position.y * 100) / 100) + '/' + String(Math.round(camera.position.z * 100) / 100) + '/' + String(Math.round(camera.rotation.x * 100) / 100) + '/' + String(Math.round(camera.rotation.y * 100) / 100) + '/' + String(Math.round(camera.rotation.z * 100) / 100)
 
         if (pos[0] != null) {
-            window.location.hash = leftPanel.siteheader + '&' + pos;
+            props.window.location.hash = leftPanel.siteheader + '&' + pos;
         }
     },
         false);
@@ -727,7 +736,7 @@ export function cont(pp, firebaseEnv) {
 
     function interpHash() {
 
-        var hash = window.location.hash.substring(1)
+        var hash = props.window.location.hash.substring(1)
 
         if (hash[0] != '&') {
             var params = hash.split('&');
@@ -792,13 +801,13 @@ export function cont(pp, firebaseEnv) {
     }
 
     //file input
-    window.addEventListener('hashchange', (e) => {
+    props.window.addEventListener('hashchange', (e) => {
         interpHash();
 
     });
 
     //resize
-    window.addEventListener('resize', () => {
+    props.window.addEventListener('resize', () => {
         // Update sizes
         sizes.updateSizes(leftPanel);
 
@@ -808,11 +817,13 @@ export function cont(pp, firebaseEnv) {
 
         // Update renderer
         renderer.setSize(sizes.width, sizes.height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(props.window.devicePixelRatio, 2));
     })
 
-    if (window.location.hash == '' || window.location.hash[1] == '&') {
-        loadRefs(ref(storage, '/Example/example.glb'), ref(storage, '/Example/data.csv'))
+    if (props.window.location.hash == '' || props.window.location.hash[1] == '&') {
+        let path0 = '/Example/example.glb'
+        let path1 = '/Example/data.csv'
+        loadRefs(path0, path1);
     }
 
     const tick = () => {
@@ -856,12 +867,12 @@ export function cont(pp, firebaseEnv) {
             tracers.forEach(t => t.drawTracer(leftPanel, camera, sizes, alpha, doVals));
 
             //Points
-            ms.forEach(pt => pt.drawPt(leftPanel, camera, sizes, pp.params.darkTheme));
-            ts.forEach(pt => pt.drawPt(leftPanel, camera, sizes, pp.params.darkTheme));
+            ms.forEach(pt => pt.drawPt(leftPanel, camera, sizes, props.darkTheme));
+            ts.forEach(pt => pt.drawPt(leftPanel, camera, sizes, props.darkTheme));
         }
 
         if (leftPanel) {
-            if (pp.params.darkTheme) {
+            if (props.darkTheme) {
                 leftPanel.ctx.fillStyle = 'black';
             } else {
                 leftPanel.ctx.fillStyle = 'white';
@@ -919,7 +930,7 @@ export function cont(pp, firebaseEnv) {
         }
 
         // Call tick again on the next frame
-        window.requestAnimationFrame(tick);
+        props.window.requestAnimationFrame(tick);
     }
 
     tick();
