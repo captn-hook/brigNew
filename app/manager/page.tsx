@@ -1,6 +1,5 @@
 "use client";
 import { title } from "@/components/primitives";
-import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/table";
 import { SiteList } from "@/components/sitelist";
 
 export default function ManagerPage() {

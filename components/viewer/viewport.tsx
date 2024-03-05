@@ -1,13 +1,20 @@
 'use client';
+import React, { useEffect } from 'react';
 import { Button, ButtonGroup } from "@nextui-org/button";
+import { open } from "./viewer";
 
 export const Viewport = () => {
+    useEffect(() => {
+        open();
+    }, []);
+
     return (
         <div style={{ width: '100%', height: '100%' }}>
             <canvas id="viewport" style={{ width: '100%', height: '100%' }}></canvas>
         </div>
     );
 }
+
 export const ViewportControl = () => {
     return (
         <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>

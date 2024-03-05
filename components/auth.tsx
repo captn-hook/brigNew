@@ -12,12 +12,15 @@ import {
     getDocs,
 } from "firebase/firestore";
 
+import { getStorage } from "firebase/storage";
+
 import { firebaseConfig } from "../app/key.js"
 
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth();
 export const provider = new GoogleAuthProvider();
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 
 export const SignOutListener = () => {
     //returns a function that can be used as a listener
