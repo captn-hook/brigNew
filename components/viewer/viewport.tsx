@@ -1,8 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { open } from "./viewer";
 import { useTheme } from "next-themes";
+
+import "./canvas.css";
 
 interface Props {
     darkTheme: boolean;
@@ -39,11 +41,9 @@ export const Viewport = () => {
         , [props]);
 
     return (
-        <div>
-            <div id="panel" style={{ position: 'relative' }}>
-                <canvas className="webgl" id="3d"></canvas>
-                <canvas style={{ position: 'relative' }} id="2d"></canvas>
-            </div>
+        <div id="3d" className="viewport">
+            <canvas className="webgl" id="threejs"></canvas>
+            <canvas className="tracers" id="2d"></canvas>
         </div>
     );
 }

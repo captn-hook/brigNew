@@ -27,6 +27,7 @@ export class ScreenSizes {
 
         this.width = this.div.offsetWidth;
         this.height = this.div.offsetHeight;
+        console.log('width: ', this.width, ' height: ', this.height);
 
         this.ctx.canvas.innerWidth = this.width;
         this.ctx.canvas.innerHeight = this.height;

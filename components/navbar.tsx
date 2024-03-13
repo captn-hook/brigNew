@@ -24,11 +24,13 @@ import { SmallAccountStatus } from "@/components/authClient";
 
 import { SignOutListener } from "@/components/auth";
 
+import "./navbar.css";
+
 export const Navbar = () => {
 	const [isMenuOpen, setIsMenuOpen] = React.useReducer((current) => !current, false);
 
 	return (
-		<NextUINavbar maxWidth="xl" position="sticky" isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen}>
+		<NextUINavbar maxWidth="xl" position="sticky" isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen} height='var(--header-height)'>
 			<NavbarContent className="basis-1/5 sm:basis-full" justify="start">
 				<NavbarBrand as="li" className="gap-3 max-w-fit">
 					<NextLink className="flex justify-start items-center gap-1" href="/">
