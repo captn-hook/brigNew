@@ -4,7 +4,7 @@ export default function ViewerLayout({
     children: React.ReactNode;
 }) {
     return (
-		<div style={{ width: '100%', height: '100%'}} >
+		<div>
 			{children}
 		</div>
     );
