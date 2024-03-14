@@ -26,6 +26,9 @@ export const Sidebar = (props: SidebarProps) => {
         };
     
         const stopDrag = () => {
+            //dispatch a resize event
+            const event = new Event('resize');
+            window.dispatchEvent(event);
             setDragging(false);
         };
         if (dragging) {
