@@ -4,13 +4,13 @@ import { SidebarProps } from '@/types';
 
 export const Sidebar = (props: SidebarProps) => {
     //const initialWidth = localStorage.getItem('sidebarWidth') ? parseInt(localStorage.getItem('sidebarWidth')!) : 250;
-    if (typeof localStorage !== 'undefined' && localStorage.getItem('sidebarWidth')) {
-        var initialWidth = parseInt(localStorage.getItem('sidebarWidth')!);
-    } else {
-        var initialWidth = 300;
-    }
+    // if (typeof localStorage !== 'undefined' && localStorage.getItem('sidebarWidth')) {
+    //     var initialWidth = parseInt(localStorage.getItem('sidebarWidth')!);
+    // } else {
+    //     var initialWidth = 300;
+    // }
 
-    const [sidebarWidth, setSidebarWidth] = useState(initialWidth);
+    const [sidebarWidth, setSidebarWidth] = useState(300); // default to the server value
     const [dragging, setDragging] = useState(false);
     const dragHandler = useRef<HTMLDivElement>(null);
 
@@ -45,8 +45,11 @@ export const Sidebar = (props: SidebarProps) => {
     }, [dragging]);
 
     useEffect(() => {
-        localStorage.setItem('sidebarWidth', sidebarWidth.toString());
-    }, [sidebarWidth]);
+        // update to the client value after the component is mounted
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('sidebarWidth')) {
+            setSidebarWidth(parseInt(localStorage.getItem('sidebarWidth')!));
+        }
+    }, []);
 
     return (
         <div style={{ display: 'flex', flexDirection: 'row', ...props.style }} className={props.className}>

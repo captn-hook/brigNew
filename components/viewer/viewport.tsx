@@ -3,6 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { open } from "./viewer";
 import { useTheme } from "next-themes";
+import { ScreenSizesContext } from "./ScreenSizesContext";
+import { ScreenSizes } from "./ScreenSizes";
 
 import "./canvas.css";
 
@@ -11,16 +13,19 @@ interface Props {
     site: string;
     sitelist: string[];
     window: Window | undefined;
+    screenSizes: ScreenSizes;
 }
 
 export const Viewport = () => {
     const { theme, setTheme } = useTheme();
+    const screenSizes = React.useContext(ScreenSizesContext);
 
     const [props, setProps] = useState<Props>({
         darkTheme: theme === "dark",
         site: "default",
         sitelist: ["default"],
         window: undefined,
+        screenSizes: screenSizes
     });
 
     React.useEffect(() => {
@@ -29,26 +34,44 @@ export const Viewport = () => {
             site: "default",
             sitelist: ["default"],
             window: window,
+            screenSizes: screenSizes
         });
     }
         , [theme]);
 
+    const div3dRef = useRef<HTMLDivElement>(null);
+    const canvas2dRef = useRef<HTMLCanvasElement>(null);
+
     useEffect(() => {
-        if (props.window) {
+        if (props.window && div3dRef.current && canvas2dRef.current) {
+            props.screenSizes.setViewerRefs(div3dRef.current, canvas2dRef.current);
+            //props.screenSizes.updateSizes();
             open(props);
         }
     }
-        , [props]);
+        , [props, div3dRef, canvas2dRef]);
 
     return (
-        <div id="3d" className="viewport">
+        <div id="3d" className="viewport" ref={div3dRef}>
             <canvas className="webgl" id="threejs"></canvas>
-            <canvas className="tracers" id="2d"></canvas>
+            <canvas className="tracers" id="2d" ref={canvas2dRef}></canvas>
         </div>
     );
 }
 
 export const ViewportControl = () => {
+    const screenSizes = React.useContext(ScreenSizesContext);
+
+    const spreadsheetRef = useRef<HTMLCanvasElement>(null);
+    
+    useEffect(() => {
+        if (spreadsheetRef.current) {
+            screenSizes.setSpreadsheetRef(spreadsheetRef.current);
+            //screenSizes.updateSizes();
+        }
+    }
+        , [spreadsheetRef]);
+
     return (
         <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
             <ButtonGroup id="nav">
@@ -84,7 +107,7 @@ export const ViewportControl = () => {
             </ButtonGroup>
             
             <div id="panel">
-                <canvas id="spreadsheet"></canvas>
+                <canvas id="spreadsheet" ref={spreadsheetRef}></canvas>
             </div>
             <div id="texcontainer" style={{ display: 'none' }}>
                 <textarea id="textbox" style={{ backgroundColor: 'grey', color: 'white' }} readOnly></textarea>

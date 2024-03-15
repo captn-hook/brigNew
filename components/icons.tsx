@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, {useEffect, useState} from "react";
 import { IconSvgProps } from "@/types";
 import { useTheme } from 'next-themes';
 
@@ -247,7 +247,14 @@ export const NoUserIcon = ({
 	
 	const { theme, setTheme } = useTheme();
 
-	const bg = theme === "dark" ? "white" : "black";
+	const [bg, setBg] = useState('black'); // default to the server value
+
+    useEffect(() => {
+        // update to the client value after the component is mounted
+        setBg('white');
+    }, []);
+
+	//const bg = theme === "dark" ? "white" : "black";
 	
 	return <svg
 		aria-hidden="true"
