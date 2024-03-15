@@ -19,9 +19,9 @@ import {
     GetAreas,
 } from './Data';
 
-import {
-    ScreenSizes
-} from './ScreenSizes';
+// import {
+//     ScreenSizes
+// } from './ScreenSizes';
 
 import {
     OrbitControls
@@ -88,7 +88,7 @@ export function open(props) {
 }
 
 export var leftPanel;
-export var sizes;
+//export var sizes;
 export var scene;
 
 export function siteList(props) {
@@ -116,7 +116,7 @@ export function siteList(props) {
 
 }
 
-export function handleFiles(input) {
+export function handleFiles(input, screenSizes = undefined) {
 
     //remove old stuff first
     leftPanel.blankClicks();
@@ -131,9 +131,9 @@ export function handleFiles(input) {
         [ms, ts, tracers, insights, views] = Data(read.result)
 
         leftPanel.setTracers(ms, ts, tracers)
-        //resize sheet if sizes isnt undefined
-        if (sizes != undefined) {
-            sizes.updateSizes(leftPanel);
+        // //resize sheet if sizes isnt undefined
+        if (screenSizes != undefined) {
+            screenSizes.updateSizes(leftPanel);
         }
     }
 }
@@ -155,13 +155,17 @@ export function reloadPanel(bool = undefined) {
         }
     }
 
-    //resize sheet if sizes isnt undefined
-    if (sizes != undefined) {
-        sizes.updateSizes(leftPanel);
+    //resize sheet if props.screenSizes isnt undefined
+    if (props.screenSizes != undefined) {
+        props.screenSizes.updateSizes(leftPanel);
     }
 }
 
 export function cont(props) {
+    //console.log('viewer open', props);
+    // props.screenSizes.canvas2d.addEventListener('mousedown', (e) => {
+    //     console.log('mousedown');
+    // })
     //defaultPage();
     //console.log('viewer open', pp);
     //console.log('WITH: ', pp.params);
@@ -211,7 +215,7 @@ export function cont(props) {
 
     props.window.dispatchEvent(new Event('hashchange'));
 
-    sizes = new ScreenSizes();
+    //sizes = new ScreenSizes();
     // Lights
 
     // Canvassesses
@@ -221,14 +225,14 @@ export function cont(props) {
     const controls = new OrbitControls(camera, canvas2d);
 
 
-    sizes.updateSizes(leftPanel, ms, ts, tracers);
+    props.screenSizes.updateSizes(leftPanel);
 
     renderer = new WebGLRenderer({
         canvas: canvas3d
     });
 
 
-    renderer.setSize(sizes.width, sizes.height);
+    renderer.setSize(props.screenSizes.width, props.screenSizes.height);
     renderer.setPixelRatio(Math.min(props.window.devicePixelRatio, 2));
 
     const clock = new Clock();
@@ -506,23 +510,23 @@ export function cont(props) {
             bug1.style.display = 'grid'
             bug2.style.display = 'none'
             bug3.style.display = 'none'
-            sizes.spreadsheetDiv.style.overflow = 'hidden';
+            props.screenSizes.spreadsheetDiv.style.overflow = 'hidden';
         } else if (leftPanel.spreadsheet == state[1]) {
             //display groups
             e.target.innerHTML = 'Areas'; //button indicates next state
             bug1.style.display = 'none'
             bug2.style.display = 'grid'
             bug3.style.display = 'none'
-            sizes.spreadsheetDiv.style.overflow = 'auto';
+            props.screenSizes.spreadsheetDiv.style.overflow = 'auto';
         } else if (leftPanel.spreadsheet == state[2]) {
             //display areas
             e.target.innerHTML = 'Tracers'; //button indicates next state
             bug1.style.display = 'none'
             bug2.style.display = 'none'
             bug3.style.display = 'grid'
-            sizes.spreadsheetDiv.style.overflow = 'auto';
+            props.screenSizes.spreadsheetDiv.style.overflow = 'auto';
         }
-        sizes.updateSizes(leftPanel);
+        props.screenSizes.updateSizes(leftPanel);
     })
 
     function updateCam() {
@@ -632,7 +636,7 @@ export function cont(props) {
                 stupid = null;
             }
 
-            sizes.updateSizes(leftPanel);
+            props.screenSizes.updateSizes(leftPanel);
 
         }).catch((err) => {
             //console.error(err);
@@ -660,7 +664,7 @@ export function cont(props) {
 
         getBlobe(ref2)
             .then((blob) => {
-                handleFiles(blob);
+                handleFiles(blob, props.screenSizes);
             })
             .catch((err) => {
                 console.error('No Data', err);
@@ -669,7 +673,7 @@ export function cont(props) {
     }
 
     document.addEventListener('DOMContentLoaded', (e) => {
-        sizes.updateSizes(leftPanel);
+        props.screenSizes.updateSizes(leftPanel);
     })
 
     //canvas
@@ -694,24 +698,24 @@ export function cont(props) {
             leftPanel.looking = false;
         }
     }
-
-    sizes.canvas2d.addEventListener('mousedown', (e) => {
+    //console.log('viewer cont', props, props.screenSizes);
+    props.screenSizes.canvas2d.addEventListener('mousedown', (e) => {
         stoplookin();
     })
 
-    sizes.canvas2d.addEventListener('wheel', (event) => {
+    props.screenSizes.canvas2d.addEventListener('wheel', (event) => {
         stoplookin();
     }, {
         passive: true
     });
 
-    sizes.canvas2d.addEventListener('contextmenu', (e) => {
+    props.screenSizes.canvas2d.addEventListener('contextmenu', (e) => {
         stoplookin();
 
         e.preventDefault();
     })
 
-    sizes.canvas2d.addEventListener('click', (e) => {
+    props.screenSizes.canvas2d.addEventListener('click', (e) => {
         stoplookin();
 
         //store pos in link
@@ -755,7 +759,7 @@ export function cont(props) {
                     stupid = params[1].substring(2);
                 } else {
                     leftPanel.gi = params[1].substring(2);
-                    sizes.updateSizes(leftPanel);
+                    props.screenSizes.updateSizes(leftPanel);
                 }
 
 
@@ -808,15 +812,15 @@ export function cont(props) {
 
     //resize
     props.window.addEventListener('resize', () => {
-        // Update sizes
-        sizes.updateSizes(leftPanel);
+        // Update props.screenSizes
+        props.screenSizes.updateSizes(leftPanel);
 
         // Update camera
-        camera.aspect = sizes.width / sizes.height;
+        camera.aspect = props.screenSizes.width / props.screenSizes.height;
         camera.updateProjectionMatrix();
 
         // Update renderer
-        renderer.setSize(sizes.width, sizes.height);
+        renderer.setSize(props.screenSizes.width, props.screenSizes.height);
         renderer.setPixelRatio(Math.min(props.window.devicePixelRatio, 2));
     })
 
@@ -858,17 +862,17 @@ export function cont(props) {
         renderer.render(scene, camera);
 
         //New Frame
-        sizes.clearC2d();
+        props.screenSizes.clearC2d();
         if (leftPanel) {
             leftPanel.ctx.clearRect(0, 0, leftPanel.canvas.width, leftPanel.canvas.height);
         }
         //Tracers
         if (leftPanel.spreadsheet != state[2]) {
-            tracers.forEach(t => t.drawTracer(leftPanel, camera, sizes, alpha, doVals));
+            tracers.forEach(t => t.drawTracer(leftPanel, camera, props.screenSizes, alpha, doVals));
 
             //Points
-            ms.forEach(pt => pt.drawPt(leftPanel, camera, sizes, props.darkTheme));
-            ts.forEach(pt => pt.drawPt(leftPanel, camera, sizes, props.darkTheme));
+            ms.forEach(pt => pt.drawPt(leftPanel, camera, props.screenSizes, props.darkTheme));
+            ts.forEach(pt => pt.drawPt(leftPanel, camera, props.screenSizes, props.darkTheme));
         }
 
         if (leftPanel) {
@@ -920,11 +924,11 @@ export function cont(props) {
 
             leftPanel.areas.forEach(a => {
                 if (a != undefined) {
-                    a.drawArea(camera, sizes, doVals, alpha);
+                    a.drawArea(camera, props.screenSizes, doVals, alpha);
                 }
             });
             if (workingArea) {
-                workingArea.drawArea(camera, sizes, doVals, true, 'last');
+                workingArea.drawArea(camera, props.screenSizes, doVals, true, 'last');
             }
 
         }
