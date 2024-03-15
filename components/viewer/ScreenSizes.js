@@ -1,11 +1,11 @@
 export class ScreenSizes {
 
-    constructor(divref = null, spreadsheetDivref = null, canvas2dref = null, ctxref = null, width = 650, height = 500) {
+    constructor(divref = null, spreadsheetCanvasref = null, canvas2dref = null, ctxref = null, width = 650, height = 500) {
         // all the refs of objects that need managed sizes
         // document.getElementById('3d')
         this.div = divref;
         // document.getElementById('spreadsheet')
-        this.spreadsheetDiv = spreadsheetDivref;
+        this.spreadsheetCanvas = spreadsheetCanvasref;
         //  document.getElementById('2d')
         this.canvas2d = canvas2dref;
         // this.canvas2d.getContext('2d')
@@ -20,9 +20,9 @@ export class ScreenSizes {
 
     }
 
-    setRefs(divref, spreadsheetDivref, canvas2dref) {
+    setRefs(divref, spreadsheetCanvasref, canvas2dref) {
         this.div = divref;
-        this.spreadsheetDiv = spreadsheetDivref;
+        this.spreadsheetCanvas = spreadsheetCanvasref;
         this.canvas2d = canvas2dref;
         this.ctx = this.canvas2d.getContext('2d');
     }
@@ -33,8 +33,8 @@ export class ScreenSizes {
         this.ctx = this.canvas2d.getContext('2d');
     }
 
-    setSpreadsheetRef(spreadsheetDivref) {
-        this.spreadsheetDiv = spreadsheetDivref;
+    setSpreadsheetRef(spreadsheetCanvasref) {
+        this.spreadsheetCanvas = spreadsheetCanvasref;
     }
 
     clearC2d() {
@@ -42,9 +42,9 @@ export class ScreenSizes {
     }
 
     updateSizes(leftPanel) {
-        if (this.div === null || this.spreadsheetDiv === null || this.canvas2d === null || this.ctx === null) {
+        if (this.div === null || this.spreadsheetCanvas === null || this.canvas2d === null || this.ctx === null) {
             //console.log('ScreenSizes: updateSizes: missing refs');
-            //onsole.log('div: ', this.div, ' spreadsheetDiv: ', this.spreadsheetDiv, ' canvas2d: ', this.canvas2d, ' ctx: ', this.ctx);
+            //onsole.log('div: ', this.div, ' spreadsheetCanvas: ', this.spreadsheetCanvas, ' canvas2d: ', this.canvas2d, ' ctx: ', this.ctx);
             return;
         }
         
@@ -61,15 +61,15 @@ export class ScreenSizes {
 
         //console.log('leftPanel: ', leftPanel,' ctx ' , leftPanel.ctx);
         if (leftPanel) {
-            leftPanel.ctx.canvas.innerWidth = this.spreadsheetDiv.offsetWidth;
+            leftPanel.ctx.canvas.innerWidth = this.spreadsheetCanvas.offsetWidth;
 
-            leftPanel.canvas.width = this.spreadsheetDiv.offsetWidth;
+            leftPanel.canvas.width = this.spreadsheetCanvas.offsetWidth;
 
             if (leftPanel.spreadsheet) {
 
-                leftPanel.canvas.height = this.spreadsheetDiv.offsetHeight;
+                leftPanel.canvas.height = this.spreadsheetCanvas.offsetHeight;
 
-                leftPanel.ctx.canvas.innerHeight = this.spreadsheetDiv.offsetHeight;
+                leftPanel.ctx.canvas.innerHeight = this.spreadsheetCanvas.offsetHeight;
 
             } else {
 
@@ -77,7 +77,7 @@ export class ScreenSizes {
 
             }
 
-            leftPanel.cellSize(this.spreadsheetDiv.offsetHeight);
+            leftPanel.cellSize(this.spreadsheetCanvas.offsetHeight);
 
         }
 
