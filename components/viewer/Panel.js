@@ -1,5 +1,5 @@
 class Panel {
-    constructor(c) {
+    constructor(spreadsheetcanvas) {
         this.state = {
             0: 'spreadsheet',
             1: 'groups',
@@ -28,9 +28,9 @@ class Panel {
 
         this.looking = true;
 
-        this.canvas = c;
+        this.canvas = spreadsheetcanvas;
 
-        this.ctx = c.getContext('2d');
+        this.ctx = spreadsheetcanvas.getContext('2d');
 
         //this.ctx.lineJoin = "round";
 
@@ -61,7 +61,7 @@ class Panel {
 
         this.ts;
 
-        this.text = ''
+        //this.text = ''
 
         this.gi;
 
@@ -183,11 +183,11 @@ class Panel {
             if (this.gi != this.cellY - 1) {
                 this.gi = this.cellY - 1
 
-                if (this.groups[this.gi] != undefined) {
-                    this.text = this.groups[this.gi]['text']
-                } else {
-                    this.text = ''
-                }
+                // if (this.groups[this.gi] != undefined) {
+                //     this.text = this.groups[this.gi]['text']
+                // } else {
+                //     this.text = ''
+                // }
 
                 if (this.camFree) {
                     this.looking = true;
@@ -201,11 +201,11 @@ class Panel {
             if (this.ai != this.cellY - 1) {
                 this.ai = this.cellY - 1
 
-                if (this.areas[this.ai] != undefined) {
-                    this.text = this.areas[this.ai].text
-                } else {
-                    this.text = ''
-                }
+                // if (this.areas[this.ai] != undefined) {
+                //     this.text = this.areas[this.ai].text
+                // } else {
+                //     this.text = ''
+                // }
 
                 if (this.camFree) {
                     this.looking = true;
@@ -341,17 +341,17 @@ class Panel {
         return [x, y, w, h]
     }
 
-    frame(textbox) {
+    frame() {
         if (this.spreadsheet == this.state[0]) {
             this.spreadsheetFrame();
         } else if (this.spreadsheet == this.state[1]) {
-            this.groupFrame(textbox);
+            this.groupFrame();
         } else if (this.spreadsheet == this.state[2]) {
-            this.areaFrame(textbox);
+            this.areaFrame();
         }
     }
 
-    groupFrame(textbox) {
+    groupFrame() {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         if (this.groups && this.groups.length > 0) {
             for (var i in this.groups) { //plus scroll?
@@ -385,7 +385,7 @@ class Panel {
                     this.ctx.fillStyle = this.color;
                     this.ctx.fillText(text, this.canvas.width / 2, i * h + h / 1.3);
 
-                    textbox.value = (this.text == null) ? '' : decodeURI(this.text).replaceAll('~', ',');
+                    //textbox.value = (this.text == null) ? '' : decodeURI(this.text).replaceAll('~', ',');
                 }
             }
         }
@@ -475,7 +475,7 @@ class Panel {
                 this.ctx.fillStyle = this.color;
                 this.ctx.fillText(text, this.canvas.width / 2, i * h + h / 1.3);
 
-                textbox.value = (this.text == null) ? '' : decodeURI(this.text).replaceAll('~', ',');
+                //textbox.value = (this.text == null) ? '' : decodeURI(this.text).replaceAll('~', ',');
             }
         }
     }

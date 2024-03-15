@@ -81,12 +81,6 @@ export var dropd;
 export var textbox;
 export var camFree = false;
 
-export function open(props) {
-    //document.body.innerHTML = html;
-
-    return cont(props);
-}
-
 export var leftPanel;
 //export var sizes;
 export var scene;
@@ -161,7 +155,7 @@ export function reloadPanel(bool = undefined) {
     }
 }
 
-export function cont(props) {
+export function open(props) {
     //console.log('viewer open', props);
     // props.screenSizes.canvas2d.addEventListener('mousedown', (e) => {
     //     console.log('mousedown');
@@ -187,14 +181,14 @@ export function cont(props) {
 
     //console.log('viewer cont', light);
 
-    leftPanel = new Panel(document.getElementById('spreadsheet'));
+    leftPanel = new Panel(props.screenSizes.spreadsheetCanvas);
 
     leftPanel.ms = ms;
     leftPanel.ts = ts;
     leftPanel.tracers = tracers;
 
     dropd = document.getElementById('dropdown');
-    textbox = document.getElementById('textbox');
+    //textbox = document.getElementById('textbox');
 
     camera.position.set(5, 5, 5);
     camera.lookAt(new Vector3(0, 0, 0));
@@ -510,21 +504,21 @@ export function cont(props) {
             bug1.style.display = 'grid'
             bug2.style.display = 'none'
             bug3.style.display = 'none'
-            props.screenSizes.spreadsheetDiv.style.overflow = 'hidden';
+            //props.screenSizes.spreadsheetDiv.style.overflow = 'hidden';
         } else if (leftPanel.spreadsheet == state[1]) {
             //display groups
             e.target.innerHTML = 'Areas'; //button indicates next state
             bug1.style.display = 'none'
             bug2.style.display = 'grid'
             bug3.style.display = 'none'
-            props.screenSizes.spreadsheetDiv.style.overflow = 'auto';
+            //props.screenSizes.spreadsheetDiv.style.overflow = 'auto';
         } else if (leftPanel.spreadsheet == state[2]) {
             //display areas
             e.target.innerHTML = 'Tracers'; //button indicates next state
             bug1.style.display = 'none'
             bug2.style.display = 'none'
             bug3.style.display = 'grid'
-            props.screenSizes.spreadsheetDiv.style.overflow = 'auto';
+            //props.screenSizes.spreadsheetDiv.style.overflow = 'auto';
         }
         props.screenSizes.updateSizes(leftPanel);
     })
@@ -559,22 +553,22 @@ export function cont(props) {
                     cameraTargView = new Vector3(parseFloat(ms[leftPanel.n].pos.x), parseFloat(ms[leftPanel.n].pos.z), parseFloat(ms[leftPanel.n].pos.y));
 
                     //insights
-                    if (leftPanel.spreadsheet) {
-                        textbox.value = (insights[leftPanel.n + 2] == null) ? '' : decodeURI(insights[leftPanel.n + 2]).replaceAll('~', ',');
-                        if (textbox.value == '') {
-                            textbox.style.display = 'none';
-                        } else {
-                            textbox.style.display = 'block';
-                        }
-                    } else {
+                    // if (leftPanel.spreadsheet) {
+                    //     textbox.value = (insights[leftPanel.n + 2] == null) ? '' : decodeURI(insights[leftPanel.n + 2]).replaceAll('~', ',');
+                    //     if (textbox.value == '') {
+                    //         textbox.style.display = 'none';
+                    //     } else {
+                    //         textbox.style.display = 'block';
+                    //     }
+                    // } else {
 
-                        textbox.value = (leftPanel.text == null) ? '' : decodeURI(leftPanel.text).replaceAll('~', ',');
-                        if (textbox.value == '') {
-                            textbox.style.display = 'none';
-                        } else {
-                            textbox.style.display = 'block';
-                        }
-                    }
+                    //     textbox.value = (leftPanel.text == null) ? '' : decodeURI(leftPanel.text).replaceAll('~', ',');
+                    //     if (textbox.value == '') {
+                    //         textbox.style.display = 'none';
+                    //     } else {
+                    //         textbox.style.display = 'block';
+                    //     }
+                    // }
 
 
                 }
@@ -727,16 +721,16 @@ export function cont(props) {
     },
         false);
 
-    textbox.addEventListener('input', e => {
-        if (textbox.readOnly == false) {
-            if (leftPanel.spreadsheet == state[0]) {
-                insights[leftPanel.firstClickY] = encodeURI(textbox.value.replaceAll(/,/g, '~'));
-            } else {
-                leftPanel.text = encodeURI(textbox.value.replaceAll(/,/g, '~'))
-                //console.log(leftPanel.text);
-            }
-        }
-    })
+    // textbox.addEventListener('input', e => {
+    //     if (textbox.readOnly == false) {
+    //         if (leftPanel.spreadsheet == state[0]) {
+    //             insights[leftPanel.firstClickY] = encodeURI(textbox.value.replaceAll(/,/g, '~'));
+    //         } else {
+    //             leftPanel.text = encodeURI(textbox.value.replaceAll(/,/g, '~'))
+    //             //console.log(leftPanel.text);
+    //         }
+    //     }
+    // })
 
     function interpHash() {
 
@@ -882,7 +876,7 @@ export function cont(props) {
                 leftPanel.ctx.fillStyle = 'white';
             }
 
-            leftPanel.frame(textbox);
+            leftPanel.frame();
         }
         //values
         if (doVals && leftPanel.spreadsheet == state[0]) {
