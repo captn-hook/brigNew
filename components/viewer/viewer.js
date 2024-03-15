@@ -187,6 +187,7 @@ export function open(props) {
     leftPanel.ts = ts;
     leftPanel.tracers = tracers;
 
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     dropd = document.getElementById('dropdown');
     //textbox = document.getElementById('textbox');
 
@@ -206,15 +207,16 @@ export function open(props) {
     var lastgi = -1;
     var lastai = -1;
 
-
+    
     props.window.dispatchEvent(new Event('hashchange'));
 
     //sizes = new ScreenSizes();
     // Lights
 
     // Canvassesses
-    const canvas3d = document.querySelector('canvas.webgl'); //viewer
-    const canvas2d = document.getElementById('2d'); //spreadsheet
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
+    const canvas3d = document.querySelector('canvas.webgl'); //three.js
+    const canvas2d = props.screenSizes.canvas2d; //tracers
 
     const controls = new OrbitControls(camera, canvas2d);
 
@@ -234,11 +236,13 @@ export function open(props) {
 
     //elements    
 
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     const bug1 = document.getElementById('bug1');
     const bug2 = document.getElementById('bug2');
     const bug3 = document.getElementById('bug3');
 
     //popstate check if leftpanel has lost data
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     dropd.addEventListener('change', (event) => {
 
         //console.log("DROPD", event.target.value);
@@ -309,12 +313,10 @@ export function open(props) {
         leftPanel.siteheader = targ;
     }
 
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     const vs = document.getElementById('valueBtnS')
-
     const ctrlBtn = document.getElementById('ctrlBtn');
-
     const ctrl = document.getElementById('ctrl');
-
     const root = document.getElementById('root');
 
     if (props.site) {
@@ -328,11 +330,10 @@ export function open(props) {
         siteList();
     }
 
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     vs.addEventListener('click', valueButton);
     document.getElementById('valueBtnG').addEventListener('click', valueButton);
     document.getElementById('valueBtnA').addEventListener('click', valueButton);
-
-
     function valueButton(e) {
         if (e.target.innerHTML == 'Show values') {
             e.target.innerHTML = 'Hide values';
@@ -345,10 +346,10 @@ export function open(props) {
         }
     }
 
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     document.getElementById('opacityBtnS').addEventListener('click', opacityButton);
     document.getElementById('opacityBtnG').addEventListener('click', opacityButton);
     document.getElementById('opacityBtnA').addEventListener('click', opacityButton);
-
     function opacityButton(e) {
         if (!alpha) {
             e.target.innerHTML = 'Transparent';
@@ -361,7 +362,7 @@ export function open(props) {
         }
     }
 
-
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     document.getElementById('flipBtn').addEventListener('click', (e) => {
 
         if (e.target.innerHTML == 'Flip ◐') {
@@ -401,6 +402,8 @@ export function open(props) {
     })
 
     leftPanel.setcam(camFree);
+
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     document.getElementById('camBtn').addEventListener('click', (e) => {
         if (e.target.innerHTML == 'Multi 🎥') {
             e.target.innerHTML = 'Locked 📷';
@@ -421,6 +424,7 @@ export function open(props) {
 
     })
 
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     document.getElementById('resetBtn').addEventListener('click', (e) => {
         if (e.target.innerHTML == 'Toggle all ❎') {
             e.target.innerHTML = 'Toggle all ✅';
@@ -453,6 +457,7 @@ export function open(props) {
         }
     })
 
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     document.getElementById('toggleBtn').addEventListener('click', (e) => {
 
         var mode = null;
@@ -494,6 +499,7 @@ export function open(props) {
         }
     })
 
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     document.getElementById('groups').addEventListener('click', (e) => {
         leftPanel.next();
 
@@ -693,6 +699,7 @@ export function open(props) {
         }
     }
     //console.log('viewer cont', props, props.screenSizes);
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     props.screenSizes.canvas2d.addEventListener('mousedown', (e) => {
         stoplookin();
     })
@@ -799,12 +806,14 @@ export function open(props) {
     }
 
     //file input
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     props.window.addEventListener('hashchange', (e) => {
         interpHash();
 
     });
 
     //resize
+    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     props.window.addEventListener('resize', () => {
         // Update props.screenSizes
         props.screenSizes.updateSizes(leftPanel);
