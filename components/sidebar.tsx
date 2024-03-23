@@ -53,7 +53,7 @@ export const Sidebar = (props: SidebarProps) => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'row', ...props.style }} className={props.className}>
-            <div style={{ flex: `0 0 ${sidebarWidth}px`, overflow: 'hidden' }} className='content-center'>
+            <div style={{ flex: `0 0 ${sidebarWidth}px`, overflow: 'hidden', marginLeft: '4px', marginTop: '15px' }}>
                 {props.firstChild}
             </div>
             <div ref={dragHandler} onMouseDown={startDrag} style={{ cursor: 'col-resize', padding: '2px', background: dragging ? '#555' : '#888' }} />

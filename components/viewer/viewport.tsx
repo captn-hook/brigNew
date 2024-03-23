@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { open } from "./viewer";
-import { ViewerContext } from "./viewerProps";
+import { ViewerContext, ViewerMode } from "./viewerProps";
 
 import "./canvas.css";
 
@@ -13,7 +13,7 @@ export const Viewport = () => {
     const canvas2dRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
-        if (props.window && div3dRef.current && canvas2dRef.current) {
+        if (props && props.window && div3dRef.current && canvas2dRef.current) {
             props.screenSizes.setViewerRefs(div3dRef.current, canvas2dRef.current);
             //props.screenSizes.updateSizes();
             open(props);
@@ -29,14 +29,33 @@ export const Viewport = () => {
     );
 }
 
-export const ViewportControl = () => {
+type BoolButtonProps = {
+    bool: boolean;
+    setter: React.Dispatch<React.SetStateAction<boolean>>;
+    textFalse: string;
+    textTrue: string;
+    title?: string;
+  };
+  
+const BoolButton = ({ bool, setter, textFalse, textTrue, title = 'Title'}: BoolButtonProps) => {
+    const handleClick = () => {
+        setter(prevBool => !prevBool);
+    }
+    return (
+        <Button onClick={handleClick} title={title}>
+            {bool ? textFalse : textTrue}
+        </Button>
+    );
+}
+
+export const ViewportControl: React.FC<{ setShowTransparency: React.Dispatch<React.SetStateAction<boolean>>, setShowValues: React.Dispatch<React.SetStateAction<boolean>> }> = ({ setShowTransparency, setShowValues }) => {
     // const screenSizes = React.useContext(ScreenSizesContext);
     const props = React.useContext(ViewerContext);
 
     const spreadsheetRef = useRef<HTMLCanvasElement>(null);
-    
+
     useEffect(() => {
-        if (spreadsheetRef.current) {
+        if (spreadsheetRef.current && props) {
             props.screenSizes.setSpreadsheetRef(spreadsheetRef.current);
             //screenSizes.updateSizes();
         }
@@ -44,8 +63,8 @@ export const ViewportControl = () => {
         , [spreadsheetRef]);
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
-            <ButtonGroup id="nav">
+        <div style={{ display: 'flex', justifyContent: 'flex-start', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+            <ButtonGroup id="nav" style={{ flexWrap: 'wrap' }}>
                 <Button id="viewer">Viewer</Button>
                 <Button id="editor">Editor</Button>
                 <Button id="index">Home</Button>
@@ -53,30 +72,27 @@ export const ViewportControl = () => {
             </ButtonGroup>
 
             <div id="siteButtons" title="Site Dropdown">
-                <label id="tx">Choose a site:</label>
-                <select name="sites" id="dropdown" title="Dropdown">
+                <label id="tx" style={{ marginRight: '1rem' }}>Choose a site:</label>
+                <select name="sites" id="dropdown" title="Dropdown" style={{ marginRight: '1rem' }}>
                     <option value="Empty">Example</option>
                 </select>
                 <Button id="groups" title="Groups Menu">Groups</Button>
             </div>
+            {props && (
+                <ButtonGroup>
+                    <BoolButton bool={props.showValues} setter={setShowValues!} textFalse="Show Values" textTrue="Hide Values" title="Toggle Values" />
+                    <BoolButton bool={props.showTransparency} setter={setShowTransparency!} textFalse="Opaque" textTrue="Transparent" title="Opaque" />
+                </ButtonGroup>
+            )}
+            {props && props.mode === ViewerMode.Tracers && (
+                <ButtonGroup>
+                    <Button id="flipBtn" title="Flip selection visibility">Flip ◐</Button>
+                    <Button id="camBtn" title="Change camera control mode">Free 📹</Button>
+                    <Button id="resetBtn" title="Toggle all visibility">Toggle all ❎</Button>
+                    <Button id="toggleBtn" title="Toggle selection visibility">Toggle ◧</Button>
+                </ButtonGroup>
+            )}
 
-            <ButtonGroup id="bug1">
-                <Button id="valueBtnS" title="Show values">Show values</Button>
-                <Button id="opacityBtnS" title="Toggle Transparency">Transparent</Button>
-                <Button id="flipBtn" title="Flip selection visibility">Flip ◐</Button>
-                <Button id="camBtn" title="Change camera control mode">Free 📹</Button>
-                <Button id="resetBtn" title="Toggle all visibility">Toggle all ❎</Button>
-                <Button id="toggleBtn" title="Toggle selection visibility">Toggle ◧</Button>
-            </ButtonGroup>
-            <ButtonGroup id="bug2" style={{ display: 'none' }}>
-                <Button id="valueBtnG" title="Show values">Show values</Button>
-                <Button id="opacityBtnG" title="Toggle Transparency">Transparent</Button>
-            </ButtonGroup>
-            <ButtonGroup id="bug3" style={{ display: 'none' }}>
-                <Button id="valueBtnA" title="Show values">Show values</Button>
-                <Button id="opacityBtnA" title="Toggle Transparency">Transparent</Button>
-            </ButtonGroup>
-            
             <div id="panel">
                 <canvas id="spreadsheet" ref={spreadsheetRef}></canvas>
             </div>

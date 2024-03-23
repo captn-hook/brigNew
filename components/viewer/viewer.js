@@ -196,13 +196,13 @@ export function open(props) {
     var cameraTargPos = new Vector3(5, 5, 5);
     var cameraTargView = new Vector3(0, 0, 0);
 
-    var alpha = true;
+    //var alpha = true; replaced by props.showTransparency
 
-    var bw = props.darkTheme;
+    //var bw = props.darkTheme;
 
     var stupid = null;
 
-    var doVals = false;
+    //var props.showValues = false;
 
     var lastgi = -1;
     var lastai = -1;
@@ -314,7 +314,7 @@ export function open(props) {
     }
 
     // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
-    const vs = document.getElementById('valueBtnS')
+    // const vs = document.getElementById('valueBtnS')
     const ctrlBtn = document.getElementById('ctrlBtn');
     const ctrl = document.getElementById('ctrl');
     const root = document.getElementById('root');
@@ -331,36 +331,36 @@ export function open(props) {
     }
 
     // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
-    vs.addEventListener('click', valueButton);
-    document.getElementById('valueBtnG').addEventListener('click', valueButton);
-    document.getElementById('valueBtnA').addEventListener('click', valueButton);
-    function valueButton(e) {
-        if (e.target.innerHTML == 'Show values') {
-            e.target.innerHTML = 'Hide values';
-            //show values
-            doVals = true;
-        } else {
-            e.target.innerHTML = 'Show values';
-            //hide values
-            doVals = false;
-        }
-    }
+    // vs.addEventListener('click', valueButton);
+    // document.getElementById('valueBtnG').addEventListener('click', valueButton);
+    // document.getElementById('valueBtnA').addEventListener('click', valueButton);
+    // function valueButton(e) {
+    //     if (e.target.innerHTML == 'Show values') {
+    //         e.target.innerHTML = 'Hide values';
+    //         //show values
+    //         props.showValues = true;
+    //     } else {
+    //         e.target.innerHTML = 'Show values';
+    //         //hide values
+    //         props.showValues = false;
+    //     }
+    // }
 
     // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
-    document.getElementById('opacityBtnS').addEventListener('click', opacityButton);
-    document.getElementById('opacityBtnG').addEventListener('click', opacityButton);
-    document.getElementById('opacityBtnA').addEventListener('click', opacityButton);
-    function opacityButton(e) {
-        if (!alpha) {
-            e.target.innerHTML = 'Transparent';
-            alpha = true;
-            //show values
-        } else {
-            e.target.innerHTML = 'Opaque';
-            alpha = false;
-            //hide values
-        }
-    }
+    // document.getElementById('opacityBtnS').addEventListener('click', opacityButton);
+    // document.getElementById('opacityBtnG').addEventListener('click', opacityButton);
+    // document.getElementById('opacityBtnA').addEventListener('click', opacityButton);
+    // function opacityButton(e) {
+    //     if (!alpha) {
+    //         e.target.innerHTML = 'Transparent';
+    //         alpha = true;
+    //         //show values
+    //     } else {
+    //         e.target.innerHTML = 'Opaque';
+    //         alpha = false;
+    //         //hide values
+    //     }
+    // }
 
     // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     document.getElementById('flipBtn').addEventListener('click', (e) => {
@@ -871,7 +871,7 @@ export function open(props) {
         }
         //Tracers
         if (leftPanel.spreadsheet != state[2]) {
-            tracers.forEach(t => t.drawTracer(leftPanel, camera, props.screenSizes, alpha, doVals));
+            tracers.forEach(t => t.drawTracer(leftPanel, camera, props.screenSizes, props.showTransparency, props.showValues));
 
             //Points
             ms.forEach(pt => pt.drawPt(leftPanel, camera, props.screenSizes, props.darkTheme));
@@ -888,7 +888,7 @@ export function open(props) {
             leftPanel.frame();
         }
         //values
-        if (doVals && leftPanel.spreadsheet == state[0]) {
+        if (props.showValues && leftPanel.spreadsheet == state[0]) {
             tracers.forEach(t => t.drawValues(leftPanel.ctx, leftPanel.cellWidth, leftPanel.cellHeight));
         }
 
@@ -927,11 +927,11 @@ export function open(props) {
 
             leftPanel.areas.forEach(a => {
                 if (a != undefined) {
-                    a.drawArea(camera, props.screenSizes, doVals, alpha);
+                    a.drawArea(camera, props.screenSizes, props.showValues, props.showTransparency);
                 }
             });
             if (workingArea) {
-                workingArea.drawArea(camera, props.screenSizes, doVals, true, 'last');
+                workingArea.drawArea(camera, props.screenSizes, props.showValues, true, 'last');
             }
 
         }
