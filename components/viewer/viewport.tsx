@@ -44,7 +44,7 @@ export const ViewportControl = () => {
         , [spreadsheetRef]);
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
             <ButtonGroup id="nav">
                 <Button id="viewer">Viewer</Button>
                 <Button id="editor">Editor</Button>
