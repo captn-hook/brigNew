@@ -2,42 +2,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { open } from "./viewer";
-import { useTheme } from "next-themes";
-import { ScreenSizesContext } from "./ScreenSizesContext";
-import { ScreenSizes } from "./ScreenSizes";
+import { ViewerContext } from "./viewerProps";
 
 import "./canvas.css";
 
-interface Props {
-    darkTheme: boolean;
-    site: string;
-    sitelist: string[];
-    window: Window | undefined;
-    screenSizes: ScreenSizes;
-}
-
 export const Viewport = () => {
-    const { theme, setTheme } = useTheme();
-    const screenSizes = React.useContext(ScreenSizesContext);
-
-    const [props, setProps] = useState<Props>({
-        darkTheme: theme === "dark",
-        site: "default",
-        sitelist: ["default"],
-        window: undefined,
-        screenSizes: screenSizes
-    });
-
-    React.useEffect(() => {
-        setProps({
-            darkTheme: theme === "dark",
-            site: "default",
-            sitelist: ["default"],
-            window: window,
-            screenSizes: screenSizes
-        });
-    }
-        , [theme]);
+    const props = React.useContext(ViewerContext);
 
     const div3dRef = useRef<HTMLDivElement>(null);
     const canvas2dRef = useRef<HTMLCanvasElement>(null);
@@ -60,13 +30,14 @@ export const Viewport = () => {
 }
 
 export const ViewportControl = () => {
-    const screenSizes = React.useContext(ScreenSizesContext);
+    // const screenSizes = React.useContext(ScreenSizesContext);
+    const props = React.useContext(ViewerContext);
 
     const spreadsheetRef = useRef<HTMLCanvasElement>(null);
     
     useEffect(() => {
         if (spreadsheetRef.current) {
-            screenSizes.setSpreadsheetRef(spreadsheetRef.current);
+            props.screenSizes.setSpreadsheetRef(spreadsheetRef.current);
             //screenSizes.updateSizes();
         }
     }
