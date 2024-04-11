@@ -69,14 +69,6 @@ class Panel {
 
         this.ctx.lineJoin = 'round';
 
-        this.canvas.oncontextmenu = () => false;
-
-        this.canvas.addEventListener('mousedown', this.clicks.bind(this));
-
-        this.canvas.addEventListener('click', this.place.bind(this));
-
-        this.canvas.addEventListener('mousemove', this.move.bind(this));
-
         this.sh = this.canvas.height;
 
     }
@@ -177,7 +169,6 @@ class Panel {
             } else {
                 this.cellHeight = (h / (this.ms.length + 1));
             }
-
         }
     }
 
@@ -450,6 +441,7 @@ class Panel {
                 this.ctx.stroke()
 
             }
+
         }
     }
 

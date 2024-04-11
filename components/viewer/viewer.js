@@ -642,7 +642,7 @@ export function open(props) {
         }
         //values
         if (props.doVals && props.leftPanel.spreadsheet == state[0]) {
-            props.tracers.forEach(t => t.drawValues(props.leftPanel.ctx, props.leftPanel.cellWidth, props.leftPanel.cellHeight));
+            props.tracers.forEach(t => t.drawValues(props.leftPanel, props.leftPanel.cellWidth, props.leftPanel.cellHeight));
         }
 
 

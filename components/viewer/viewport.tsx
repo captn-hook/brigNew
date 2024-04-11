@@ -97,6 +97,11 @@ export const ViewportControl = () => {
             screenSizes.setSpreadsheetRef(spreadsheetRef.current);
             //screenSizes.updateSizes();
             leftPanel.setPanelRef(spreadsheetRef.current);
+            
+            leftPanel.canvas.oncontextmenu = () => false;
+            leftPanel.canvas.addEventListener('mousedown', leftPanel.clicks.bind(leftPanel));
+            leftPanel.canvas.addEventListener('click', leftPanel.place.bind(leftPanel));
+            leftPanel.canvas.addEventListener('mousemove', leftPanel.move.bind(leftPanel));
         }
     }
         , [spreadsheetRef]);
@@ -136,6 +141,7 @@ export const ViewportControl = () => {
             </ButtonGroup>
             
             <div id="panel">
+                {/*width={leftPanel.getWidth()} height={leftPanel.getHeight()}*/}
                 <canvas id="spreadsheet" ref={spreadsheetRef}></canvas>
             </div>
             <div id="texcontainer" style={{ display: 'none' }}>

@@ -145,7 +145,6 @@ class Tracer2d extends Tracer {
 
     drawTracer(leftPanel, camera, sizes, alpha, doVals) {
 
-        var ctxLeft = leftPanel.ctx;
         var cellHeight = leftPanel.cellHeight;
         var cellWidth = leftPanel.cellWidth;
 
@@ -216,18 +215,18 @@ class Tracer2d extends Tracer {
         //spreadsheet
         if (leftPanel.ctx != undefined & leftPanel.spreadsheet == 'spreadsheet') {
             if (this.visible) {
-                ctxLeft.globalAlpha = 1.0;
+                leftPanel.ctx.globalAlpha = 1.0;
             } else {
-                ctxLeft.globalAlpha = .2;
+                leftPanel.ctx.globalAlpha = .2;
             }
-            ctxLeft.fillStyle = this.color;
-            ctxLeft.fillRect(this.t.i * cellWidth, this.m.i * cellHeight, cellWidth, cellHeight);
-            ctxLeft.globalAlpha = 1.0;
+            leftPanel.ctx.fillStyle = this.color;
+            leftPanel.ctx.fillRect(this.t.i * cellWidth, this.m.i * cellHeight, cellWidth, cellHeight);
+            leftPanel.ctx.globalAlpha = 1.0;
         }
     };
 
-    drawValues(ctxLeft, cellWidth, cellHeight) {
-        if (ctxLeft == undefined) {
+    drawValues(leftPanel, cellWidth, cellHeight) {
+        if (leftPanel.ctx == undefined) {
             return
         }
         if (this.visible) {
@@ -240,20 +239,21 @@ class Tracer2d extends Tracer {
                 //cellWidth
                 var size = parseInt(minv / 2.3);
             }
+            console.log('drawinVALS!')
 
-            ctxLeft.font = size.toString() + "px Arial";
-            ctxLeft.textAlign = "center";
-            ctxLeft.strokeStyle = 'black';
-            ctxLeft.lineWidth = 2;
-            ctxLeft.strokeText(Math.round(this.value * 100) / 100, this.t.i * cellWidth + cellWidth / 2, this.m.i * cellHeight + cellHeight / 1.5);
-            ctxLeft.fillStyle = "white";
-            ctxLeft.fillText(Math.round(this.value * 100) / 100, this.t.i * cellWidth + cellWidth / 2, this.m.i * cellHeight + cellHeight / 1.5);
+            leftPanel.ctx.font = size.toString() + "px Arial";
+            leftPanel.ctx.textAlign = "center";
+            leftPanel.ctx.strokeStyle = 'black';
+            leftPanel.ctx.lineWidth = 2;
+            leftPanel.ctx.strokeText(Math.round(this.value * 100) / 100, this.t.i * cellWidth + cellWidth / 2, this.m.i * cellHeight + cellHeight / 1.5);
+            leftPanel.ctx.fillStyle = "white";
+            leftPanel.ctx.fillText(Math.round(this.value * 100) / 100, this.t.i * cellWidth + cellWidth / 2, this.m.i * cellHeight + cellHeight / 1.5);
 
             /*
-            ctxLeft.font = "12px Arial";
-            ctxLeft.fillStyle = "black";
-            ctxLeft.textAlign = "center";
-            ctxLeft.fillText(this.value, cellWidth * cellWidth, cellHeight * cellHeight - 30);
+            leftPanel.ctx.font = "12px Arial";
+            leftPanel.ctx.fillStyle = "black";
+            leftPanel.ctx.textAlign = "center";
+            leftPanel.ctx.fillText(this.value, cellWidth * cellWidth, cellHeight * cellHeight - 30);
             */
         }
     };

@@ -45,6 +45,7 @@ class Point2d extends Point {
 
     drawPt(leftPanel, camera, sizes, bw) {
 
+
         var ctxLeft = leftPanel.ctx;
         var cellHeight = leftPanel.cellHeight;
         var cellWidth = leftPanel.cellWidth;
@@ -75,8 +76,7 @@ class Point2d extends Point {
         }
 
         //left canvas
-        if (leftPanel.ctx != undefined & leftPanel.spreadsheet) {
-
+        if (leftPanel.ctx != undefined & leftPanel.spreadsheet == 'spreadsheet') {
             ctxLeft.font = String(leftPanel.fontsize) + "px Arial";
 
             if (this.visible) {
