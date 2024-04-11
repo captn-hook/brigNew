@@ -63,7 +63,6 @@ export class ScreenSizes {
             leftPanel.ctx.canvas.innerWidth = this.spreadsheetCanvas.offsetWidth;
 
             leftPanel.canvas.width = this.spreadsheetCanvas.offsetWidth;
-            console.log('settinggg width')
 
             if (leftPanel.spreadsheet) {
 

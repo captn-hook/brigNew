@@ -1,9 +1,7 @@
-"use client";
-import { Sidebar } from "@/components/sidebar";
-import { Viewport, ViewportControl } from "@/components/viewer/viewport";
+'use client';
 import { ScreenSizes } from "@/components/viewer/ScreenSizes";
 import { Panel } from "@/components/viewer/Panel"
-import { ScreenSizesContext, LeftPanelContext } from "@/components/viewer/Context";
+import { ScreenSizesContext, LeftPanelContext, ViewportContainer } from "@/components/viewer/Context";
 
 export default function ViewerPage() {
 	
@@ -13,16 +11,7 @@ export default function ViewerPage() {
 	return (
 		<ScreenSizesContext.Provider value={screenSizes}>
 			<LeftPanelContext.Provider value={leftPanel}>
-				<Sidebar
-					firstChild={
-						<div>
-							<ViewportControl />
-						</div>
-					}
-					secondChild={
-						<Viewport />
-					}			
-				/>
+				<ViewportContainer></ViewportContainer>
 			</LeftPanelContext.Provider>
 		</ScreenSizesContext.Provider>
 	);

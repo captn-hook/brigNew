@@ -76,6 +76,13 @@ export function siteList(props) { //AHHH
 
 }
 
+function refill(arr, data) {
+    arr.length = 0;
+    data.forEach((d) => {
+        arr.push(d);
+    })
+}
+
 export function handleFiles(input, props) {
 
     //remove old stuff first
@@ -88,7 +95,15 @@ export function handleFiles(input, props) {
 
     read.onloadend = function () {
 
-        [props.ms, props.ts, props.tracers, insights, views] = Data(read.result)
+        var ms = [];
+        var ts = [];
+        var tracers = [];
+
+        [ms, ts, tracers, insights, views] = Data(read.result)
+
+        refill(props.ms, ms);
+        refill(props.ts, ts);
+        refill(props.tracers, tracers);
 
         props.leftPanel.setTracers(props.ms, props.ts, props.tracers)
         // //resize sheet if sizes isnt undefined
@@ -563,7 +578,7 @@ export function open(props) {
         siteList();
     }
         
-    props.leftPanel.setcam(props.camFree);
+    props.leftPanel.setcam(props.bools[1]);
 
     //resize
     // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
@@ -624,7 +639,7 @@ export function open(props) {
         }
         //Tracers
         if (props.leftPanel.spreadsheet != state[2]) {
-            props.tracers.forEach(t => t.drawTracer(props.leftPanel, camera, props.screenSizes, props.alpha, props.doVals));
+            props.tracers.forEach(t => t.drawTracer(props.leftPanel, camera, props.screenSizes, props.bools[1], props.bools[0]));
 
             //Points
             props.ms.forEach(pt => pt.drawPt(props.leftPanel, camera, props.screenSizes, props.darkTheme));
@@ -641,7 +656,7 @@ export function open(props) {
             props.leftPanel.frame();
         }
         //values
-        if (props.doVals && props.leftPanel.spreadsheet == state[0]) {
+        if (props.bools[0] && props.leftPanel.spreadsheet == state[0]) {
             props.tracers.forEach(t => t.drawValues(props.leftPanel, props.leftPanel.cellWidth, props.leftPanel.cellHeight));
         }
 
@@ -680,11 +695,11 @@ export function open(props) {
 
             props.leftPanel.areas.forEach(a => {
                 if (a != undefined) {
-                    a.drawArea(camera, props.screenSizes, props.doVals, props.alpha);
+                    a.drawArea(camera, props.screenSizes, props.bools[0], props.bools[1]);
                 }
             });
             if (workingArea) {
-                workingArea.drawArea(camera, props.screenSizes, props.doVals, true, 'last');
+                workingArea.drawArea(camera, props.screenSizes, props.bools[0], true, 'last');
             }
 
         }
