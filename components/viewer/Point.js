@@ -75,7 +75,7 @@ class Point2d extends Point {
         }
 
         //left canvas
-        if (leftPanel.spreadsheet) {
+        if (leftPanel.ctx != undefined & leftPanel.spreadsheet) {
 
             ctxLeft.font = String(leftPanel.fontsize) + "px Arial";
 

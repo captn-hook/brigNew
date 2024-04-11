@@ -1,15 +1,27 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import { Button, ButtonGroup } from "@nextui-org/button";
+import { SwitchButton, ThreeStateButton } from "./Button";
+import { FlipButton, CamButton, ResetButton, ToggleButton, GroupButton } from "./Buttons";
 import { open } from "./viewer";
 import { useTheme } from "next-themes";
-import { ScreenSizesContext } from "./ScreenSizesContext";
+import { ScreenSizesContext, LeftPanelContext } from "./Context";
 import { ScreenSizes } from "./ScreenSizes";
 
 import "./canvas.css";
+import { Panel } from "./Panel";
+import { Point2d } from "./Point";
+import { Tracer2d } from "./Tracer";
 
 interface Props {
     darkTheme: boolean;
+    doVals: boolean;
+    alpha: boolean;
+    camFree: boolean;
+    leftPanel: Panel;
+    ms: Point2d[];
+    ts: Point2d[];
+    tracers: Tracer2d[];
     site: string;
     sitelist: string[];
     window: Window | undefined;
@@ -19,9 +31,17 @@ interface Props {
 export const Viewport = () => {
     const { theme, setTheme } = useTheme();
     const screenSizes = React.useContext(ScreenSizesContext);
+    const leftPanel = React.useContext(LeftPanelContext);
 
     const [props, setProps] = useState<Props>({
         darkTheme: theme === "dark",
+        doVals: false,
+        alpha: false,
+        camFree: false,
+        leftPanel: leftPanel,
+        ms: [],
+        ts: [],
+        tracers: [],
         site: "default",
         sitelist: ["default"],
         window: undefined,
@@ -31,6 +51,13 @@ export const Viewport = () => {
     React.useEffect(() => {
         setProps({
             darkTheme: theme === "dark",
+            doVals: false,
+            alpha: false,
+            camFree: false,
+            leftPanel: leftPanel,
+            ms: [],
+            ts: [],
+            tracers: [],
             site: "default",
             sitelist: ["default"],
             window: window,
@@ -61,6 +88,7 @@ export const Viewport = () => {
 
 export const ViewportControl = () => {
     const screenSizes = React.useContext(ScreenSizesContext);
+    const leftPanel = React.useContext(LeftPanelContext);
 
     const spreadsheetRef = useRef<HTMLCanvasElement>(null);
     
@@ -68,6 +96,7 @@ export const ViewportControl = () => {
         if (spreadsheetRef.current) {
             screenSizes.setSpreadsheetRef(spreadsheetRef.current);
             //screenSizes.updateSizes();
+            leftPanel.setPanelRef(spreadsheetRef.current);
         }
     }
         , [spreadsheetRef]);
@@ -95,7 +124,7 @@ export const ViewportControl = () => {
                 <Button id="flipBtn" title="Flip selection visibility">Flip ◐</Button>
                 <Button id="camBtn" title="Change camera control mode">Free 📹</Button>
                 <Button id="resetBtn" title="Toggle all visibility">Toggle all ❎</Button>
-                <Button id="toggleBtn" title="Toggle selection visibility">Toggle ◧</Button>
+                <Button id="toggleBtn" title="Toggle selection visibility">Toggle ◧</Button>    
             </ButtonGroup>
             <ButtonGroup id="bug2" style={{ display: 'none' }}>
                 <Button id="valueBtnG" title="Show values">Show values</Button>

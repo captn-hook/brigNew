@@ -214,7 +214,7 @@ class Tracer2d extends Tracer {
         }
 
         //spreadsheet
-        if (leftPanel.spreadsheet == 'spreadsheet') {
+        if (leftPanel.ctx != undefined & leftPanel.spreadsheet == 'spreadsheet') {
             if (this.visible) {
                 ctxLeft.globalAlpha = 1.0;
             } else {
@@ -227,7 +227,9 @@ class Tracer2d extends Tracer {
     };
 
     drawValues(ctxLeft, cellWidth, cellHeight) {
-
+        if (ctxLeft == undefined) {
+            return
+        }
         if (this.visible) {
             let min = cellHeight < cellWidth ? true : false;
             let minv = min ? cellHeight : cellWidth;

@@ -1,11 +1,11 @@
 class Panel {
-    constructor(spreadsheetcanvas) {
+    constructor() {
         this.state = {
             0: 'spreadsheet',
             1: 'groups',
             2: 'areas'
         }
-
+        
         this.areas = [];
 
         this.spreadsheet = this.state[0];
@@ -28,24 +28,11 @@ class Panel {
 
         this.looking = true;
 
-        this.canvas = spreadsheetcanvas;
+        this.controls;
 
-        this.ctx = spreadsheetcanvas.getContext('2d');
+        this.canvas;
 
-        //this.ctx.lineJoin = "round";
-
-        //this.ctx.lineJoin = "miter";
-        // // fiddle around until u find the miterLimit that looks best to you.
-        this.ctx.lineJoin = 'round';
-        //this.ctx.lineJoin = 'bevel';
-
-        this.canvas.oncontextmenu = () => false;
-
-        this.canvas.addEventListener('mousedown', this.clicks.bind(this));
-
-        this.canvas.addEventListener('click', this.place.bind(this));
-
-        this.canvas.addEventListener('mousemove', this.move.bind(this));
+        this.sh;
 
         this.bw = true;
 
@@ -67,12 +54,36 @@ class Panel {
 
         this.ai = 0;
 
-        this.sh = this.canvas.height;
-
         this.fontsize = 12;
 
         this.siteheader = '';
 
+    }
+
+    setPanelRef(spreadsheetcanvas) {
+
+        this.canvas = spreadsheetcanvas;
+
+        //log the canvas id
+        this.ctx = spreadsheetcanvas.getContext('2d');
+
+        this.ctx.lineJoin = 'round';
+
+        this.canvas.oncontextmenu = () => false;
+
+        this.canvas.addEventListener('mousedown', this.clicks.bind(this));
+
+        this.canvas.addEventListener('click', this.place.bind(this));
+
+        this.canvas.addEventListener('mousemove', this.move.bind(this));
+
+        this.sh = this.canvas.height;
+
+    }
+
+
+    setControls(controls) {
+        this.controls = controls;
     }
 
     camPos(x, y) {
@@ -115,10 +126,12 @@ class Panel {
         this.ms = ms;
         this.ts = ts;
         this.setFontsize(tracers.length);
-        //console.log(this.fontsize)
     }
 
     setFontsize(l) {
+        if (this.canvas == undefined) {
+            return
+        }
         if (l == undefined){
             if (this.tracers != undefined) {
                 l = this.tracers.length;
@@ -139,8 +152,12 @@ class Panel {
         this.bw = bw;
     }
 
-    setcam(camFree) {
+    setcam(camFree, controls) {
+        if (this.controls == undefined) {
+            return
+        }
         this.camFree = camFree;
+        this.controls.enabled = controls;
     }
 
     blankClicks() {
@@ -183,12 +200,6 @@ class Panel {
             if (this.gi != this.cellY - 1) {
                 this.gi = this.cellY - 1
 
-                // if (this.groups[this.gi] != undefined) {
-                //     this.text = this.groups[this.gi]['text']
-                // } else {
-                //     this.text = ''
-                // }
-
                 if (this.camFree) {
                     this.looking = true;
                 }
@@ -200,12 +211,6 @@ class Panel {
         } else if (this.spreadsheet == this.state[2]) {
             if (this.ai != this.cellY - 1) {
                 this.ai = this.cellY - 1
-
-                // if (this.areas[this.ai] != undefined) {
-                //     this.text = this.areas[this.ai].text
-                // } else {
-                //     this.text = ''
-                // }
 
                 if (this.camFree) {
                     this.looking = true;
@@ -306,6 +311,9 @@ class Panel {
 
     //spreadsheet mouse move, tracks mouse position to cellX and cellY
     move(e) {
+        if (this.canvas == undefined) {
+            return
+        }
         var rect = this.canvas.getBoundingClientRect();
         var x = e.pageX - rect.left;
         var y = e.pageY - rect.top;
@@ -352,6 +360,9 @@ class Panel {
     }
 
     groupFrame() {
+        if (this.ctx == undefined) {
+            return
+        }
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         if (this.groups && this.groups.length > 0) {
             for (var i in this.groups) { //plus scroll?
@@ -392,6 +403,7 @@ class Panel {
     }
 
     spreadsheetFrame() {
+       
         //click 1
         //this.ctx.fillRect(0, 0, this.cellWidth, this.cellHeight);
 
@@ -442,6 +454,9 @@ class Panel {
     }
 
     areaFrame() {
+        if (this.ctx == undefined) {
+            return
+        }
         //console.log('this.areas', this.areas)
 
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
