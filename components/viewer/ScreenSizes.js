@@ -59,8 +59,7 @@ export class ScreenSizes {
         this.canvas2d.width = this.width;
         this.canvas2d.height = this.height;
 
-        //console.log('leftPanel: ', leftPanel,' ctx ' , leftPanel.ctx);
-        if (leftPanel) {
+        if (leftPanel != undefined & leftPanel.ctx != undefined) {
             leftPanel.ctx.canvas.innerWidth = this.spreadsheetCanvas.offsetWidth;
 
             leftPanel.canvas.width = this.spreadsheetCanvas.offsetWidth;
