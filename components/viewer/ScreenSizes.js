@@ -43,8 +43,8 @@ export class ScreenSizes {
 
     updateSizes(leftPanel) {
         if (this.div === null || this.spreadsheetCanvas === null || this.canvas2d === null || this.ctx === null) {
-            //console.log('ScreenSizes: updateSizes: missing refs');
-            //onsole.log('div: ', this.div, ' spreadsheetCanvas: ', this.spreadsheetCanvas, ' canvas2d: ', this.canvas2d, ' ctx: ', this.ctx);
+            console.log('ScreenSizes: updateSizes: missing refs');
+            console.log('div: ', this.div, ' spreadsheetCanvas: ', this.spreadsheetCanvas, ' canvas2d: ', this.canvas2d, ' ctx: ', this.ctx);
             return;
         }
         

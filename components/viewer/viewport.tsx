@@ -1,10 +1,12 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { SwitchButton, ThreeStateButton } from "./Button";
 import { FlipButton, CamButton, ResetButton, ToggleButton, GroupButton } from "./Buttons";
 import { open } from "./viewer";
 import { Props } from "./Context";
+import * as Viewer from "./viewer";
+import { ViewerContext, ViewerMode } from "./viewerProps";
 
 import "./canvas.css";
 
@@ -14,11 +16,17 @@ export const Viewport = (props: Props) => {
     const canvas2dRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
-        if (props.window && div3dRef.current && canvas2dRef.current) {
+        if (props && props.window && div3dRef.current && canvas2dRef.current) {
             props.screenSizes.setViewerRefs(div3dRef.current, canvas2dRef.current);
             //props.screenSizes.updateSizes();
-            open(props);
+            Viewer.open(props);
         }
+
+        window.addEventListener('resize', () => {
+            if (props.window != null) {
+                Viewer.windowResizeFunc(props);
+            }
+        } );
     }
         , [props, div3dRef, canvas2dRef]);
 
@@ -30,12 +38,30 @@ export const Viewport = (props: Props) => {
     );
 }
 
-export const ViewportControl = (props: Props) => {
+type BoolButtonProps = {
+    bool: boolean;
+    setter: React.Dispatch<React.SetStateAction<boolean>>;
+    textFalse: string;
+    textTrue: string;
+    title?: string;
+  };
+  
+const BoolButton = ({ bool, setter, textFalse, textTrue, title = 'Title'}: BoolButtonProps) => {
+    const handleClick = () => {
+        setter(prevBool => !prevBool);
+    }
+    return (
+        <Button onClick={handleClick} title={title}>
+            {bool ? textFalse : textTrue}
+        </Button>
+    );
+}
 
+export const ViewportControl = (props: Props) => {
     const spreadsheetRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
-        if (spreadsheetRef.current) {
+        if (spreadsheetRef.current && props) {
             props.screenSizes.setSpreadsheetRef(spreadsheetRef.current);
             //screenSizes.updateSizes();
             props.leftPanel.setPanelRef(spreadsheetRef.current);
@@ -49,8 +75,8 @@ export const ViewportControl = (props: Props) => {
         , [spreadsheetRef]);
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
-            <ButtonGroup id="nav">
+        <div style={{ display: 'flex', justifyContent: 'flex-start', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+            <ButtonGroup id="nav" style={{ flexWrap: 'wrap' }}>
                 <Button id="viewer">Viewer</Button>
                 <Button id="editor">Editor</Button>
                 <Button id="index">Home</Button>
@@ -58,8 +84,8 @@ export const ViewportControl = (props: Props) => {
             </ButtonGroup>
 
             <div id="siteButtons" title="Site Dropdown">
-                <label id="tx">Choose a site:</label>
-                <select name="sites" id="dropdown" title="Dropdown">
+                <label id="tx" style={{ marginRight: '1rem' }}>Choose a site:</label>
+                <select name="sites" id="dropdown" title="Dropdown" style={{ marginRight: '1rem' }}>
                     <option value="Empty">Example</option>
                 </select>
                 <Button id="groups" title="Groups Menu" onPress={() => GroupButton(props.leftPanel)}>Groups</Button>

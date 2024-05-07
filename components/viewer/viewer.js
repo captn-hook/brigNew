@@ -135,6 +135,47 @@ export function reloadPanel(bool = undefined) {
     }
 }
 
+export function windowResizeFunc(props) {
+    props.screenSizes.updateSizes(props.leftPanel);
+
+    // Update camera
+    camera.aspect = props.screenSizes.width / props.screenSizes.height;
+    camera.updateProjectionMatrix();
+    
+    // Update renderer
+    renderer.setSize(props.screenSizes.width, props.screenSizes.height);
+    renderer.setPixelRatio(Math.min(props.window.devicePixelRatio, 2));
+}
+
+export function groupButtonListener(props) {
+    leftPanel.next();
+
+    if (leftPanel.spreadsheet == state[0]) {
+        //if saved tracers exist, turn them on 
+        //display tracers
+        e.target.innerHTML = 'Groups'; //button indicates next state
+        bug1.style.display = 'grid'
+        bug2.style.display = 'none'
+        bug3.style.display = 'none'
+        //props.screenSizes.spreadsheetDiv.style.overflow = 'hidden';
+    } else if (leftPanel.spreadsheet == state[1]) {
+        //display groups
+        e.target.innerHTML = 'Areas'; //button indicates next state
+        bug1.style.display = 'none'
+        bug2.style.display = 'grid'
+        bug3.style.display = 'none'
+        //props.screenSizes.spreadsheetDiv.style.overflow = 'auto';
+    } else if (leftPanel.spreadsheet == state[2]) {
+        //display areas
+        e.target.innerHTML = 'Tracers'; //button indicates next state
+        bug1.style.display = 'none'
+        bug2.style.display = 'none'
+        bug3.style.display = 'grid'
+        //props.screenSizes.spreadsheetDiv.style.overflow = 'auto';
+    }
+}
+    // console.log('updating sizes from groups');
+    // props.screenSizes.updateSizes(leftPanel);
 export function open(props) {
     //console.log('viewer open', props);
     // props.screenSizes.canvas2d.addEventListener('mousedown', (e) => {
@@ -190,9 +231,6 @@ export function open(props) {
     const canvas2d = props.screenSizes.canvas2d; //tracers
 
     const controls = new OrbitControls(camera, canvas2d);
-
-
-    props.screenSizes.updateSizes(props.leftPanel);
 
     renderer = new WebGLRenderer({
         canvas: canvas3d
@@ -427,10 +465,6 @@ export function open(props) {
 
     }
 
-    document.addEventListener('DOMContentLoaded', (e) => {
-        props.screenSizes.updateSizes(props.leftPanel);
-    })
-
     //canvas
     // document.getElementById('title').addEventListener('click', (e) => {
 
@@ -582,18 +616,10 @@ export function open(props) {
 
     //resize
     // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
-    props.window.addEventListener('resize', () => {
-        // Update props.screenSizes
-        props.screenSizes.updateSizes(props.leftPanel);
-
-        // Update camera
-        camera.aspect = props.screenSizes.width / props.screenSizes.height;
-        camera.updateProjectionMatrix();
-
-        // Update renderer
-        renderer.setSize(props.screenSizes.width, props.screenSizes.height);
-        renderer.setPixelRatio(Math.min(props.window.devicePixelRatio, 2));
-    })
+    // props.window.addEventListener('resize', () => {
+    //     // Update props.screenSizes
+    //     windowResizeFunc(props);
+    // })
 
     if (props.window.location.hash == '' || props.window.location.hash[1] == '&') {
         let path0 = '/Example/example.glb'
@@ -601,6 +627,7 @@ export function open(props) {
         loadRefs(path0, path1);
     }
 
+    windowResizeFunc(props);
     const tick = () => {
 
         const elapsedTime = clock.getElapsedTime();
