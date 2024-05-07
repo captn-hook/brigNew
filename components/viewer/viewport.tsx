@@ -10,8 +10,7 @@ import { ViewerContext, ViewerMode } from "./viewerProps";
 
 import "./canvas.css";
 
-export const Viewport = () => {
-    const props = React.useContext(ViewerContext);
+export const Viewport = (props: Props) => {
 
     const div3dRef = useRef<HTMLDivElement>(null);
     const canvas2dRef = useRef<HTMLCanvasElement>(null);
@@ -24,7 +23,9 @@ export const Viewport = () => {
         }
 
         window.addEventListener('resize', () => {
-            Viewer.windowResizeFunc(props);
+            if (props.window != null) {
+                Viewer.windowResizeFunc(props);
+            }
         } );
     }
         , [props, div3dRef, canvas2dRef]);
@@ -56,9 +57,7 @@ const BoolButton = ({ bool, setter, textFalse, textTrue, title = 'Title'}: BoolB
     );
 }
 
-export const ViewportControl: React.FC<{ setShowTransparency: React.Dispatch<React.SetStateAction<boolean>>, setShowValues: React.Dispatch<React.SetStateAction<boolean>> }> = ({ setShowTransparency, setShowValues }) => {
-    // const screenSizes = React.useContext(ScreenSizesContext);
-    const props = React.useContext(ViewerContext);
+export const ViewportControl = (props: Props) => {
     const spreadsheetRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {

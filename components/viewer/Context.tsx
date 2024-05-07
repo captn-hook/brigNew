@@ -25,7 +25,7 @@ export interface Props {
     tracers: Tracer2d[];
     site: string;
     sitelist: string[];
-    window: Window | undefined;
+    window: Window | null;
     screenSizes: ScreenSizes;
 }
 
@@ -46,7 +46,7 @@ export const ViewportContainer = () => {
         tracers: [],
         site: "default",
         sitelist: ["default"],
-        window: undefined,
+        window: null,
         screenSizes: screenSizes
     });
 
@@ -66,6 +66,7 @@ export const ViewportContainer = () => {
             window: window,
             screenSizes: screenSizes
         });
+        console.log('set props', props.window, window);
     }, [theme]);
 
     return (

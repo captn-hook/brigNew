@@ -136,12 +136,12 @@ export function reloadPanel(bool = undefined) {
 }
 
 export function windowResizeFunc(props) {
-    props.screenSizes.updateSizes(leftPanel);
+    props.screenSizes.updateSizes(props.leftPanel);
 
     // Update camera
     camera.aspect = props.screenSizes.width / props.screenSizes.height;
     camera.updateProjectionMatrix();
-
+    
     // Update renderer
     renderer.setSize(props.screenSizes.width, props.screenSizes.height);
     renderer.setPixelRatio(Math.min(props.window.devicePixelRatio, 2));
