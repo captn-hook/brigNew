@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { Button, ButtonGroup } from "@nextui-org/button";
-import { open } from "./viewer";
+import * as Viewer from "./viewer";
 import { ViewerContext, ViewerMode } from "./viewerProps";
 
 import "./canvas.css";
@@ -16,8 +16,12 @@ export const Viewport = () => {
         if (props && props.window && div3dRef.current && canvas2dRef.current) {
             props.screenSizes.setViewerRefs(div3dRef.current, canvas2dRef.current);
             //props.screenSizes.updateSizes();
-            open(props);
+            Viewer.open(props);
         }
+
+        window.addEventListener('resize', () => {
+            Viewer.windowResizeFunc(props);
+        } );
     }
         , [props, div3dRef, canvas2dRef]);
 
