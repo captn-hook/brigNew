@@ -244,7 +244,7 @@ export function open(props) {
 
     // Canvassesses
     // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
-    const canvas3d = pr
+    const canvas3d = props.screenSizes.webgl;
     const canvas2d = props.screenSizes.canvas2d; //tracers
 
     const controls = new OrbitControls(camera, canvas2d);

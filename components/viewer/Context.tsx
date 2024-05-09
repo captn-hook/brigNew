@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, useEffect } from 'react';
 import { useTheme } from "next-themes";
 import { ScreenSizes } from './ScreenSizes';
@@ -47,9 +46,6 @@ export const ViewportContainer = () => {
 
     useEffect(() => {
         setProps({
-            //doVals: false,
-            //alpha: false,
-            //camFree: false,
             bools: [false, false, false, false, false, false, theme === "dark"],
             leftPanel: leftPanel,
             ms: [],

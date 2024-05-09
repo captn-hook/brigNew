@@ -1,4 +1,3 @@
-'use client';
 import { ScreenSizes } from "@/components/viewer/ScreenSizes";
 import { Panel } from "@/components/viewer/Panel"
 import { ScreenSizesContext, LeftPanelContext, ViewportContainer } from "@/components/viewer/Context";
