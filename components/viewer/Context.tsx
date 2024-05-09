@@ -14,10 +14,6 @@ export const ScreenSizesContext = React.createContext(new ScreenSizes());
 export const LeftPanelContext = React.createContext(new Panel());
 
 export interface Props {
-    darkTheme: boolean;
-    //doVals: boolean;
-    //alpha: boolean;
-    //camFree: boolean;
     bools: boolean[];
     leftPanel: Panel;
     ms: Point2d[];
@@ -35,11 +31,10 @@ export const ViewportContainer = () => {
     const leftPanel = React.useContext(LeftPanelContext);
 
     const [props, setProps] = useState < Props > ({
-        darkTheme: theme === "dark",
         //doVals: false,
         //alpha: false,
         //camFree: false,
-        bools: [false, false, false],
+        bools: [false, false, false, false, false, false, theme === "dark"],
         leftPanel: leftPanel,
         ms: [],
         ts: [],
@@ -52,11 +47,10 @@ export const ViewportContainer = () => {
 
     useEffect(() => {
         setProps({
-            darkTheme: theme === "dark",
             //doVals: false,
             //alpha: false,
             //camFree: false,
-            bools: [false, false, false],
+            bools: [false, false, false, false, false, false, theme === "dark"],
             leftPanel: leftPanel,
             ms: [],
             ts: [],

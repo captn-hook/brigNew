@@ -18,6 +18,8 @@ export class ScreenSizes {
         // this.div.offsetHeight
         this.height = height;
 
+        this.webgl = null;
+
     }
 
     setRefs(divref, spreadsheetCanvasref, canvas2dref) {
@@ -27,10 +29,11 @@ export class ScreenSizes {
         this.ctx = this.canvas2d.getContext('2d');
     }
 
-    setViewerRefs(divref, canvas2dref) {
+    setViewerRefs(divref, canvas2dref, webglRef) {
         this.div = divref;
         this.canvas2d = canvas2dref;
         this.ctx = this.canvas2d.getContext('2d');
+        this.webgl = webglRef;
     }
 
     setSpreadsheetRef(spreadsheetCanvasref) {

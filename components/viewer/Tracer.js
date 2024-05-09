@@ -239,8 +239,7 @@ class Tracer2d extends Tracer {
                 //cellWidth
                 var size = parseInt(minv / 2.3);
             }
-            console.log('drawinVALS!')
-
+            
             leftPanel.ctx.font = size.toString() + "px Arial";
             leftPanel.ctx.textAlign = "center";
             leftPanel.ctx.strokeStyle = 'black';

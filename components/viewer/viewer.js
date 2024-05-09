@@ -171,12 +171,29 @@ export function groupButtonListener(props) {
         bug1.style.display = 'none'
         bug2.style.display = 'none'
         bug3.style.display = 'grid'
-        //props.screenSizes.spreadsheetDiv.style.overflow = 'auto';
+        //props.screenSizes.spreadshetDiv.style.overflow = 'auto';
+    }
+}
+
+export function changeSceneBG(props) {
+    if (scene != undefined) {
+        scene.background = props.bools[6] ? new Color(0x000000) : new Color(0xffffff);
     }
 }
     // console.log('updating sizes from groups');
     // props.screenSizes.updateSizes(leftPanel);
 export function open(props) {
+    //prop bools
+    let pb = {
+        val: props.bools[0],
+        opac: props.bools[1],
+        flip: props.bools[2],
+        cam: props.bools[3],
+        reset: props.bools[4],
+        tog: props.bools[5],
+        theme: props.bools[6]
+        
+    }
     //console.log('viewer open', props);
     // props.screenSizes.canvas2d.addEventListener('mousedown', (e) => {
     //     console.log('mousedown');
@@ -195,7 +212,7 @@ export function open(props) {
     const light = new AmbientLight(0xffffff, 1.3);
     if (scene == undefined) {
         scene = new Scene();
-        scene.background = new Color(0x000000);
+        scene.background = props.bools[6] ? new Color(0x000000) : new Color(0xffffff);
         scene.add(camera);
         scene.add(light);
     }
@@ -227,7 +244,7 @@ export function open(props) {
 
     // Canvassesses
     // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
-    const canvas3d = document.querySelector('canvas.webgl'); //three.js
+    const canvas3d = pr
     const canvas2d = props.screenSizes.canvas2d; //tracers
 
     const controls = new OrbitControls(camera, canvas2d);
@@ -669,12 +686,12 @@ export function open(props) {
             props.tracers.forEach(t => t.drawTracer(props.leftPanel, camera, props.screenSizes, props.bools[1], props.bools[0]));
 
             //Points
-            props.ms.forEach(pt => pt.drawPt(props.leftPanel, camera, props.screenSizes, props.darkTheme));
-            props.ts.forEach(pt => pt.drawPt(props.leftPanel, camera, props.screenSizes, props.darkTheme));
+            props.ms.forEach(pt => pt.drawPt(props.leftPanel, camera, props.screenSizes, props.bools[6]));
+            props.ts.forEach(pt => pt.drawPt(props.leftPanel, camera, props.screenSizes, props.bools[6]));
         }
 
         if (props.leftPanel != undefined  & props.leftPanel.canvas != undefined) {
-            if (props.darkTheme) {
+            if (props.bools[6]) {
                 props.leftPanel.ctx.fillStyle = 'black';
             } else {
                 props.leftPanel.ctx.fillStyle = 'white';

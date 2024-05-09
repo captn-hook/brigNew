@@ -14,7 +14,7 @@ interface SwitchButtonProps {
 }
 
 export const SwitchButton = (props: SwitchButtonProps) => {
-    console.log('SwitchButton', props.onPress);
+    
     //wrap the onClick function to toggle the text, using state
     const [text, setText] = useState(props.text1);
     const onPress = () => {

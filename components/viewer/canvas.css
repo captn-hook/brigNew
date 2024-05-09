@@ -19,3 +19,10 @@ canvas {
 .tracers {
     position: absolute;
 }
+
+.smallButtonGroup {
+    font-size: 0.01px;
+    padding: 0;
+    margin: 0;
+
+}
