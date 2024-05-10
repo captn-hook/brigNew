@@ -44,7 +44,7 @@ export class ScreenSizes {
         this.ctx.clearRect(0, 0, this.canvas2d.width, this.canvas2d.height)
     }
 
-    updateSizes(leftPanel) {
+    updateSizes(props) {
         if (this.div === null || this.spreadsheetCanvas === null || this.canvas2d === null || this.ctx === null) {
             console.log('ScreenSizes: updateSizes: missing refs');
             console.log('div: ', this.div, ' spreadsheetCanvas: ', this.spreadsheetCanvas, ' canvas2d: ', this.canvas2d, ' ctx: ', this.ctx);
@@ -62,24 +62,24 @@ export class ScreenSizes {
         this.canvas2d.width = this.width;
         this.canvas2d.height = this.height;
 
-        if (leftPanel != undefined & leftPanel.ctx != undefined) {
-            leftPanel.ctx.canvas.innerWidth = this.spreadsheetCanvas.offsetWidth;
+        if (props.leftPanel != undefined & props.leftPanel.ctx != undefined) {
+            props.leftPanel.ctx.canvas.innerWidth = this.spreadsheetCanvas.offsetWidth;
 
-            leftPanel.canvas.width = this.spreadsheetCanvas.offsetWidth;
+            props.leftPanel.canvas.width = this.spreadsheetCanvas.offsetWidth;
 
-            if (leftPanel.spreadsheet) {
+            if (props.leftPanel.spreadsheet) {
 
-                leftPanel.canvas.height = this.spreadsheetCanvas.offsetHeight;
+                props.leftPanel.canvas.height = this.spreadsheetCanvas.offsetHeight;
 
-                leftPanel.ctx.canvas.innerHeight = this.spreadsheetCanvas.offsetHeight;
+                props.leftPanel.ctx.canvas.innerHeight = this.spreadsheetCanvas.offsetHeight;
 
             } else {
 
-                leftPanel.canvas.height = leftPanel.groups.length * leftPanel.cellHeight
+                props.leftPanel.canvas.height = props.leftPanel.groups.length * props.leftPanel.cellHeight
 
             }
 
-            leftPanel.cellSize(this.spreadsheetCanvas.offsetHeight);
+            props.leftPanel.cellSize(this.spreadsheetCanvas.offsetHeight, props);
 
         }
 

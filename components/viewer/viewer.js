@@ -26,6 +26,7 @@ import {
 import {
     Area
 } from './Area';
+import exp from 'constants';
 
 export var insights = []
 export var views = []
@@ -50,6 +51,7 @@ export var renderer; //seperate the renderer from the data  and data display
 export const camera = new PerspectiveCamera(75, 1 / 1, 1, 500);
 
 export var scene;
+export var controls;
 
 export function siteList(props) { //AHHH
     //empty dropdown
@@ -105,10 +107,10 @@ export function handleFiles(input, props) {
         refill(props.ts, ts);
         refill(props.tracers, tracers);
 
-        props.leftPanel.setTracers(props.ms, props.ts, props.tracers)
+        //props.leftPanel.setTracers(props.ms, props.ts, props.tracers)
         // //resize sheet if sizes isnt undefined
-        props.screenSizes.updateSizes(props.leftPanel);
-        
+        props.screenSizes.updateSizes(props);
+
     }
 }
 
@@ -118,7 +120,7 @@ export function setTracer(tracers2) {
 
 export function reloadPanel(bool = undefined) {
     //if undefined, do nothing, if true new M, if false new T
-    props.leftPanel.setTracers(props.ms, props.ts, props.tracers)
+    //props.leftPanel.setTracers(props.ms, props.ts, props.tracers)
     //select if new 
     if (bool != undefined) {
         props.leftPanel.blankClicks();
@@ -131,26 +133,26 @@ export function reloadPanel(bool = undefined) {
 
     //resize sheet if props.screenSizes isnt undefined
     if (props.screenSizes != undefined) {
-        props.screenSizes.updateSizes(props.leftPanel);
+        props.screenSizes.updateSizes(props);
     }
 }
 
 export function windowResizeFunc(props) {
-    props.screenSizes.updateSizes(props.leftPanel);
+    props.screenSizes.updateSizes(props);
 
     // Update camera
     camera.aspect = props.screenSizes.width / props.screenSizes.height;
     camera.updateProjectionMatrix();
-    
+
     // Update renderer
     renderer.setSize(props.screenSizes.width, props.screenSizes.height);
     renderer.setPixelRatio(Math.min(props.window.devicePixelRatio, 2));
 }
 
 export function groupButtonListener(props) {
-    leftPanel.next();
+    props.leftPanel.next();
 
-    if (leftPanel.spreadsheet == state[0]) {
+    if (props.leftPanel.spreadsheet == state[0]) {
         //if saved tracers exist, turn them on 
         //display tracers
         e.target.innerHTML = 'Groups'; //button indicates next state
@@ -158,14 +160,14 @@ export function groupButtonListener(props) {
         bug2.style.display = 'none'
         bug3.style.display = 'none'
         //props.screenSizes.spreadsheetDiv.style.overflow = 'hidden';
-    } else if (leftPanel.spreadsheet == state[1]) {
+    } else if (props.leftPanel.spreadsheet == state[1]) {
         //display groups
         e.target.innerHTML = 'Areas'; //button indicates next state
         bug1.style.display = 'none'
         bug2.style.display = 'grid'
         bug3.style.display = 'none'
         //props.screenSizes.spreadsheetDiv.style.overflow = 'auto';
-    } else if (leftPanel.spreadsheet == state[2]) {
+    } else if (props.leftPanel.spreadsheet == state[2]) {
         //display areas
         e.target.innerHTML = 'Tracers'; //button indicates next state
         bug1.style.display = 'none'
@@ -180,8 +182,24 @@ export function changeSceneBG(props) {
         scene.background = props.bools[6] ? new Color(0x000000) : new Color(0xffffff);
     }
 }
-    // console.log('updating sizes from groups');
-    // props.screenSizes.updateSizes(leftPanel);
+// console.log('updating sizes from groups');
+// props.screenSizes.updateSizes(leftPanel);
+
+export function stoplookin(props) {
+    if (props.leftPanel.camFree) {
+        props.leftPanel.looking = false;
+    }
+}
+
+export function storePos(props) {
+    //store pos in link
+    var pos = String('P=' + Math.round(camera.position.x * 100) / 100) + '/' + String(Math.round(camera.position.y * 100) / 100) + '/' + String(Math.round(camera.position.z * 100) / 100) + '/' + String(Math.round(camera.rotation.x * 100) / 100) + '/' + String(Math.round(camera.rotation.y * 100) / 100) + '/' + String(Math.round(camera.rotation.z * 100) / 100)
+
+    if (pos[0] != null) {
+        props.window.location.hash = props.leftPanel.siteheader + '&' + pos;
+    }
+}
+
 export function open(props) {
     //prop bools
     let pb = {
@@ -192,7 +210,7 @@ export function open(props) {
         reset: props.bools[4],
         tog: props.bools[5],
         theme: props.bools[6]
-        
+
     }
     //console.log('viewer open', props);
     // props.screenSizes.canvas2d.addEventListener('mousedown', (e) => {
@@ -208,7 +226,7 @@ export function open(props) {
     let db, storage = import('../auth').then((module) => {
         return module.db, module.storage;
     });
-    
+
     const light = new AmbientLight(0xffffff, 1.3);
     if (scene == undefined) {
         scene = new Scene();
@@ -236,7 +254,7 @@ export function open(props) {
     var lastgi = -1;
     var lastai = -1;
 
-    
+
     props.window.dispatchEvent(new Event('hashchange'));
 
     //sizes = new ScreenSizes();
@@ -247,7 +265,7 @@ export function open(props) {
     const canvas3d = props.screenSizes.webgl;
     const canvas2d = props.screenSizes.canvas2d; //tracers
 
-    const controls = new OrbitControls(camera, canvas2d);
+    controls = new OrbitControls(camera, canvas2d);
 
     renderer = new WebGLRenderer({
         canvas: canvas3d
@@ -295,7 +313,7 @@ export function open(props) {
             loadSite(targ);
 
             var modelRef = '/Sites/' + targ + '/' + targ + '.glb';
-            
+
             loadRefAndDoc(modelRef, targ);
         } else {
             //load default
@@ -439,14 +457,14 @@ export function open(props) {
 
             //console.log(ms, ts, tracers, insights, views)
 
-            props.leftPanel.setTracers(props.ms, props.ts, props.tracers)
+            //props.leftPanel.setTracers(props.ms, props.ts, props.tracers)
 
             if (stupid != null) {
                 props.leftPanel.gi = stupid;
                 stupid = null;
             }
 
-            props.screenSizes.updateSizes(props.leftPanel);
+            props.screenSizes.updateSizes(props);
 
         }).catch((err) => {
             //console.error(err);
@@ -499,40 +517,6 @@ export function open(props) {
     // })
 
 
-    function stoplookin() {
-        if (props.leftPanel.camFree) {
-            props.leftPanel.looking = false;
-        }
-    }
-    //console.log('viewer cont', props, props.screenSizes);
-    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
-    props.screenSizes.canvas2d.addEventListener('mousedown', (e) => {
-        stoplookin();
-    })
-
-    props.screenSizes.canvas2d.addEventListener('wheel', (event) => {
-        stoplookin();
-    }, {
-        passive: true
-    });
-
-    props.screenSizes.canvas2d.addEventListener('contextmenu', (e) => {
-        stoplookin();
-
-        e.preventDefault();
-    })
-
-    props.screenSizes.canvas2d.addEventListener('click', (e) => {
-        stoplookin();
-
-        //store pos in link
-        var pos = String('P=' + Math.round(camera.position.x * 100) / 100) + '/' + String(Math.round(camera.position.y * 100) / 100) + '/' + String(Math.round(camera.position.z * 100) / 100) + '/' + String(Math.round(camera.rotation.x * 100) / 100) + '/' + String(Math.round(camera.rotation.y * 100) / 100) + '/' + String(Math.round(camera.rotation.z * 100) / 100)
-
-        if (pos[0] != null) {
-            props.window.location.hash = props.leftPanel.siteheader + '&' + pos;
-        }
-    },
-        false);
 
     // textbox.addEventListener('input', e => {
     //     if (textbox.readOnly == false) {
@@ -560,13 +544,13 @@ export function open(props) {
             }
 
             if (params[1] && params[1][0] == 'G') {
-                //setTimeout(giHack, 1500, params);
+                
                 props.leftPanel.spreadsheet = state[1];
                 if (params[0] != props.leftPanel.siteheader) {
                     stupid = params[1].substring(2);
                 } else {
                     props.leftPanel.gi = params[1].substring(2);
-                    props.screenSizes.updateSizes(props.leftPanel);
+                    props.screenSizes.updateSizes(props);
                 }
 
 
@@ -628,9 +612,7 @@ export function open(props) {
     if (props.siteList) {//have to wait for resolve
         siteList();
     }
-        
-    props.leftPanel.setcam(props.bools[1]);
-
+    
     //resize
     // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     // props.window.addEventListener('resize', () => {
@@ -690,7 +672,7 @@ export function open(props) {
             props.ts.forEach(pt => pt.drawPt(props.leftPanel, camera, props.screenSizes, props.bools[6]));
         }
 
-        if (props.leftPanel != undefined  & props.leftPanel.canvas != undefined) {
+        if (props.leftPanel != undefined & props.leftPanel.canvas != undefined) {
             if (props.bools[6]) {
                 props.leftPanel.ctx.fillStyle = 'black';
             } else {

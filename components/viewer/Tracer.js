@@ -215,11 +215,16 @@ class Tracer2d extends Tracer {
         //spreadsheet
         if (leftPanel.ctx != undefined & leftPanel.spreadsheet == 'spreadsheet') {
             if (this.visible) {
-                leftPanel.ctx.globalAlpha = 1.0;
+                
+                leftPanel.ctx.fillStyle = this.color;
+                //leftPanel.ctx.globalAlpha = 1.0;
             } else {
-                leftPanel.ctx.globalAlpha = .2;
+                //mix with this.color with grey if not visible
+                let newcolor = this.rgbToHex((this.r + 128) / 2, (this.g + 128) / 2, (this.b + 128) / 2);
+                leftPanel.ctx.fillStyle = newcolor;
+
+                //leftPanel.ctx.globalAlpha = .2;
             }
-            leftPanel.ctx.fillStyle = this.color;
             leftPanel.ctx.fillRect(this.t.i * cellWidth, this.m.i * cellHeight, cellWidth, cellHeight);
             leftPanel.ctx.globalAlpha = 1.0;
         }

@@ -1,43 +1,44 @@
 "use client";
+import React, { useEffect, useState } from 'react';
 import { IconImgProps } from "@/types";
 import { useTheme } from "next-themes";
 
-//import Image from "next/image";
-
-
 export const PoppyIconSmall = (props: IconImgProps) => {
-	const { theme, setTheme } = useTheme();
-  
+    const { theme } = useTheme();
+    const [logo, setLogo] = useState("/logoSmallLight.png");
 
-	const lightLogo = "/logoSmallLight.png";
-	const darkLogo = "/logoSmallDark.png";
+    useEffect(() => {
+        setLogo(theme === "dark" ? "/logoSmallLight.png" : "/logoSmallDark.png");
+    }, [theme]);
 
-	return (
-		<img
-			alt="Small logo"
-			src={theme === "light" ? darkLogo : lightLogo}
-			width={props.size}
-			height={props.size}
-			{...props}
-		/>
-	);
+    return (
+        <img
+            alt="Small logo"
+            src={logo}
+            width={props.size}
+            height={props.size}
+            {...props}
+        />
+    );
 }
+
 export const PoppyIconLarge = (props: IconImgProps) => {
-	const { theme, setTheme } = useTheme();
-  
+    const { theme } = useTheme();
+    const [logo, setLogo] = useState("/logoLight.png");
 
-	const lightLogo = "/logoLight.png";
-	const darkLogo = "/logoDark.png";
+    useEffect(() => {
+        setLogo(theme === "dark" ? "/logoLight.png" : "/logoDark.png");
+    }, [theme]);
 
-	return (
-		<img
-			alt="Large logo"
-			src={theme === "light" ? darkLogo : lightLogo}
-			width={props.size}
-			height={props.size}
-			{...props}
-		/>
-	);
+    return (
+        <img
+            alt="Large logo"
+            src={logo}
+            width={props.size}
+            height={props.size}
+            {...props}
+        />
+    );
 }
 
 export const GoogleIcon = (props: IconImgProps) => {

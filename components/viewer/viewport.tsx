@@ -6,6 +6,8 @@ import { open } from "./viewer";
 import { Props } from "./Context";
 import * as Viewer from "./viewer";
 import { ViewerContext, ViewerMode } from "./viewerProps";
+import { Tracer2d } from "./Tracer";
+import { Point2d } from "./Point";
 
 import "./canvas.css";
 
@@ -38,7 +40,22 @@ export const Viewport = (props: Props) => {
     return (
         <div id="3d" className="viewport" ref={div3dRef}>
             <canvas className="webgl" id="threejs" ref={webglRef}></canvas>
-            <canvas className="tracers" id="2d" ref={canvas2dRef}></canvas>
+            <canvas className="tracers" id="2d" ref={canvas2dRef}
+                onContextMenu={(e) => {
+                    Viewer.stoplookin(props);
+                    e.preventDefault();
+                }}
+                onMouseDown={(e) => {
+                    Viewer.stoplookin(props);
+                }}
+                onWheel={(e) => {
+                    Viewer.stoplookin(props); //should be passive
+                }}
+                onClick={(e) => {
+                    Viewer.stoplookin(props);
+                    Viewer.storePos(props);
+                }}
+            />
         </div>
     );
 }
@@ -72,9 +89,9 @@ export const ViewportControl = (props: Props) => {
             props.leftPanel.setPanelRef(spreadsheetRef.current);
 
             props.leftPanel.canvas.oncontextmenu = () => false;
-            props.leftPanel.canvas.addEventListener('mousedown', props.leftPanel.clicks.bind(props.leftPanel));
-            props.leftPanel.canvas.addEventListener('click', props.leftPanel.place.bind(props.leftPanel));
-            props.leftPanel.canvas.addEventListener('mousemove', props.leftPanel.move.bind(props.leftPanel));
+            // props.leftPanel.canvas.addEventListener('mousedown', props.leftPanel.clicks.bind(props.leftPanel));
+            // props.leftPanel.canvas.addEventListener('click', props.leftPanel.place.bind(props.leftPanel));
+            // props.leftPanel.canvas.addEventListener('mousemove', props.leftPanel.move.bind(props.leftPanel));
         }
     }
         , [spreadsheetRef]);
@@ -121,6 +138,39 @@ export const ViewportControl = (props: Props) => {
                     onPress={
                         async () => {
                             props.bools[2] = !props.bools[2]
+
+                            //find the difference between click 1 and click 2
+                            
+
+                            let corv: number[] = props.leftPanel.getClicks();
+                            let minx = corv[0];
+                            let miny = corv[1];
+                            let x = corv[2];
+                            let y = corv[3];
+                            
+                            props.tracers.forEach((t: Tracer2d) => {
+                                const tPoint = t.t as unknown as Point2d;
+                                const mPoint = t.m as unknown as Point2d; //fuck typescript
+                                if (tPoint.i >= minx && tPoint.i <= x && mPoint.i >= miny && mPoint.i <= y) {
+                                    t.visible = !t.visible
+                                }
+                            })
+
+                            if (minx == 0) {
+                                props.ms.forEach((m) => {
+                                    if (m.i >= miny && m.i <= y) {
+                                        m.visible = !m.visible;
+                                    }
+                                })
+                            }
+
+                            if (miny == 0) {
+                                props.ts.forEach((d) => {
+                                    if (d.i >= minx && d.i <= x) {
+                                        d.visible = !d.visible;
+                                    }
+                                })
+                            }
                             console.log('flip', props.bools[2])
                         }
                     }
@@ -129,20 +179,48 @@ export const ViewportControl = (props: Props) => {
                 ></SwitchButton>
             </ButtonGroup>
             <ButtonGroup id="bug1">
-                <SwitchButton id="camBtn" title="Change camera control mode"
+                <ThreeStateButton id="camBtn" title="Camera Mode"
                     onPress={
                         async () => {
-                            props.bools[3] = !props.bools[3]
-                            console.log('camera', props.bools[3])
+
+                            //combo = controls.enabled = true, camFree = true
+                            //locked = controls.enabled = false, camFree = true
+                            //free = controls.enabled = true, camFree = false
+                            if (Viewer.controls.enabled && props.leftPanel.camFree) {
+                                // combo -> locked
+                                Viewer.controls.enabled = false;
+                                props.leftPanel.camFree = true; 
+                            } else if (!Viewer.controls.enabled && props.leftPanel.camFree) {
+                                // locked -> free
+                                Viewer.controls.enabled = true;
+                                props.leftPanel.camFree = false;
+                            } else {
+                                // free -> combo
+                                Viewer.controls.enabled = true;
+                                props.leftPanel.camFree = true;
+                            }                               
+
                         }
                     }
-                    text1="Free 📹"
-                    text2="Fixed 📷"
-                ></SwitchButton>
+                    text1="Combo 🎥"
+                    text2="Locked 📷"
+                    text3="Free 📹"
+                ></ThreeStateButton>
                 <SwitchButton id="resetBtn" title="Toggle all visibility"
                     onPress={
                         async () => {
                             props.bools[4] = !props.bools[4]
+
+                            props.ms.forEach((m) => {
+                                m.visible = !props.bools[4];
+                            })
+                            props.ts.forEach((t) => {
+                                t.visible = !props.bools[4];
+                            })
+                            props.tracers.forEach((t) => {
+                                t.visible = !props.bools[4];
+                            })
+
                             console.log('reset', props.bools[4])
                         }
                     }
@@ -153,6 +231,38 @@ export const ViewportControl = (props: Props) => {
                     onPress={
                         async () => {
                             props.bools[5] = !props.bools[5]
+
+                            //find the difference between click 1 and click 2
+                            let corv: number[] = props.leftPanel.getClicks(); // i hate typescript
+                            let minx = corv[0];
+                            let miny = corv[1];
+                            let x = corv[2];
+                            let y = corv[3];
+
+                            props.tracers.forEach((t: Tracer2d) => {
+                                const tPoint = t.t as unknown as Point2d;
+                                const mPoint = t.m as unknown as Point2d; //fuck typescript
+                                if (tPoint.i >= minx && tPoint.i <= x && mPoint.i >= miny && mPoint.i <= y) {
+                                    t.visible = !props.bools[5];
+                                }
+                            });
+
+                            if (minx == 0) {
+                                props.ms.forEach((m) => {
+                                    if (m.i >= miny && m.i <= y) {
+                                        m.visible = !props.bools[5];
+                                    }
+                                })
+                            }
+
+                            if (miny == 0) {
+                                props.ts.forEach((d) => {
+                                    if (d.i >= minx && d.i <= x) {
+                                        d.visible = !props.bools[5];
+                                    }
+                                })
+                            }
+
                             console.log('toggle', props.bools[5])
                         }
                     }
@@ -162,7 +272,17 @@ export const ViewportControl = (props: Props) => {
             </ButtonGroup>
 
             <div id="panel">
-                <canvas id="spreadsheet" ref={spreadsheetRef}></canvas>
+                <canvas id="spreadsheet" ref={spreadsheetRef}
+                    onMouseDown={(e) => {
+                        props.leftPanel.clicks(e);
+                    }}
+                    onClick={(e) => {
+                        props.leftPanel.place(e, props);
+                    }}
+                    onMouseMove={(e) => {
+                        props.leftPanel.move(e);
+                    }}
+                ></canvas>
             </div>
             <div id="texcontainer" style={{ display: 'none' }}>
                 <textarea id="textbox" style={{ backgroundColor: 'grey', color: 'white' }} readOnly></textarea>

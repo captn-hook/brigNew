@@ -5,13 +5,13 @@ class Panel {
             1: 'groups',
             2: 'areas'
         }
-        
+
         this.areas = [];
 
         this.spreadsheet = this.state[0];
 
         this.groups = [];
-        
+
         this.firstClick = false;
 
         this.secondClickX = null;
@@ -28,8 +28,6 @@ class Panel {
 
         this.looking = true;
 
-        this.controls;
-
         this.canvas;
 
         this.sh;
@@ -42,13 +40,7 @@ class Panel {
 
         this.n = 0;
 
-        this.tracers;
-
-        this.ms;
-
-        this.ts;
-
-        //this.text = ''
+        this.text = ''
 
         this.gi;
 
@@ -73,12 +65,7 @@ class Panel {
 
     }
 
-
-    setControls(controls) {
-        this.controls = controls;
-    }
-
-    camPos(x, y) {
+    camPos(x, y, props) {
 
         if (this.camFree) {
 
@@ -93,7 +80,7 @@ class Panel {
                 this.n = x - 2;
                 //throws errors if it trys to select row before/after last
 
-            } else if (1 < y && y < this.ms.length + 2) {
+            } else if (1 < y && y < props.ms.length + 2) {
                 //if x (column) == 1, ms
                 this.mt = 1;
                 this.n = y - 2;
@@ -113,27 +100,27 @@ class Panel {
         }
     }
 
-    setTracers(ms, ts, tracers) {
-        this.tracers = tracers;
-        this.ms = ms;
-        this.ts = ts;
-        this.setFontsize(tracers.length);
-    }
+    // setTracers(ms, ts, tracers) {
+    //     props.tracers = tracers;
+    //     props.ms = ms;
+    //     props.ts = ts;
+    //     this.setFontsize(tracers.length);
+    // }
 
-    setFontsize(l) {
+    setFontsize(l, props) {
         if (this.canvas == undefined) {
             return
         }
-        if (l == undefined){
-            if (this.tracers != undefined) {
-                l = this.tracers.length;
+        if (l == undefined) {
+            if (props.tracers != undefined) {
+                l = props.tracers.length;
             } else {
                 l = 12;
             }
         }
-        
+
         var m = Math.floor(Math.min(this.canvas.parentElement.clientWidth, this.canvas.parentElement.clientHeight));
-        var x =  Math.ceil(m / 1.7 / (l / 4)) + 5;
+        var x = Math.ceil(m / 1.7 / (l / 4)) + 5;
         if (x > 20) {
             x = 20;
         }
@@ -144,14 +131,6 @@ class Panel {
         this.bw = bw;
     }
 
-    setcam(camFree, controls) {
-        if (this.controls == undefined) {
-            return
-        }
-        this.camFree = camFree;
-        this.controls.enabled = controls;
-    }
-
     blankClicks() {
         this.firstClick = true;
         this.firstClickX = null;
@@ -160,14 +139,14 @@ class Panel {
         this.secondClickY = null;
     }
 
-    cellSize(h) {
-        if (this.ms != undefined && this.ts != undefined) {
-            this.cellWidth = (this.canvas.width / (this.ts.length + 1));
+    cellSize(h, props) {
+        if (props.ms != undefined && props.ts != undefined) {
+            this.cellWidth = (this.canvas.width / (props.ts.length + 1));
 
             if (this.spreadsheet == this.state[0]) {
-                this.cellHeight = (this.canvas.height / (this.ms.length + 1));
+                this.cellHeight = (this.canvas.height / (props.ms.length + 1));
             } else {
-                this.cellHeight = (h / (this.ms.length + 1));
+                this.cellHeight = (h / (props.ms.length + 1));
             }
         }
     }
@@ -194,7 +173,7 @@ class Panel {
                 if (this.camFree) {
                     this.looking = true;
                 }
-                
+
                 window.location.hash = (this.siteheader + '&G=' + this.gi);
             } else {
                 this.gi = -1;
@@ -214,7 +193,15 @@ class Panel {
         }
     }
 
-    place(e) {
+    getClicks() {
+        var minx = ((this.firstClickX < this.secondClickX) ? this.firstClickX : this.secondClickX) - 1;
+        var miny = ((this.firstClickY < this.secondClickY) ? this.firstClickY : this.secondClickY) - 1;
+        var x = Math.abs(this.secondClickX - this.firstClickX) + minx;
+        var y = Math.abs(this.secondClickY - this.firstClickY) + miny;
+        return [minx, miny, x, y]
+    }
+
+    place(e, props) {
         if (this.spreadsheet == this.state[0]) {
             if (this.camFree) {
                 this.looking = true;
@@ -224,7 +211,7 @@ class Panel {
                 if (this.firstClick) {
 
                     //update camera on mouse click
-                    this.camPos(this.cellX, this.cellY)
+                    this.camPos(this.cellX, this.cellY, props)
 
                     //grabs position of mouse, upaated by mousemove event
                     this.firstClickX = this.cellX;
@@ -240,7 +227,7 @@ class Panel {
                     this.secondClickY = this.cellY;
 
                     //update camera on mouse click
-                    this.camPos(this.cellX, this.cellY)
+                    this.camPos(this.cellX, this.cellY, props)
 
                     //window.location.hash = ('X=' + this.cellX + '&Y=' + this.cellY)
 
@@ -250,18 +237,18 @@ class Panel {
 
                 this.blankClicks();
 
-                this.camPos(this.cellX, this.cellY);
+                this.camPos(this.cellX, this.cellY, props)
 
                 //get m/t/tracer by cellX and cellY
                 if (this.cellX <= 1 && this.cellY <= 1) {
                     //do nothing
                 } else if (this.cellY == 1) {
 
-                    var state = !this.ts[this.cellX - 2].visible
+                    var state = !props.ts[this.cellX - 2].visible
 
-                    this.ts[this.cellX - 2].visible = state;
+                    props.ts[this.cellX - 2].visible = state;
 
-                    this.tracers.forEach((t) => {
+                    props.tracers.forEach((t) => {
                         if (t.t.i == this.cellX - 1) {
                             t.visible = state;
                         }
@@ -269,24 +256,24 @@ class Panel {
 
                 } else if (this.cellX == 1) {
 
-                    var state = !this.ms[this.cellY - 2].visible
+                    var state = !props.ms[this.cellY - 2].visible
 
-                    this.ms[this.cellY - 2].visible = state;
+                    props.ms[this.cellY - 2].visible = state;
 
                     if (state == true) {
-                        this.ts.forEach(t => {
+                        props.ts.forEach(t => {
                             t.visible = true
                         })
                     }
 
-                    this.tracers.forEach((t) => {
+                    props.tracers.forEach((t) => {
                         if (t.m.i == this.cellY - 1) {
                             t.visible = state;
                         }
                     })
 
                 } else {
-                    this.tracers.forEach((t) => {
+                    props.tracers.forEach((t) => {
                         if (t.m.i == this.cellY - 1 && t.t.i == this.cellX - 1) {
                             t.visible = !t.visible;
                         }
@@ -312,21 +299,21 @@ class Panel {
         this.cellX = Math.ceil(x / this.cellWidth);
 
         this.cellY = Math.ceil(y / this.cellHeight);
-       
+
     }
 
-    selectLastX() {
+    selectLastX(props) {
         this.firstClickY = 1;
         this.secondClickY = 1;
-        this.firstClickX = this.ts.length + 1;
-        this.secondClickX = this.ts.length + 1;
+        this.firstClickX = props.ts.length + 1;
+        this.secondClickX = props.ts.length + 1;
     }
 
-    selectLastY() {
+    selectLastY(props) {
         this.firstClickX = 1;
         this.secondClickX = 1;
-        this.firstClickY = this.ms.length + 1;
-        this.secondClickY = this.ms.length + 1;
+        this.firstClickY = props.ms.length + 1;
+        this.secondClickY = props.ms.length + 1;
     }
 
     bounds(x1, y1, x2, y2) {
@@ -394,7 +381,7 @@ class Panel {
     }
 
     spreadsheetFrame() {
-       
+
         //click 1
         //this.ctx.fillRect(0, 0, this.cellWidth, this.cellHeight);
 
@@ -443,6 +430,14 @@ class Panel {
             }
 
         }
+
+        // console.log('clicks n stuff');
+        // console.log('firstClicks', this.firstClickX, this.firstClickY);
+        // console.log('secondClicks', this.secondClickX, this.secondClickY);
+        // console.log('cellX', this.cellX, 'cellY', this.cellY);
+        // console.log('cellWidth', this.cellWidth, 'cellHeight', this.cellHeight);
+
+
     }
 
     areaFrame() {

@@ -51,7 +51,13 @@ export const ThreeStateButton = (props: ThreeStateButtonProps) => {
     const [text, setText] = useState(props.text1);
     const onPress = () => {
         props.onPress().then(() => {
-            setText(text === props.text1 ? (text === props.text2 ? props.text3 : props.text2) : props.text1);
+            if (text === props.text1) {
+                setText(props.text2);
+            } else if (text === props.text2) {
+                setText(props.text3);
+            } else {
+                setText(props.text1);
+            }
         });
     }
 

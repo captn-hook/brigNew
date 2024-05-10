@@ -30,9 +30,6 @@ export const ViewportContainer = () => {
     const leftPanel = React.useContext(LeftPanelContext);
 
     const [props, setProps] = useState < Props > ({
-        //doVals: false,
-        //alpha: false,
-        //camFree: false,
         bools: [false, false, false, false, false, false, theme === "dark"],
         leftPanel: leftPanel,
         ms: [],
@@ -56,7 +53,7 @@ export const ViewportContainer = () => {
             window: window,
             screenSizes: screenSizes
         });
-        console.log('set props', props.window, window);
+        
     }, [theme]);
 
     return (
