@@ -44,7 +44,6 @@ export const state = {
 }
 
 export const defaultDropd = 'Select a site';
-export var dropd;
 export var textbox;
 // three Scene
 export var renderer; //seperate the renderer from the data  and data display
@@ -83,6 +82,133 @@ function refill(arr, data) {
     data.forEach((d) => {
         arr.push(d);
     })
+}
+
+export function dropdListener(event, props) {
+    //console.log("DROPD", event.target.value);
+    [props.ms, props.ts, props.tracers, insights, views] = [
+        [],
+        [],
+        [],
+        [],
+        []
+    ];
+
+    //console.log("CGANGIN", event.target.value);
+
+    if (event.target.value == null || event.target.value == undefined || event.target.value == '') {
+        var targ = props.leftPanel.siteheader;
+    } else {
+        var targ = event.target.value;
+    }
+
+    //console.log("TARG", targ);
+
+    if (targ != defaultDropd) {
+
+        loadSite(targ);
+
+        var modelRef = '/Sites/' + targ + '/' + targ + '.glb';
+
+        loadRefAndDoc(modelRef, targ, props);
+    } else {
+        //load default
+
+        /*
+        load example
+        */
+        var modelRef = '/Example/example.glb';
+
+        var dataRef = '/Example/data.csv';
+
+        // .glb, load model
+
+        loadRefs(modelRef, dataRef, props);
+
+        props.leftPanel.groups = GetGroups(db, targ);
+        props.leftPanel.areas = GetAreas(db, targ);
+
+        /*
+        Animate
+        */
+        props.leftPanel.siteheader = 'Example';
+    }
+
+    //props.window.location.hash = props.leftPanel.siteheader + '&';
+}
+
+function loadSite(targ) {
+    // .glb, load model
+
+    //var dataRef = ref(storage, '/Sites/' + event.target.value + '/data.csv');
+    //loadRefs(modelRef, dataRef)
+    props.leftPanel.groups = GetGroups(db, targ);
+    props.leftPanel.areas = GetAreas(db, targ);
+
+    props.leftPanel.siteheader = targ;
+}
+
+function loadRefAndDoc(ref, doc, props) {
+
+    getBlobe(ref)
+        .then((blob) => {
+            import('../viewer/modelHandler.js').then((module) => {
+                console.log('model transfered RD, loading...');
+                module.handleModels(blob, scene);
+            })
+        })
+        .catch((err) => {
+            console.error('transfer error...');
+            console.error(err);
+        })
+
+    RemoteData(db, doc).then((data) => {
+
+        [props.ms, props.ts, props.tracers, insights, views] = data;
+
+        //console.log(ms, ts, tracers, insights, views)
+
+        //props.leftPanel.setTracers(props.ms, props.ts, props.tracers)
+
+        if (stupid != null) {
+            props.leftPanel.gi = stupid;
+            stupid = null;
+        }
+
+        props.screenSizes.updateSizes(props);
+
+    }).catch((err) => {
+        //console.error(err);
+    })
+
+
+}
+
+function loadRefs(ref1, ref2, props) {
+
+    getBlobe(ref1)
+        .then((blob) => {
+            import('../viewer/modelHandler.js').then((module) => {
+                console.log('model transfered, loading...');
+                module.handleModels(blob, scene);
+            })
+
+        })
+        .catch((err) => {
+            console.error('transfer error...');
+            console.error(err);
+        })
+
+    // .csv, load data
+
+    getBlobe(ref2)
+        .then((blob) => {
+            handleFiles(blob, props);
+        })
+        .catch((err) => {
+            console.error('No Data', err);
+        })
+
 }
 
 export function handleFiles(input, props) {
@@ -287,76 +413,7 @@ export function open(props) {
     const bug3 = document.getElementById('bug3');
 
     //popstate check if props.leftPanel has lost data
-    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
-    dropd.addEventListener('change', (event) => {
-
-        //console.log("DROPD", event.target.value);
-        [props.ms, props.ts, props.tracers, insights, views] = [
-            [],
-            [],
-            [],
-            [],
-            []
-        ];
-
-        //console.log("CGANGIN", event.target.value);
-
-        if (event.target.value == null || event.target.value == undefined || event.target.value == '') {
-            var targ = props.leftPanel.siteheader;
-        } else {
-            var targ = event.target.value;
-        }
-
-        //console.log("TARG", targ);
-
-        if (targ != defaultDropd) {
-
-            loadSite(targ);
-
-            var modelRef = '/Sites/' + targ + '/' + targ + '.glb';
-
-            loadRefAndDoc(modelRef, targ);
-        } else {
-            //load default
-
-            /*
-            load example
-            */
-            var modelRef = '/Example/example.glb';
-
-            var dataRef = '/Example/data.csv';
-
-            // .glb, load model
-
-            loadRefs(modelRef, dataRef)
-
-            props.leftPanel.groups = GetGroups(db, targ);
-            props.leftPanel.areas = GetAreas(db, targ);
-
-            /*
-            Animate
-            */
-            props.leftPanel.siteheader = 'Example';
-        }
-
-        //props.window.location.hash = props.leftPanel.siteheader + '&';
-
-    })
-
-    function loadSite(targ) {
-        // .glb, load model
-
-        //var dataRef = ref(storage, '/Sites/' + event.target.value + '/data.csv');
-
-        //loadRefs(modelRef, dataRef)
-        props.leftPanel.groups = GetGroups(db, targ);
-        props.leftPanel.areas = GetAreas(db, targ);
-        //console.log("AREAS", props.leftPanel.areas);
-        //console.log("GROUPS", props.leftPanel.groups);
-        //console.log("GETING", targ);
-
-        props.leftPanel.siteheader = targ;
-    }
+    
 
     function updateCam() {
 
@@ -436,69 +493,6 @@ export function open(props) {
                 cameraTargView = new Vector3(props.leftPanel.areas[i].avgPos()[0], props.leftPanel.areas[i].avgPos()[2], props.leftPanel.areas[i].avgPos()[1]);
             } catch (e) { }
         }
-    }
-
-    function loadRefAndDoc(ref, doc) {
-
-        getBlobe(ref)
-            .then((blob) => {
-                import('../viewer/modelHandler.js').then((module) => {
-                    console.log('model transfered RD, loading...');
-                    module.handleModels(blob, scene);
-                })
-            })
-            .catch((err) => {
-                console.error('transfer error...');
-                console.error(err);
-            })
-
-        RemoteData(db, doc).then((data) => {
-
-            [props.ms, props.ts, props.tracers, insights, views] = data;
-
-            //console.log(ms, ts, tracers, insights, views)
-
-            //props.leftPanel.setTracers(props.ms, props.ts, props.tracers)
-
-            if (stupid != null) {
-                props.leftPanel.gi = stupid;
-                stupid = null;
-            }
-
-            props.screenSizes.updateSizes(props);
-
-        }).catch((err) => {
-            //console.error(err);
-        })
-
-
-    }
-
-    function loadRefs(ref1, ref2) {
-
-        getBlobe(ref1)
-            .then((blob) => {
-                import('../viewer/modelHandler.js').then((module) => {
-                    console.log('model transfered, loading...');
-                    module.handleModels(blob, scene);
-                })
-
-            })
-            .catch((err) => {
-                console.error('transfer error...');
-                console.error(err);
-            })
-
-        // .csv, load data
-
-        getBlobe(ref2)
-            .then((blob) => {
-                handleFiles(blob, props);
-            })
-            .catch((err) => {
-                console.error('No Data', err);
-            })
-
     }
 
     //canvas

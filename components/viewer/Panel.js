@@ -30,6 +30,8 @@ class Panel {
 
         this.canvas;
 
+        this.dropd;
+        
         this.sh;
 
         this.bw = true;
@@ -52,10 +54,10 @@ class Panel {
 
     }
 
-    setPanelRef(spreadsheetcanvas) {
+    setPanelRef(spreadsheetcanvas, dropd) {
 
         this.canvas = spreadsheetcanvas;
-
+        this.dropd = dropd;
         //log the canvas id
         this.ctx = spreadsheetcanvas.getContext('2d');
 

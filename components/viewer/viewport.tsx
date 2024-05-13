@@ -81,12 +81,13 @@ const BoolButton = ({ bool, setter, textFalse, textTrue, title = 'Title' }: Bool
 
 export const ViewportControl = (props: Props) => {
     const spreadsheetRef = useRef<HTMLCanvasElement>(null);
+    const dropdownRef = useRef<HTMLSelectElement>(null);
 
     useEffect(() => {
         if (spreadsheetRef.current && props) {
             props.screenSizes.setSpreadsheetRef(spreadsheetRef.current);
             //screenSizes.updateSizes();
-            props.leftPanel.setPanelRef(spreadsheetRef.current);
+            props.leftPanel.setPanelRef(spreadsheetRef.current, dropdownRef.current);
 
             props.leftPanel.canvas.oncontextmenu = () => false;
             // props.leftPanel.canvas.addEventListener('mousedown', props.leftPanel.clicks.bind(props.leftPanel));
@@ -101,10 +102,12 @@ export const ViewportControl = (props: Props) => {
 
             <div id="siteButtons" title="Site Dropdown">
                 <label id="tx" style={{ marginRight: '1rem' }}>Choose a site:</label>
-                <select name="sites" id="dropdown" title="Dropdown" style={{ marginRight: '1rem' }}>
+                <select name="sites" id="dropdown" title="Dropdown" style={{ marginRight: '1rem' }} ref={dropdownRef} onChange={(event) => {
+                    Viewer.dropdListener(event, props);
+                }}>
                     <option value="Empty">Example</option>
                 </select>
-                <Button style={{display: 'none'}} size="sm" id="groups" title="Groups Menu" onPress={() => GroupButton(props.leftPanel)}>Groups</Button>
+                <Button style={{ display: 'none' }} size="sm" id="groups" title="Groups Menu" onPress={() => GroupButton(props.leftPanel)}>Groups</Button>
             </div>
 
             <ButtonGroup id="bug1">
@@ -134,14 +137,14 @@ export const ViewportControl = (props: Props) => {
                             props.bools[2] = !props.bools[2]
 
                             //find the difference between click 1 and click 2
-                            
+
 
                             let corv: number[] = props.leftPanel.getClicks();
                             let minx = corv[0];
                             let miny = corv[1];
                             let x = corv[2];
                             let y = corv[3];
-                            
+
                             props.tracers.forEach((t: Tracer2d) => {
                                 const tPoint = t.t as unknown as Point2d;
                                 const mPoint = t.m as unknown as Point2d; //fuck typescript
@@ -183,7 +186,7 @@ export const ViewportControl = (props: Props) => {
                             if (Viewer.controls.enabled && props.leftPanel.camFree) {
                                 // combo -> locked
                                 Viewer.controls.enabled = false;
-                                props.leftPanel.camFree = true; 
+                                props.leftPanel.camFree = true;
                             } else if (!Viewer.controls.enabled && props.leftPanel.camFree) {
                                 // locked -> free
                                 Viewer.controls.enabled = true;
@@ -192,7 +195,7 @@ export const ViewportControl = (props: Props) => {
                                 // free -> combo
                                 Viewer.controls.enabled = true;
                                 props.leftPanel.camFree = true;
-                            }                               
+                            }
 
                         }
                     }
