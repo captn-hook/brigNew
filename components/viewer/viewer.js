@@ -54,23 +54,26 @@ export var controls;
 
 export function siteList(props) { //AHHH
     //empty dropdown
-    // while (dropd.firstChild) {
-    //     dropd.removeChild(dropd.firstChild);
-    // }
+    console.log('SITE LIST', props.sitelist);
+    console.log('SITE LIST', props.leftPanel.dropd);
+    while (props.leftPanel.dropd.options.length > 0) {
+        props.leftPanel.dropd.remove(0);
+    }
     //console.log(s);
     //add default option
     var def = document.createElement('option');
     def.text = defaultDropd;
-    dropd.add(def);
-
-    props.sitlist.forEach((site) => {
+    props.leftPanel.dropd.add(def);
+    
+    props.sitelist.forEach((site) => {
+        console.log(site);
         var option = document.createElement('option');
         option.text = site;
-        dropd.add(option);
+        props.leftPanel.dropd.add(option);
 
-        if (props.window.location.hash != '' && props.window.location.hash[1] != '&') {
-            if (props.window.location.hash.split('&')[0].substring(1) == dropd.options[dropd.length - 1].text) {
-                dropd.selectedIndex = dropd.length - 1;
+        if (props.window && props.window.location.hash != '' && props.window.location.hash[1] != '&') {
+            if (props.window.location.hash.split('&')[0].substring(1) == props.leftPanel.dropd.options[props.leftPanel.dropd.length - 1].text) {
+                props.leftPanel.dropd.selectedIndex = props.leftPanel.dropd.length - 1;
             }
         }
     })
@@ -214,6 +217,7 @@ function loadRefs(ref1, ref2, props) {
 export function handleFiles(input, props) {
 
     //remove old stuff first
+    
     props.leftPanel.blankClicks();
 
     var read = new FileReader();
@@ -365,10 +369,6 @@ export function open(props) {
     props.leftPanel.ms = props.ms;
     props.leftPanel.ts = props.ts;
     props.leftPanel.tracers = props.tracers;
-
-    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
-    dropd = document.getElementById('dropdown');
-    //textbox = document.getElementById('textbox');
 
     camera.position.set(5, 5, 5);
     camera.lookAt(new Vector3(0, 0, 0));
@@ -534,8 +534,8 @@ export function open(props) {
 
             if (params[0] != props.leftPanel.siteheader && params[0][0] != 'X' && params[0][0] != 'P' && params[0][0] != 'G') {
                 props.leftPanel.siteheader = params[0];
-                dropd.value = params[0];
-                dropd.dispatchEvent(new Event('change'));
+                props.leftPanel.dropd.value = params[0];
+                props.leftPanel.dropd.dispatchEvent(new Event('change'));
             }
 
             if (params[1] && params[1][0] == 'G') {
@@ -603,7 +603,7 @@ export function open(props) {
     } else {
         interpHash();
     }
-
+    
     if (props.siteList) {//have to wait for resolve
         siteList();
     }
@@ -618,7 +618,7 @@ export function open(props) {
     if (props.window.location.hash == '' || props.window.location.hash[1] == '&') {
         let path0 = '/Example/example.glb'
         let path1 = '/Example/data.csv'
-        loadRefs(path0, path1);
+        loadRefs(path0, path1, props);
     }
 
     windowResizeFunc(props);

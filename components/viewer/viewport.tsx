@@ -9,6 +9,8 @@ import { ViewerContext, ViewerMode } from "./viewerProps";
 import { Tracer2d } from "./Tracer";
 import { Point2d } from "./Point";
 
+import { userSites, auth } from "../auth";
+
 import "./canvas.css";
 
 export const Viewport = (props: Props) => {
@@ -60,24 +62,6 @@ export const Viewport = (props: Props) => {
     );
 }
 
-type BoolButtonProps = {
-    bool: boolean;
-    setter: React.Dispatch<React.SetStateAction<boolean>>;
-    textFalse: string;
-    textTrue: string;
-    title?: string;
-};
-
-const BoolButton = ({ bool, setter, textFalse, textTrue, title = 'Title' }: BoolButtonProps) => {
-    const handleClick = () => {
-        setter(prevBool => !prevBool);
-    }
-    return (
-        <Button onClick={handleClick} title={title}>
-            {bool ? textFalse : textTrue}
-        </Button>
-    );
-}
 
 export const ViewportControl = (props: Props) => {
     const spreadsheetRef = useRef<HTMLCanvasElement>(null);
@@ -87,7 +71,7 @@ export const ViewportControl = (props: Props) => {
         if (spreadsheetRef.current && props) {
             props.screenSizes.setSpreadsheetRef(spreadsheetRef.current);
             //screenSizes.updateSizes();
-            props.leftPanel.setPanelRef(spreadsheetRef.current, dropdownRef.current);
+            props.leftPanel.setPanelRef(spreadsheetRef.current);
 
             props.leftPanel.canvas.oncontextmenu = () => false;
             // props.leftPanel.canvas.addEventListener('mousedown', props.leftPanel.clicks.bind(props.leftPanel));
@@ -96,6 +80,33 @@ export const ViewportControl = (props: Props) => {
         }
     }
         , [spreadsheetRef]);
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            if (user && dropdownRef.current && props) {
+                userSites().then((sitelist: any) => {
+
+                    props.leftPanel.setDropdRef(dropdownRef.current);
+                    console.log(sitelist);
+                    for (let i = props.sitelist.length - 1; i >= 0; i--) {
+                        props.sitelist.pop();
+                    }
+                    for (let i = 0; i < sitelist.length; i++) {
+                        props.sitelist.push(sitelist[i]);
+                    }
+
+                    Viewer.siteList(props);
+                }).catch((error) => {
+                    console.error(error);
+                });
+            } else {
+                console.log("No user signed in");
+            }
+        });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+    }, [dropdownRef]);
 
     return (
         <div style={{ display: 'flex', justifyContent: 'flex-start', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
@@ -115,7 +126,6 @@ export const ViewportControl = (props: Props) => {
                     onPress={
                         async () => {
                             props.bools[0] = !props.bools[0]
-                            console.log('values', props.bools[0])
                         }
                     }
                     text1="Show Values"
@@ -125,7 +135,7 @@ export const ViewportControl = (props: Props) => {
                     onPress={
                         async () => {
                             props.bools[1] = !props.bools[1]
-                            console.log('opacity', props.bools[1])
+
                         }
                     }
                     text1="Transparent"
@@ -168,7 +178,7 @@ export const ViewportControl = (props: Props) => {
                                     }
                                 })
                             }
-                            console.log('flip', props.bools[2])
+
                         }
                     }
                     text1="Flip ◑"
@@ -218,7 +228,6 @@ export const ViewportControl = (props: Props) => {
                                 t.visible = !props.bools[4];
                             })
 
-                            console.log('reset', props.bools[4])
                         }
                     }
                     text1="Toggle all ✔"
@@ -260,7 +269,6 @@ export const ViewportControl = (props: Props) => {
                                 })
                             }
 
-                            console.log('toggle', props.bools[5])
                         }
                     }
                     text1="Toggle ◨"

@@ -54,10 +54,9 @@ class Panel {
 
     }
 
-    setPanelRef(spreadsheetcanvas, dropd) {
+    setPanelRef(spreadsheetcanvas) {
 
         this.canvas = spreadsheetcanvas;
-        this.dropd = dropd;
         //log the canvas id
         this.ctx = spreadsheetcanvas.getContext('2d');
 
@@ -65,6 +64,11 @@ class Panel {
 
         this.sh = this.canvas.height;
 
+    }
+
+    setDropdRef(dropd) {
+        console.log('dropd', dropd)
+        this.dropd = dropd;
     }
 
     camPos(x, y, props) {
