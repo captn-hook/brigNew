@@ -1,24 +1,18 @@
-import { Sidebar } from "@/components/sidebar";
-import { Viewport, ViewportControl } from "@/components/viewer/viewport";
-import { SpreadSheet, SpreadSheetControl, SpreadSheetEditor} from "@/components/spreadsheet";
-import { EditorTools } from "@/components/editorTools";
+'use client';
+import { ScreenSizes } from "@/components/viewer/ScreenSizes";
+import { Panel } from "@/components/viewer/Panel"
+import { ScreenSizesContext, LeftPanelContext, ViewportContainer } from "@/components/viewer/Context";
 
 export default function EditorPage() {
+	
+	const screenSizes = new ScreenSizes();
+	const leftPanel = new Panel();
+	
 	return (
-		<Sidebar
-			className="h-screen"
-			firstChild={
-				<div>
-					<ViewportControl />
-					<SpreadSheetControl />
-					<SpreadSheet />
-					<SpreadSheetEditor />
-					<EditorTools />
-				</div>
-			}
-			secondChild={
-				<Viewport />
-			}			
-		/>
+		<ScreenSizesContext.Provider value={screenSizes}>
+			<LeftPanelContext.Provider value={leftPanel}>
+				<ViewportContainer></ViewportContainer>
+			</LeftPanelContext.Provider>
+		</ScreenSizesContext.Provider>
 	);
 }

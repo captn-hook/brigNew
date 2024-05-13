@@ -1,21 +1,18 @@
-import { Sidebar } from "@/components/sidebar";
-import { Viewport, ViewportControl } from "@/components/viewer/viewport";
-import { SpreadSheet, SpreadSheetControl, SpreadSheetEditor} from "@/components/spreadsheet";
-import { CreatorTools } from "@/components/creatorTools";
+'use client';
+import { ScreenSizes } from "@/components/viewer/ScreenSizes";
+import { Panel } from "@/components/viewer/Panel"
+import { ScreenSizesContext, LeftPanelContext, ViewportContainer } from "@/components/viewer/Context";
 
 export default function CreatorPage() {
+	
+	const screenSizes = new ScreenSizes();
+	const leftPanel = new Panel();
+	
 	return (
-		<Sidebar
-			className="h-screen"
-			firstChild={
-				<div>
-					<CreatorTools />
-					<SpreadSheet />
-				</div>
-			}
-			secondChild={
-				<Viewport />
-			}			
-		/>
+		<ScreenSizesContext.Provider value={screenSizes}>
+			<LeftPanelContext.Provider value={leftPanel}>
+				<ViewportContainer></ViewportContainer>
+			</LeftPanelContext.Provider>
+		</ScreenSizesContext.Provider>
 	);
 }
