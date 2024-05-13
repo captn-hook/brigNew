@@ -265,6 +265,7 @@ export function open(props) {
     const canvas3d = props.screenSizes.webgl;
     const canvas2d = props.screenSizes.canvas2d; //tracers
 
+    controls = null;
     controls = new OrbitControls(camera, canvas2d);
 
     renderer = new WebGLRenderer({

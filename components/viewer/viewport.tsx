@@ -98,19 +98,13 @@ export const ViewportControl = (props: Props) => {
 
     return (
         <div style={{ display: 'flex', justifyContent: 'flex-start', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-            <ButtonGroup id="nav" className="smallButtonGroup" size="sm">
-                <Button id="viewer">Viewer</Button>
-                <Button id="editor">Editor</Button>
-                <Button id="index">Home</Button>
-                <Button id="account">Account</Button>
-            </ButtonGroup>
 
             <div id="siteButtons" title="Site Dropdown">
                 <label id="tx" style={{ marginRight: '1rem' }}>Choose a site:</label>
                 <select name="sites" id="dropdown" title="Dropdown" style={{ marginRight: '1rem' }}>
                     <option value="Empty">Example</option>
                 </select>
-                <Button size="sm" id="groups" title="Groups Menu" onPress={() => GroupButton(props.leftPanel)}>Groups</Button>
+                <Button style={{display: 'none'}} size="sm" id="groups" title="Groups Menu" onPress={() => GroupButton(props.leftPanel)}>Groups</Button>
             </div>
 
             <ButtonGroup id="bug1">
@@ -271,8 +265,8 @@ export const ViewportControl = (props: Props) => {
                 ></SwitchButton>
             </ButtonGroup>
 
-            <div id="panel">
-                <canvas id="spreadsheet" ref={spreadsheetRef}
+            <div id="panel" className="panel">
+                <canvas id="spreadsheet" ref={spreadsheetRef} className="spreadsheet"
                     onMouseDown={(e) => {
                         props.leftPanel.clicks(e);
                     }}
