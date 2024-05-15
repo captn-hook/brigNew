@@ -67,7 +67,6 @@ class Panel {
     }
 
     setDropdRef(dropd) {
-        console.log('dropd', dropd)
         this.dropd = dropd;
     }
 
@@ -247,7 +246,13 @@ class Panel {
 
                 //get m/t/tracer by cellX and cellY
                 if (this.cellX <= 1 && this.cellY <= 1) {
-                    //do nothing
+                    //flip only points, not tracers
+                    props.ms.forEach(m => {
+                        m.visible = !m.visible
+                    })
+                    props.ts.forEach(t => {
+                        t.visible = !t.visible
+                    })
                 } else if (this.cellY == 1) {
 
                     var state = !props.ts[this.cellX - 2].visible

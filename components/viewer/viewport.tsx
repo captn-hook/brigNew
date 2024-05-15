@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { SwitchButton, ThreeStateButton } from "./Button";
 import { FlipButton, CamButton, ResetButton, ToggleButton, GroupButton } from "./Buttons";
@@ -25,19 +25,35 @@ export const Viewport = (props: Props) => {
             //props.screenSizes.updateSizes();
             Viewer.open(props);
         }
+    }, [props, div3dRef, canvas2dRef, webglRef]);
 
+    useEffect(() => {
         window.addEventListener('resize', () => {
             if (props.window != null) {
                 Viewer.windowResizeFunc(props);
             }
         });
-    }
-        , [props, div3dRef, canvas2dRef]);
+    }, [props.window]);
+
+    useEffect(() => {
+        window.addEventListener('hashchange', (e) => {
+            if (props.window != null && props.leftPanel.dropd != null) {
+                Viewer.interpHash(props);
+            }
+        });
+        
+        if (props.window != null && props.leftPanel.dropd != null) {
+            Viewer.interpHash(props);
+        }
+
+    }, [props.window, props.leftPanel.dropd]);    
 
     //listen for theme change
     useEffect(() => {
         Viewer.changeSceneBG(props);
     }, [props.bools[6]]);
+
+    
 
     return (
         <div id="3d" className="viewport" ref={div3dRef}>
@@ -82,12 +98,16 @@ export const ViewportControl = (props: Props) => {
         , [spreadsheetRef]);
 
     useEffect(() => {
+        if (props && props.leftPanel && dropdownRef.current) {
+            props.leftPanel.setDropdRef(dropdownRef.current);
+        }
+    }, [dropdownRef]);        
+
+    useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user && dropdownRef.current && props) {
                 userSites().then((sitelist: any) => {
 
-                    props.leftPanel.setDropdRef(dropdownRef.current);
-                    console.log(sitelist);
                     for (let i = props.sitelist.length - 1; i >= 0; i--) {
                         props.sitelist.pop();
                     }

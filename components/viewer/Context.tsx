@@ -35,8 +35,8 @@ export const ViewportContainer = () => {
         ms: [],
         ts: [],
         tracers: [],
-        site: "default",
-        sitelist: ["default"],
+        site: "",
+        sitelist: [""],
         window: null,
         screenSizes: screenSizes
     });
@@ -48,8 +48,8 @@ export const ViewportContainer = () => {
             ms: [],
             ts: [],
             tracers: [],
-            site: "default",
-            sitelist: ["default"],
+            site: "",
+            sitelist: [""],
             window: window,
             screenSizes: screenSizes
         });

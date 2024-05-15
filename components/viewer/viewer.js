@@ -54,19 +54,16 @@ export var controls;
 
 export function siteList(props) { //AHHH
     //empty dropdown
-    console.log('SITE LIST', props.sitelist);
-    console.log('SITE LIST', props.leftPanel.dropd);
     while (props.leftPanel.dropd.options.length > 0) {
         props.leftPanel.dropd.remove(0);
     }
     //console.log(s);
     //add default option
     var def = document.createElement('option');
-    def.text = defaultDropd;
+    def.text = props.leftPanel.siteheader == '' ? defaultDropd : props.leftPanel.siteheader;
     props.leftPanel.dropd.add(def);
-    
+
     props.sitelist.forEach((site) => {
-        console.log(site);
         var option = document.createElement('option');
         option.text = site;
         props.leftPanel.dropd.add(option);
@@ -88,59 +85,62 @@ function refill(arr, data) {
 }
 
 export function dropdListener(event, props) {
-    //console.log("DROPD", event.target.value);
-    [props.ms, props.ts, props.tracers, insights, views] = [
-        [],
-        [],
-        [],
-        [],
-        []
-    ];
-
+    let lists = [props.ms, props.ts, props.tracers, insights, views]
+    lists.forEach((list) => {
+        for (let i = list.length - 1; i >= 0; i--) {
+            list.pop();
+        }
+    })
     //console.log("CGANGIN", event.target.value);
-
-    if (event.target.value == null || event.target.value == undefined || event.target.value == '') {
+    if (event == null) {
+        var targ = props.leftPanel.siteheader;
+    } else if (event.target.value == null || event.target.value == undefined || event.target.value == '') {
         var targ = props.leftPanel.siteheader;
     } else {
         var targ = event.target.value;
     }
 
-    //console.log("TARG", targ);
+    import('../auth').then((module) => {
 
-    if (targ != defaultDropd) {
+        const db = module.db;
+        //console.log("TARG", targ);
 
-        loadSite(targ);
+        if (targ != defaultDropd) {
 
-        var modelRef = '/Sites/' + targ + '/' + targ + '.glb';
+            loadSite(targ, props, db);
 
-        loadRefAndDoc(modelRef, targ, props);
-    } else {
-        //load default
+            var modelRef = '/Sites/' + targ + '/' + targ + '.glb';
 
-        /*
-        load example
-        */
-        var modelRef = '/Example/example.glb';
+            loadRefAndDoc(modelRef, targ, props, db);
+        } else {
+            //load default
 
-        var dataRef = '/Example/data.csv';
+            /*
+            load example
+            */
+            var modelRef = '/Example/example.glb';
 
-        // .glb, load model
+            var dataRef = '/Example/data.csv';
 
-        loadRefs(modelRef, dataRef, props);
+            // .glb, load model
 
-        props.leftPanel.groups = GetGroups(db, targ);
-        props.leftPanel.areas = GetAreas(db, targ);
+            loadRefs(modelRef, dataRef, props);
 
-        /*
-        Animate
-        */
-        props.leftPanel.siteheader = 'Example';
-    }
+            props.leftPanel.groups = GetGroups(db, targ);
+            props.leftPanel.areas = GetAreas(db, targ);
+
+            /*
+            Animate
+            */
+            props.leftPanel.siteheader = 'Example';
+        }
+
+    });
 
     //props.window.location.hash = props.leftPanel.siteheader + '&';
 }
 
-function loadSite(targ) {
+function loadSite(targ, props, db) {
     // .glb, load model
 
     //var dataRef = ref(storage, '/Sites/' + event.target.value + '/data.csv');
@@ -151,12 +151,12 @@ function loadSite(targ) {
     props.leftPanel.siteheader = targ;
 }
 
-function loadRefAndDoc(ref, doc, props) {
-
+function loadRefAndDoc(ref, doc, props, db) {
+    console.log('loading ref and doc');
     getBlobe(ref)
         .then((blob) => {
             import('../viewer/modelHandler.js').then((module) => {
-                console.log('model transfered RD, loading...');
+                console.log('model transfered, loading...');
                 module.handleModels(blob, scene);
             })
         })
@@ -166,12 +166,18 @@ function loadRefAndDoc(ref, doc, props) {
         })
 
     RemoteData(db, doc).then((data) => {
+        console.log('data transfered, loading...');
 
-        [props.ms, props.ts, props.tracers, insights, views] = data;
+        var ms = [];
+        var ts = [];
+        var tracers = [];
 
-        //console.log(ms, ts, tracers, insights, views)
+        [ms, ts, tracers, insights, views] = data;
 
-        //props.leftPanel.setTracers(props.ms, props.ts, props.tracers)
+        refill(props.ms, ms);
+        refill(props.ts, ts);
+        refill(props.tracers, tracers);
+
 
         if (stupid != null) {
             props.leftPanel.gi = stupid;
@@ -217,7 +223,7 @@ function loadRefs(ref1, ref2, props) {
 export function handleFiles(input, props) {
 
     //remove old stuff first
-    
+
     props.leftPanel.blankClicks();
 
     var read = new FileReader();
@@ -226,7 +232,7 @@ export function handleFiles(input, props) {
     read.readAsBinaryString(input);
 
     read.onloadend = function () {
-
+        console.log('loaded');
         var ms = [];
         var ts = [];
         var tracers = [];
@@ -279,6 +285,11 @@ export function windowResizeFunc(props) {
     renderer.setPixelRatio(Math.min(props.window.devicePixelRatio, 2));
 }
 
+// // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
+// const bug1 = document.getElementById('bug1');
+// const bug2 = document.getElementById('bug2');
+// const bug3 = document.getElementById('bug3');
+
 export function groupButtonListener(props) {
     props.leftPanel.next();
 
@@ -330,6 +341,185 @@ export function storePos(props) {
     }
 }
 
+export var cameraTargPos = new Vector3(5, 5, 5);
+export var cameraTargView = new Vector3(0, 0, 0);
+
+export var stupid = null;
+
+export function updateCam(props) {
+
+    //console.log(props.leftPanel.camFree, props.leftPanel.looking, props.leftPanel.spreadsheet, props.leftPanel.n, props.leftPanel.gi)
+
+    if (props.leftPanel.camFree && props.leftPanel.spreadsheet == state[0]) {
+        try {
+            //fail quietly if cannot set camera
+            if (props.leftPanel.mt == 0) {
+
+            } else if (props.leftPanel.mt == 2) {
+                //if y (row) == 1, ts
+
+                cameraTargPos = new Vector3(parseFloat(props.ts[props.leftPanel.n].pos.x) + 14, parseFloat(props.ts[props.leftPanel.n].pos.z) + 30, parseFloat(props.ts[props.leftPanel.n].pos.y) + 8);
+                cameraTargView = new Vector3(parseFloat(props.ts[props.leftPanel.n].pos.x), parseFloat(props.ts[props.leftPanel.n].pos.z), parseFloat(props.ts[props.leftPanel.n].pos.y));
+
+                //throws errors if it trys to select row before/after last
+            } else if (props.leftPanel.mt == 1) {
+                //if x (column) == 1, ms
+                //special views
+                //console.log(views[props.leftPanel.n + 1])
+                if (views[props.leftPanel.n + 1] != null && views[props.leftPanel.n + 1][0] != '') {
+                    cameraTargPos = new Vector3(parseFloat(views[props.leftPanel.n + 1][0]), parseFloat(views[props.leftPanel.n + 1][1]), parseFloat(views[props.leftPanel.n + 1][2]));
+                } else {
+
+                    cameraTargPos = new Vector3(parseFloat(props.ms[props.leftPanel.n].pos.x) + 14, parseFloat(props.ms[props.leftPanel.n].pos.z) + 30, parseFloat(props.ms[props.leftPanel.n].pos.y) + 8);
+
+                }
+                cameraTargView = new Vector3(parseFloat(props.ms[props.leftPanel.n].pos.x), parseFloat(props.ms[props.leftPanel.n].pos.z), parseFloat(props.ms[props.leftPanel.n].pos.y));
+
+                //insights
+                // if (props.leftPanel.spreadsheet) {
+                //     textbox.value = (insights[props.leftPanel.n + 2] == null) ? '' : decodeURI(insights[props.leftPanel.n + 2]).replaceAll('~', ',');
+                //     if (textbox.value == '') {
+                //         textbox.style.display = 'none';
+                //     } else {
+                //         textbox.style.display = 'block';
+                //     }
+                // } else {
+
+                //     textbox.value = (props.leftPanel.text == null) ? '' : decodeURI(props.leftPanel.text).replaceAll('~', ',');
+                //     if (textbox.value == '') {
+                //         textbox.style.display = 'none';
+                //     } else {
+                //         textbox.style.display = 'block';
+                //     }
+                // }
+
+
+            }
+        } catch (e) {
+            //console.log(e)
+        }
+    } else if (props.leftPanel.spreadsheet == state[1] && props.leftPanel.camFree) {
+
+        if (props.leftPanel.gi) {
+            var i = props.leftPanel.gi;
+        } else {
+            var i = 0;
+        }
+        try {
+            cameraTargPos = new Vector3(props.leftPanel.groups[i]['pos'][0] + 5, props.leftPanel.groups[i]['pos'][2] + 10, props.leftPanel.groups[i]['pos'][1] + 3);
+            cameraTargView = new Vector3(props.leftPanel.groups[i]['pos'][0], props.leftPanel.groups[i]['pos'][2], props.leftPanel.groups[i]['pos'][1]);
+        } catch (e) { }
+
+        //console.log(cameraTargPos, cameraTargView)
+
+    } else if (props.leftPanel.spreadsheet == state[2] && props.leftPanel.camFree) {
+
+        if (props.leftPanel.ai) {
+            var i = props.leftPanel.ai;
+        } else {
+            var i = 0;
+        }
+        try {
+            cameraTargPos = new Vector3(props.leftPanel.areas[i].avgPos()[0] + 5, props.leftPanel.areas[i].avgPos()[2] + 10, props.leftPanel.areas[i].avgPos()[1] + 3);
+            cameraTargView = new Vector3(props.leftPanel.areas[i].avgPos()[0], props.leftPanel.areas[i].avgPos()[2], props.leftPanel.areas[i].avgPos()[1]);
+        } catch (e) { }
+    }
+}
+
+//canvas
+// document.getElementById('title').addEventListener('click', (e) => {
+
+//     bw = !bw;
+
+//     props.leftPanel.setbw(bw)
+
+//     if (bw) {
+//         e.target.innerHTML = 'Light Mode';
+//         scene.background = new Color(0x000000);
+//     } else {
+//         e.target.innerHTML = 'Dark Mode';
+//         scene.background = new Color(0xffffff);
+//     }
+// })
+
+
+
+// textbox.addEventListener('input', e => {
+//     if (textbox.readOnly == false) {
+//         if (props.leftPanel.spreadsheet == state[0]) {
+//             insights[props.leftPanel.firstClickY] = encodeURI(textbox.value.replaceAll(/,/g, '~'));
+//         } else {
+//             props.leftPanel.text = encodeURI(textbox.value.replaceAll(/,/g, '~'))
+//             //console.log(props.leftPanel.text);
+//         }
+//     }
+// })
+
+export function interpHash(props) {
+    
+    var hash = props.window.location.hash.substring(1)
+
+    if (hash[0] != '&') {
+        var params = hash.split('&');
+
+        if (params[0] != props.leftPanel.siteheader && params[0][0] != 'X' && params[0][0] != 'P' && params[0][0] != 'G') {
+            props.leftPanel.siteheader = params[0];
+            props.leftPanel.dropd.value = params[0];
+            dropdListener(null, props);
+        }
+
+        if (params[1] && params[1][0] == 'G') {
+
+            props.leftPanel.spreadsheet = state[1];
+            if (params[0] != props.leftPanel.siteheader) {
+                stupid = params[1].substring(2); //==========
+            } else {
+                props.leftPanel.gi = params[1].substring(2);
+                props.screenSizes.updateSizes(props);
+            }
+
+
+        } else if (params[1] && params[1][0] == 'X') {
+            props.leftPanel.spreadsheet = state[0];
+            if (params[1].substring(2) != props.leftPanel.cellX || params[2].substring(2) != props.leftPanel.cellY) {
+                props.leftPanel.firstClickX = params[0].substring(2);
+                props.leftPanel.firstClickY = params[1].substring(2);
+                updateCam(props);
+
+                //props.leftPanel.canvas.dispatchEvent(new Event('click'));
+            }
+        } else if (params[1] && params[1][0] == 'P') {
+
+            var coords = params[1].substring(2).split('/')
+
+            var pos = new Vector3(parseFloat(coords[0]), parseFloat(coords[1]), parseFloat(coords[2]))
+            //var rot = new Vector3(parseFloat(coords[3]), parseFloat(coords[4]), parseFloat(coords[5]))
+
+            //                                   min dist
+            if (camera.position.distanceTo(pos) > .03) {
+
+                //console.log('moving camera');
+                // if (props.leftPanel.camFree) {
+                //    props.leftPanel.looking = true;
+                //}
+
+                cameraTargPos = pos
+                camera.rotation.set(parseFloat(params[3]), parseFloat(params[4]), parseFloat(params[5]))
+
+                controls.update();
+                updateCam(props);
+
+            }
+
+        }
+    }
+    //set font size with shortest of ms and ds
+    // let lengthms = ms.length;
+    // let lengthds = ts.length;
+    // props.leftPanel.setFontsize(Math.min(lengthms, lengthds));
+
+}
+
 export function open(props) {
     //prop bools
     let pb = {
@@ -353,9 +543,6 @@ export function open(props) {
     //     import('./LoginStyle.js').then((module) => { module.default(); });
     // }
     //firebase
-    let db, storage = import('../auth').then((module) => {
-        return module.db, module.storage;
-    });
 
     const light = new AmbientLight(0xffffff, 1.3);
     if (scene == undefined) {
@@ -372,16 +559,9 @@ export function open(props) {
 
     camera.position.set(5, 5, 5);
     camera.lookAt(new Vector3(0, 0, 0));
-    var cameraTargPos = new Vector3(5, 5, 5);
-    var cameraTargView = new Vector3(0, 0, 0);
-
-    var stupid = null;
 
     var lastgi = -1;
     var lastai = -1;
-
-
-    props.window.dispatchEvent(new Event('hashchange'));
 
     //sizes = new ScreenSizes();
     // Lights
@@ -407,207 +587,9 @@ export function open(props) {
 
     //elements    
 
-    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
-    const bug1 = document.getElementById('bug1');
-    const bug2 = document.getElementById('bug2');
-    const bug3 = document.getElementById('bug3');
 
     //popstate check if props.leftPanel has lost data
-    
 
-    function updateCam() {
-
-        //console.log(props.leftPanel.camFree, props.leftPanel.looking, props.leftPanel.spreadsheet, props.leftPanel.n, props.leftPanel.gi)
-
-        if (props.leftPanel.camFree && props.leftPanel.spreadsheet == state[0]) {
-            try {
-                //fail quietly if cannot set camera
-                if (props.leftPanel.mt == 0) {
-
-                } else if (props.leftPanel.mt == 2) {
-                    //if y (row) == 1, ts
-
-                    cameraTargPos = new Vector3(parseFloat(props.ts[props.leftPanel.n].pos.x) + 14, parseFloat(props.ts[props.leftPanel.n].pos.z) + 30, parseFloat(props.ts[props.leftPanel.n].pos.y) + 8);
-                    cameraTargView = new Vector3(parseFloat(props.ts[props.leftPanel.n].pos.x), parseFloat(props.ts[props.leftPanel.n].pos.z), parseFloat(props.ts[props.leftPanel.n].pos.y));
-
-                    //throws errors if it trys to select row before/after last
-                } else if (props.leftPanel.mt == 1) {
-                    //if x (column) == 1, ms
-                    //special views
-                    //console.log(views[props.leftPanel.n + 1])
-                    if (views[props.leftPanel.n + 1] != null && views[props.leftPanel.n + 1][0] != '') {
-                        cameraTargPos = new Vector3(parseFloat(views[props.leftPanel.n + 1][0]), parseFloat(views[props.leftPanel.n + 1][1]), parseFloat(views[props.leftPanel.n + 1][2]));
-                    } else {
-
-                        cameraTargPos = new Vector3(parseFloat(props.ms[props.leftPanel.n].pos.x) + 14, parseFloat(props.ms[props.leftPanel.n].pos.z) + 30, parseFloat(props.ms[props.leftPanel.n].pos.y) + 8);
-
-                    }
-                    cameraTargView = new Vector3(parseFloat(props.ms[props.leftPanel.n].pos.x), parseFloat(props.ms[props.leftPanel.n].pos.z), parseFloat(props.ms[props.leftPanel.n].pos.y));
-
-                    //insights
-                    // if (props.leftPanel.spreadsheet) {
-                    //     textbox.value = (insights[props.leftPanel.n + 2] == null) ? '' : decodeURI(insights[props.leftPanel.n + 2]).replaceAll('~', ',');
-                    //     if (textbox.value == '') {
-                    //         textbox.style.display = 'none';
-                    //     } else {
-                    //         textbox.style.display = 'block';
-                    //     }
-                    // } else {
-
-                    //     textbox.value = (props.leftPanel.text == null) ? '' : decodeURI(props.leftPanel.text).replaceAll('~', ',');
-                    //     if (textbox.value == '') {
-                    //         textbox.style.display = 'none';
-                    //     } else {
-                    //         textbox.style.display = 'block';
-                    //     }
-                    // }
-
-
-                }
-            } catch (e) {
-                //console.log(e)
-            }
-        } else if (props.leftPanel.spreadsheet == state[1] && props.leftPanel.camFree) {
-
-            if (props.leftPanel.gi) {
-                var i = props.leftPanel.gi;
-            } else {
-                var i = 0;
-            }
-            try {
-                cameraTargPos = new Vector3(props.leftPanel.groups[i]['pos'][0] + 5, props.leftPanel.groups[i]['pos'][2] + 10, props.leftPanel.groups[i]['pos'][1] + 3);
-                cameraTargView = new Vector3(props.leftPanel.groups[i]['pos'][0], props.leftPanel.groups[i]['pos'][2], props.leftPanel.groups[i]['pos'][1]);
-            } catch (e) { }
-
-            //console.log(cameraTargPos, cameraTargView)
-
-        } else if (props.leftPanel.spreadsheet == state[2] && props.leftPanel.camFree) {
-
-            if (props.leftPanel.ai) {
-                var i = props.leftPanel.ai;
-            } else {
-                var i = 0;
-            }
-            try {
-                cameraTargPos = new Vector3(props.leftPanel.areas[i].avgPos()[0] + 5, props.leftPanel.areas[i].avgPos()[2] + 10, props.leftPanel.areas[i].avgPos()[1] + 3);
-                cameraTargView = new Vector3(props.leftPanel.areas[i].avgPos()[0], props.leftPanel.areas[i].avgPos()[2], props.leftPanel.areas[i].avgPos()[1]);
-            } catch (e) { }
-        }
-    }
-
-    //canvas
-    // document.getElementById('title').addEventListener('click', (e) => {
-
-    //     bw = !bw;
-
-    //     props.leftPanel.setbw(bw)
-
-    //     if (bw) {
-    //         e.target.innerHTML = 'Light Mode';
-    //         scene.background = new Color(0x000000);
-    //     } else {
-    //         e.target.innerHTML = 'Dark Mode';
-    //         scene.background = new Color(0xffffff);
-    //     }
-    // })
-
-
-
-    // textbox.addEventListener('input', e => {
-    //     if (textbox.readOnly == false) {
-    //         if (props.leftPanel.spreadsheet == state[0]) {
-    //             insights[props.leftPanel.firstClickY] = encodeURI(textbox.value.replaceAll(/,/g, '~'));
-    //         } else {
-    //             props.leftPanel.text = encodeURI(textbox.value.replaceAll(/,/g, '~'))
-    //             //console.log(props.leftPanel.text);
-    //         }
-    //     }
-    // })
-
-    function interpHash() {
-
-        var hash = props.window.location.hash.substring(1)
-
-        if (hash[0] != '&') {
-            var params = hash.split('&');
-
-
-            if (params[0] != props.leftPanel.siteheader && params[0][0] != 'X' && params[0][0] != 'P' && params[0][0] != 'G') {
-                props.leftPanel.siteheader = params[0];
-                props.leftPanel.dropd.value = params[0];
-                props.leftPanel.dropd.dispatchEvent(new Event('change'));
-            }
-
-            if (params[1] && params[1][0] == 'G') {
-                
-                props.leftPanel.spreadsheet = state[1];
-                if (params[0] != props.leftPanel.siteheader) {
-                    stupid = params[1].substring(2);
-                } else {
-                    props.leftPanel.gi = params[1].substring(2);
-                    props.screenSizes.updateSizes(props);
-                }
-
-
-            } else if (params[1] && params[1][0] == 'X') {
-                props.leftPanel.spreadsheet = state[0];
-                if (params[1].substring(2) != props.leftPanel.cellX || params[2].substring(2) != props.leftPanel.cellY) {
-                    props.leftPanel.firstClickX = params[0].substring(2);
-                    props.leftPanel.firstClickY = params[1].substring(2);
-                    updateCam();
-
-                    //props.leftPanel.canvas.dispatchEvent(new Event('click'));
-                }
-            } else if (params[1] && params[1][0] == 'P') {
-
-                var coords = params[1].substring(2).split('/')
-
-                var pos = new Vector3(parseFloat(coords[0]), parseFloat(coords[1]), parseFloat(coords[2]))
-                //var rot = new Vector3(parseFloat(coords[3]), parseFloat(coords[4]), parseFloat(coords[5]))
-
-                //                                   min dist
-                if (camera.position.distanceTo(pos) > .03) {
-
-                    //console.log('moving camera');
-                    // if (props.leftPanel.camFree) {
-                    //    props.leftPanel.looking = true;
-                    //}
-
-                    cameraTargPos = pos
-                    camera.rotation.set(parseFloat(params[3]), parseFloat(params[4]), parseFloat(params[5]))
-
-                    controls.update();
-                    updateCam();
-
-                }
-
-            }
-        }
-        //set font size with shortest of ms and ds
-        // let lengthms = ms.length;
-        // let lengthds = ts.length;
-        // props.leftPanel.setFontsize(Math.min(lengthms, lengthds));
-
-    }
-
-    //file input
-    // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
-    props.window.addEventListener('hashchange', (e) => {
-        interpHash();
-
-    });
-
-    if (props.site) {
-        //LOAD
-        ('LOADING SITE: ', props.site);
-    } else {
-        interpHash();
-    }
-    
-    if (props.siteList) {//have to wait for resolve
-        siteList();
-    }
-    
     //resize
     // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     // props.window.addEventListener('resize', () => {
@@ -622,12 +604,14 @@ export function open(props) {
     }
 
     windowResizeFunc(props);
+    interpHash(props);
+
     const tick = () => {
 
         const elapsedTime = clock.getElapsedTime();
         if (props.leftPanel) {
             if (props.leftPanel.looking || props.leftPanel.state == state[1]) {
-                updateCam();
+                updateCam(props);
             }
 
 
