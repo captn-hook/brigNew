@@ -64,7 +64,7 @@ class Point2d extends Point {
             sizes.ctx.strokeStyle = this.color;
             sizes.ctx.stroke();
 
-            sizes.ctx.font = String(leftPanel.fontsize) + "px Arial";
+            sizes.ctx.font = "12px Arial";
             sizes.ctx.textAlign = "center";
             sizes.ctx.strokeStyle = 'black';
             sizes.ctx.lineWidth = 4;

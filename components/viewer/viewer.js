@@ -152,7 +152,7 @@ function loadSite(targ, props, db) {
 }
 
 function loadRefAndDoc(ref, doc, props, db) {
-    console.log('loading ref and doc');
+    //console.log('loading ref and doc');
     getBlobe(ref)
         .then((blob) => {
             import('../viewer/modelHandler.js').then((module) => {
@@ -232,7 +232,7 @@ export function handleFiles(input, props) {
     read.readAsBinaryString(input);
 
     read.onloadend = function () {
-        console.log('loaded');
+        //console.log('loaded');
         var ms = [];
         var ts = [];
         var tracers = [];
@@ -347,18 +347,23 @@ export var cameraTargView = new Vector3(0, 0, 0);
 export var stupid = null;
 
 export function updateCam(props) {
+    let size = Math.round(Math.sqrt(props.tracers.length) / 10)
+    let xadd = 3 + size;
+    let zadd = 5 + size;
+    let yadd = 1 + size;
 
     //console.log(props.leftPanel.camFree, props.leftPanel.looking, props.leftPanel.spreadsheet, props.leftPanel.n, props.leftPanel.gi)
 
     if (props.leftPanel.camFree && props.leftPanel.spreadsheet == state[0]) {
         try {
+
             //fail quietly if cannot set camera
             if (props.leftPanel.mt == 0) {
 
             } else if (props.leftPanel.mt == 2) {
-                //if y (row) == 1, ts
-
-                cameraTargPos = new Vector3(parseFloat(props.ts[props.leftPanel.n].pos.x) + 14, parseFloat(props.ts[props.leftPanel.n].pos.z) + 30, parseFloat(props.ts[props.leftPanel.n].pos.y) + 8);
+                //if y (row) == 1, tsx
+                
+                cameraTargPos = new Vector3(parseFloat(props.ts[props.leftPanel.n].pos.x) + xadd, parseFloat(props.ts[props.leftPanel.n].pos.z) + zadd, parseFloat(props.ts[props.leftPanel.n].pos.y) + yadd);
                 cameraTargView = new Vector3(parseFloat(props.ts[props.leftPanel.n].pos.x), parseFloat(props.ts[props.leftPanel.n].pos.z), parseFloat(props.ts[props.leftPanel.n].pos.y));
 
                 //throws errors if it trys to select row before/after last
@@ -370,7 +375,7 @@ export function updateCam(props) {
                     cameraTargPos = new Vector3(parseFloat(views[props.leftPanel.n + 1][0]), parseFloat(views[props.leftPanel.n + 1][1]), parseFloat(views[props.leftPanel.n + 1][2]));
                 } else {
 
-                    cameraTargPos = new Vector3(parseFloat(props.ms[props.leftPanel.n].pos.x) + 14, parseFloat(props.ms[props.leftPanel.n].pos.z) + 30, parseFloat(props.ms[props.leftPanel.n].pos.y) + 8);
+                    cameraTargPos = new Vector3(parseFloat(props.ms[props.leftPanel.n].pos.x) + xadd, parseFloat(props.ms[props.leftPanel.n].pos.z) + zadd, parseFloat(props.ms[props.leftPanel.n].pos.y) + yadd);
 
                 }
                 cameraTargView = new Vector3(parseFloat(props.ms[props.leftPanel.n].pos.x), parseFloat(props.ms[props.leftPanel.n].pos.z), parseFloat(props.ms[props.leftPanel.n].pos.y));
@@ -406,7 +411,7 @@ export function updateCam(props) {
             var i = 0;
         }
         try {
-            cameraTargPos = new Vector3(props.leftPanel.groups[i]['pos'][0] + 5, props.leftPanel.groups[i]['pos'][2] + 10, props.leftPanel.groups[i]['pos'][1] + 3);
+            cameraTargPos = new Vector3(props.leftPanel.groups[i]['pos'][0] + xadd, props.leftPanel.groups[i]['pos'][2] + zadd, props.leftPanel.groups[i]['pos'][1] + yadd);
             cameraTargView = new Vector3(props.leftPanel.groups[i]['pos'][0], props.leftPanel.groups[i]['pos'][2], props.leftPanel.groups[i]['pos'][1]);
         } catch (e) { }
 
@@ -420,7 +425,7 @@ export function updateCam(props) {
             var i = 0;
         }
         try {
-            cameraTargPos = new Vector3(props.leftPanel.areas[i].avgPos()[0] + 5, props.leftPanel.areas[i].avgPos()[2] + 10, props.leftPanel.areas[i].avgPos()[1] + 3);
+            cameraTargPos = new Vector3(props.leftPanel.areas[i].avgPos()[0] + xadd, props.leftPanel.areas[i].avgPos()[2] + zadd, props.leftPanel.areas[i].avgPos()[1] + yadd);
             cameraTargView = new Vector3(props.leftPanel.areas[i].avgPos()[0], props.leftPanel.areas[i].avgPos()[2], props.leftPanel.areas[i].avgPos()[1]);
         } catch (e) { }
     }
@@ -662,7 +667,7 @@ export function open(props) {
         }
         //values
         if (props.bools[0] && props.leftPanel.spreadsheet == state[0]) {
-            props.tracers.forEach(t => t.drawValues(props.leftPanel, props.leftPanel.cellWidth, props.leftPanel.cellHeight));
+            props.tracers.forEach(t => t.drawValues(props.leftPanel));
         }
 
 
