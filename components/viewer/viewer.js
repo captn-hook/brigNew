@@ -17,11 +17,20 @@ import {
 } from './Area';
 
 import {
-    interpHash,
-    updateCam,
-    windowResizeFunc,
     loadRefs
-} from './viewerFunc';
+} from './siteChange';
+
+import {
+    windowResizeFunc
+} from './listeners';
+
+import interpHash from './interpHash';
+
+import { 
+    cameraTargPos, 
+    cameraTargView, 
+    updateCam 
+} from './updateCam';
 
 export var workingArea = new Area([]);
 
@@ -42,9 +51,6 @@ export const camera = new PerspectiveCamera(75, 1 / 1, 1, 500);
 
 export var scene;
 export var controls;
-
-export var cameraTargPos = new Vector3(5, 5, 5);
-export var cameraTargView = new Vector3(0, 0, 0);
 
 export var stupid = null;
 
@@ -79,11 +85,6 @@ export function open(props) {
         scene.add(camera);
         scene.add(light);
     }
-
-
-    props.leftPanel.ms = props.ms;
-    props.leftPanel.ts = props.ts;
-    props.leftPanel.tracers = props.tracers;
 
     camera.position.set(5, 5, 5);
     camera.lookAt(new Vector3(0, 0, 0));
@@ -200,7 +201,6 @@ export function open(props) {
 
                 props.ms.forEach(pt => pt.visible = false);
                 props.ts.forEach(pt => pt.visible = false);
-
                 props.tracers.forEach((t) => {
                     var label = String(t.m.i) + "/" + String(t.t.i);
 

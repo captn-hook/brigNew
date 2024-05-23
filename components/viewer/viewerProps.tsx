@@ -75,6 +75,18 @@ export interface Props {
     removeGroup?: (index: number) => void;
     setGroup?: (index: number, group: Point2d[]) => void;
 
+    insights: string[];
+    setInsights?: (insights: string[]) => void;
+    pushToInsights?: (insight: string) => void;
+    popFromInsights?: () => void;
+    removeInsight?: (index: number) => void;
+
+    views: string[];
+    setViews?: (views: string[]) => void;
+    pushToViews?: (view: string) => void;
+    popFromViews?: () => void;
+    removeView?: (index: number) => void;
+
     showValues: boolean;
     setShowValues?: (showValues: boolean) => void;
 
@@ -97,6 +109,8 @@ export function createProps(theme = false): Props {
         yPoints: [],
         areas: [],
         groups: [],
+        insights: [],
+        views: [],
         showValues: false,
         showTransparency: false,
         window: undefined,

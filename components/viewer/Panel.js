@@ -114,7 +114,6 @@ class Panel {
 
     setFontsize(props) {
         if (this.canvas == undefined) {
-            console.log('tried to set font size while uninitialized');
             return
         }
         var l = props.tracers.length
@@ -124,12 +123,10 @@ class Panel {
         if (min) {
             //cellHeight
             var scale = (window.innerHeight / this.canvas.height) / 2;
-            console.log('fontsize chose height')
             this.fontsize = this.cellHeight / 1.6;
         } else {
             //cellWidth
             var scale = Math.sqrt(window.innerWidth / this.canvas.width);
-            console.log('fontsize chose width')
             this.fontsize = this.cellWidth / 2.7;
         }
     }

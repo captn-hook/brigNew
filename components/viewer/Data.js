@@ -209,7 +209,7 @@ export async function RemoteData(db, name) {
 
                     tracers.push(new Tracer2d(ms[m - 2], ts[t - 2], d[t][m]));
 
-                    if (gru != undefined && (String(m - 1) + "/" + String(t - 1)) in gru) {
+                    if (tracers[tracers.length - 1].visible && gru != undefined && (String(m - 1) + "/" + String(t - 1)) in gru) {
 
                         tracers[tracers.length - 1].visible = gru[String(m - 1) + "/" + String(t - 1)];
                     }

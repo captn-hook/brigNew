@@ -1,38 +1,39 @@
 export class CanvasObject {
     constructor() {
+        this.max = 25;
+        this.groups = [0, 0.00016000640025601025, 0.003960158406336254, 0.01996079843193728, 0.03996159846393856, 0.1999679987199488, 1];
+        this.colors = ["#0000ff", "#00a0ff", "#02fbff", "#4aff01", "#fbfd00", "#ff5a00", "#ff0000"];
+        this.opacity = [0, .1, .2, .4, .6, .8, 1]
     }
 
     rgb(value) {
 
         //         i    0                       1                     2                    3                    4                   5   6
-        const max = 25;
-        const groups = [0, 0.00016000640025601025, 0.003960158406336254, 0.01996079843193728, 0.03996159846393856, 0.1999679987199488, 1];
-        const colors = ["#0000ff", "#00a0ff", "#02fbff", "#4aff01", "#fbfd00", "#ff5a00", "#ff0000"];
-        const opacity = [0, .1, .2, .4, .6, .8, 1]
+        
 
-        for (let i = 0; i < groups.length; i++) {
+        for (let i = 0; i < this.groups.length; i++) {
 
-            if (groups[i] * max <= value && value <= groups[i + 1] * max) {
+            if (this.groups[i] * this.max <= value && value <= this.groups[i + 1] * this.max) {
 
 
-                //console.log( this.hexToRgb(colors[i]))
+                //console.log( this.hexToRgb(this.colors[i]))
 
-                var c1 = this.hexToRgb(colors[i]);
-                var c2 = this.hexToRgb(colors[i + 1]);
+                var c1 = this.hexToRgb(this.colors[i]);
+                var c2 = this.hexToRgb(this.colors[i + 1]);
 
-                var r = this.rescale(value, groups[i] * max, groups[i + 1] * max, c1.r, c2.r);
-                var g = this.rescale(value, groups[i] * max, groups[i + 1] * max, c1.g, c2.g);
-                var b = this.rescale(value, groups[i] * max, groups[i + 1] * max, c1.b, c2.b);
+                var r = this.rescale(value, this.groups[i] * this.max, this.groups[i + 1] * this.max, c1.r, c2.r);
+                var g = this.rescale(value, this.groups[i] * this.max, this.groups[i + 1] * this.max, c1.g, c2.g);
+                var b = this.rescale(value, this.groups[i] * this.max, this.groups[i + 1] * this.max, c1.b, c2.b);
 
                 //alpha
-                var a = this.rescale(value, groups[i] * max, groups[i + 1] * max, opacity[i], opacity[i + 1]);
+                var a = this.rescale(value, this.groups[i] * this.max, this.groups[i + 1] * this.max, this.opacity[i], this.opacity[i + 1]);
 
                 //console.log(a)
 
                 return [r, g, b, a];
 
-            } else if (value > groups[groups.length - 1] * max) {
-                var c = this.hexToRgb(colors[colors.length - 1])
+            } else if (value > this.groups[this.groups.length - 1] * this.max) {
+                var c = this.hexToRgb(this.colors[this.colors.length - 1])
                 var a = 1;
 
                 return [c.r, c.g, c.b, a];

@@ -25,7 +25,8 @@ class Tracer extends CanvasObject {
         //console.log(this.color);
 
 
-        this.visible = true;
+        this.visible = this.value >= this.groups[1];
+
     }
 
     screenPts(camera, w, h) {
@@ -152,6 +153,7 @@ class Tracer2d extends Tracer {
          var [x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6, z1, z2, flag] = this.screenPts(camera, sizes.width / 2, sizes.height / 2)
 
         //if z1 and z2 magnitude is less than 1, then draw the tracer
+        
         if (this.visible && Math.abs(z1) < 1 && Math.abs(z2) < 1) {
 
             sizes.ctx.lineWidth = this.outline;
@@ -198,7 +200,7 @@ class Tracer2d extends Tracer {
                 sizes.ctx.stroke();
             }            
 
-            if (doVals && this.value != 0) {
+            if (doVals) {
 
                 sizes.ctx.font = "12px Arial";
                 sizes.ctx.textAlign = "center";

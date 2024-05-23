@@ -18,6 +18,8 @@ export interface Props {
     ms: Point2d[];
     ts: Point2d[];
     tracers: Tracer2d[];
+    views: string[];
+    insights: string[];
     site: string;
     sitelist: string[];
     window: Window | null;
@@ -35,6 +37,8 @@ export const ViewportContainer = () => {
         ms: [],
         ts: [],
         tracers: [],
+        views: [],
+        insights: [],
         site: "",
         sitelist: [""],
         window: null,
@@ -48,6 +52,8 @@ export const ViewportContainer = () => {
             ms: [],
             ts: [],
             tracers: [],
+            views: [],
+            insights: [],
             site: "",
             sitelist: [""],
             window: window,
