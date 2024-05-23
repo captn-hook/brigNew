@@ -190,7 +190,7 @@ export function open(props) {
         }
         //values
         if (props.bools[0] && props.leftPanel.spreadsheet == state[0]) {
-            props.tracers.forEach(t => t.drawValues(props.leftPanel, props.leftPanel.cellWidth, props.leftPanel.cellHeight));
+            props.tracers.forEach(t => t.drawValues(props.leftPanel));
         }
 
 

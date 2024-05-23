@@ -230,28 +230,20 @@ class Tracer2d extends Tracer {
         }
     };
 
-    drawValues(leftPanel, cellWidth, cellHeight) {
+    drawValues(leftPanel) {
         if (leftPanel.ctx == undefined) {
             return
         }
         if (this.visible) {
-            let min = cellHeight < cellWidth ? true : false;
-            let minv = min ? cellHeight : cellWidth;
-            if (min) {
-                //cellHeight
-                var size  = parseInt(minv / 1.3);
-            } else {
-                //cellWidth
-                var size = parseInt(minv / 2.3);
-            }
             
-            leftPanel.ctx.font = size.toString() + "px Arial";
+            
+            leftPanel.ctx.font = leftPanel.fontsize.toString() + "px Arial";
             leftPanel.ctx.textAlign = "center";
             leftPanel.ctx.strokeStyle = 'black';
             leftPanel.ctx.lineWidth = 2;
-            leftPanel.ctx.strokeText(Math.round(this.value * 100) / 100, this.t.i * cellWidth + cellWidth / 2, this.m.i * cellHeight + cellHeight / 1.5);
+            leftPanel.ctx.strokeText(Math.round(this.value * 100) / 100, this.t.i * leftPanel.cellWidth + leftPanel.cellWidth / 2, this.m.i * leftPanel.cellHeight + leftPanel.cellHeight / 1.5);
             leftPanel.ctx.fillStyle = "white";
-            leftPanel.ctx.fillText(Math.round(this.value * 100) / 100, this.t.i * cellWidth + cellWidth / 2, this.m.i * cellHeight + cellHeight / 1.5);
+            leftPanel.ctx.fillText(Math.round(this.value * 100) / 100, this.t.i * leftPanel.cellWidth + leftPanel.cellWidth / 2, this.m.i * leftPanel.cellHeight + leftPanel.cellHeight / 1.5);
 
             /*
             leftPanel.ctx.font = "12px Arial";

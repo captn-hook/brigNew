@@ -31,7 +31,7 @@ class Panel {
         this.canvas;
 
         this.dropd;
-        
+
         this.sh;
 
         this.bw = true;
@@ -112,24 +112,30 @@ class Panel {
     //     this.setFontsize(tracers.length);
     // }
 
-    setFontsize(l, props) {
+    setFontsize(props) {
         if (this.canvas == undefined) {
+            console.log('tried to set font size while uninitialized');
             return
         }
-        if (l == undefined) {
-            if (props.tracers != undefined) {
-                l = props.tracers.length;
-            } else {
-                l = 12;
-            }
-        }
+        var l = props.tracers.length
 
-        var m = Math.floor(Math.min(this.canvas.parentElement.clientWidth, this.canvas.parentElement.clientHeight));
-        var x = Math.ceil(m / 1.7 / (l / 4)) + 5;
-        if (x > 20) {
-            x = 20;
+        let min = this.cellHeight < this.cellWidth ? true : false;
+        let minv = min ? this.cellHeight : this.cellWidth;
+        if (min) {
+            //cellHeight
+            var scale = (window.innerHeight / this.canvas.height) / 2;
+            console.log('fontsize chose height')
+            this.fontsize = this.cellHeight / 1.6;
+        } else {
+            //cellWidth
+            var scale = Math.sqrt(window.innerWidth / this.canvas.width);
+            console.log('fontsize chose width')
+            this.fontsize = this.cellWidth / 2.7;
         }
-        this.fontsize = x
+        console.log('fontsize', this.fontsize)
+        console.log('cellHeight', this.cellHeight)
+        console.log('cellWidth', this.cellWidth)
+        console.log('scale', scale)
     }
 
     setbw(bw) {
@@ -154,6 +160,7 @@ class Panel {
                 this.cellHeight = (h / (props.ms.length + 1));
             }
         }
+        this.setFontsize(props)
     }
 
     clicks(e) {
