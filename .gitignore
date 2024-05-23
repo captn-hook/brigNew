@@ -45,3 +45,5 @@ key.js
 .firebase/*
 .build
 .build/*
+
+*.rules

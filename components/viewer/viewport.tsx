@@ -2,9 +2,9 @@ import React, { use, useEffect, useRef, useState } from "react";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { SwitchButton, ThreeStateButton } from "./Button";
 import { FlipButton, CamButton, ResetButton, ToggleButton, GroupButton } from "./Buttons";
-import { open } from "./viewer";
 import { Props } from "./Context";
 import * as Viewer from "./viewer";
+import * as ViewerFunc from "./viewerFunc";
 import { ViewerContext, ViewerMode } from "./viewerProps";
 import { Tracer2d } from "./Tracer";
 import { Point2d } from "./Point";
@@ -30,7 +30,7 @@ export const Viewport = (props: Props) => {
     useEffect(() => {
         window.addEventListener('resize', () => {
             if (props.window != null) {
-                Viewer.windowResizeFunc(props);
+                ViewerFunc.windowResizeFunc(props);
             }
         });
     }, [props.window]);
@@ -38,19 +38,19 @@ export const Viewport = (props: Props) => {
     useEffect(() => {
         window.addEventListener('hashchange', (e) => {
             if (props.window != null && props.leftPanel.dropd != null) {
-                Viewer.interpHash(props);
+                ViewerFunc.interpHash(props);
             }
         });
         
         if (props.window != null && props.leftPanel.dropd != null) {
-            Viewer.interpHash(props);
+            ViewerFunc.interpHash(props);
         }
 
     }, [props.window, props.leftPanel.dropd]);    
 
     //listen for theme change
     useEffect(() => {
-        Viewer.changeSceneBG(props);
+        ViewerFunc.changeSceneBG(props);
     }, [props.bools[6]]);
 
     
@@ -60,18 +60,18 @@ export const Viewport = (props: Props) => {
             <canvas className="webgl" id="threejs" ref={webglRef}></canvas>
             <canvas className="tracers" id="2d" ref={canvas2dRef}
                 onContextMenu={(e) => {
-                    Viewer.stoplookin(props);
+                    ViewerFunc.stoplookin(props);
                     e.preventDefault();
                 }}
                 onMouseDown={(e) => {
-                    Viewer.stoplookin(props);
+                    ViewerFunc.stoplookin(props);
                 }}
                 onWheel={(e) => {
-                    Viewer.stoplookin(props); //should be passive
+                    ViewerFunc.stoplookin(props); //should be passive
                 }}
                 onClick={(e) => {
-                    Viewer.stoplookin(props);
-                    Viewer.storePos(props);
+                    ViewerFunc.stoplookin(props);
+                    ViewerFunc.storePos(props);
                 }}
             />
         </div>
@@ -115,7 +115,7 @@ export const ViewportControl = (props: Props) => {
                         props.sitelist.push(sitelist[i]);
                     }
 
-                    Viewer.siteList(props);
+                    ViewerFunc.siteList(props);
                 }).catch((error) => {
                     console.error(error);
                 });
@@ -134,7 +134,7 @@ export const ViewportControl = (props: Props) => {
             <div id="siteButtons" title="Site Dropdown">
                 <label id="tx" style={{ marginRight: '1rem' }}>Choose a site:</label>
                 <select name="sites" id="dropdown" title="Dropdown" style={{ marginRight: '1rem' }} ref={dropdownRef} onChange={(event) => {
-                    Viewer.dropdListener(event, props);
+                    ViewerFunc.dropdListener(event, props);
                 }}>
                     <option value="Empty">Example</option>
                 </select>

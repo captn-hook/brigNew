@@ -198,7 +198,7 @@ class Tracer2d extends Tracer {
                 sizes.ctx.stroke();
             }            
 
-            if (doVals) {
+            if (doVals && this.value != 0) {
 
                 sizes.ctx.font = "12px Arial";
                 sizes.ctx.textAlign = "center";

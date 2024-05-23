@@ -77,7 +77,16 @@ class Point2d extends Point {
 
         //left canvas
         if (leftPanel.ctx != undefined & leftPanel.spreadsheet == 'spreadsheet') {
-            ctxLeft.font = String(leftPanel.fontsize) + "px Arial";
+            let min = leftPanel.cellHeight < leftPanel.cellWidth ? true : false;
+            let minv = min ? leftPanel.cellHeight : leftPanel.cellWidth;
+            if (min) {
+                //cellHeight
+                var size  = parseInt(minv / 1.3);
+            } else {
+                //cellWidth
+                var size = parseInt(minv / 2.3);
+            }
+            ctxLeft.font = String(size) + "px Arial";
 
             if (this.visible) {
                 ctxLeft.globalAlpha = 1.0;
@@ -100,7 +109,7 @@ class Point2d extends Point {
                 } else {
                     ctxLeft.fillStyle = "white";
                 }
-                ctxLeft.fillText(this.name, cellWidth / 2, this.i * cellHeight + cellHeight / 2 + leftPanel.fontsize / 3);
+                ctxLeft.fillText(this.name, cellWidth / 2, this.i * cellHeight + cellHeight / 1.5);
             } else if (this.type == 'D') {
                 ctxLeft.fillRect(this.i * cellWidth, 0, cellWidth, cellHeight);
                 if (!bw) {
@@ -108,7 +117,7 @@ class Point2d extends Point {
                 } else {
                     ctxLeft.fillStyle = "white";
                 }
-                ctxLeft.fillText(this.name, this.i * cellWidth + cellWidth / 2, cellHeight / 2 + leftPanel.fontsize / 3);
+                ctxLeft.fillText(this.name, this.i * cellWidth + cellWidth / 2, cellHeight / 1.5);
             } else {
                 console.error('Type Error: Left Canvas')
             }
