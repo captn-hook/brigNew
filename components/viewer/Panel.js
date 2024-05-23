@@ -132,10 +132,6 @@ class Panel {
             console.log('fontsize chose width')
             this.fontsize = this.cellWidth / 2.7;
         }
-        console.log('fontsize', this.fontsize)
-        console.log('cellHeight', this.cellHeight)
-        console.log('cellWidth', this.cellWidth)
-        console.log('scale', scale)
     }
 
     setbw(bw) {
