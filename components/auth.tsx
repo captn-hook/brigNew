@@ -12,6 +12,8 @@ import {
     getDocs,
 } from "firebase/firestore";
 
+import { getFunctions } from "firebase/functions";
+
 import { getStorage, ref, getBlob } from "firebase/storage";
 
 import { firebaseConfig } from "../app/key.js"
@@ -21,6 +23,7 @@ export const auth = getAuth();
 export const provider = new GoogleAuthProvider();
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+export const functions = getFunctions(app);
 
 export const SignOutListener = () => {
     //returns a function that can be used as a listener

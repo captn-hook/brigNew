@@ -1,12 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { userSites, auth } from "./auth";
+import { useTheme } from "next-themes";
 
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/table";
 
-export const SiteList = () => {
+export const SiteList = ( { SiteSelectListener }: { SiteSelectListener: (site: string) => void } ) => {
     const [sites, setSites] = useState<string[] | null>(null);
     const [loading, setLoading] = useState(true);
+	const { theme, setTheme } = useTheme();
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
@@ -27,6 +29,21 @@ export const SiteList = () => {
         return () => unsubscribe();
     }, []);
 
+    const [selectedSite, setSelectedSite] = useState<string | null>(null);
+    
+    const SiteSelectListenerW = (site: string) => {
+        setSelectedSite(site);
+        SiteSelectListener(site);
+    }
+
+    const setColor = (theme: any) => {
+        if (theme === "dark") {
+            return "#333";
+        } else {
+            return "#f5f5f5";
+        }
+    }
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -43,7 +60,12 @@ export const SiteList = () => {
                     <TableBody>
                         {sites.map((site, index) => (
                             <TableRow key={index}>
-                                <TableCell>{site}</TableCell>
+                                <TableCell 
+                                    onClick={() => SiteSelectListenerW(site)}
+                                    style={{ cursor: "pointer", 
+                                              backgroundColor: site === selectedSite ? setColor(theme) : "transparent" }}>
+                                    {site}
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
