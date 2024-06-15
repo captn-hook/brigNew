@@ -33,8 +33,9 @@ export default function UserList() {
 
     var itemRef = ref(storage, '/Sites/' + currentSite + '/' + currentSite + '.glb')
 
-    function getSiteUsers() {
-        var inUsers = [];
+    function getSiteUsers(users: any) {
+        var outUsers = users;
+        var inUsers: any[] = [];
         if (currentSite != null) {
             getMetadata(itemRef).then((metadata) => {
 
@@ -43,10 +44,12 @@ export default function UserList() {
                     var names = Object.keys(metadata.customMetadata);
                     var data = Object.values(metadata.customMetadata);
 
-                    names.forEach((user) => {
+                    names.forEach((user: any) => {
 
                         if (data[names.indexOf(user)] != 'false') {
-                            inUsers.push(user.
+                            inUsers.push(user.email);
+                        } else {
+                            console.log(user.email + " is not in " + currentSite);
                         }
                     });
                 }
@@ -73,7 +76,7 @@ export default function UserList() {
     const [inUsers, setInUsers] = useState<string[] | null>(null);
 
     useEffect(() => {
-        setInUsers(getSiteUsers());
+        setInUsers(getSiteUsers(users));
     }, [currentSite]);
 
     return (

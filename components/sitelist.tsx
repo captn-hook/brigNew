@@ -53,17 +53,18 @@ export const SiteList = ( { SiteSelectListener }: { SiteSelectListener: (site: s
     } else {
         return (
             <div style={{ marginTop: "1rem" }}>
-                <Table>
-                    <TableHeader>
+                <Table aria-label="Sites">
+                    <TableHeader aria-label="Site List Header">
                         <TableColumn>Site Name</TableColumn>
                     </TableHeader>
-                    <TableBody>
+                    <TableBody aria-label="Site List">
                         {sites.map((site, index) => (
                             <TableRow key={index}>
                                 <TableCell 
                                     onClick={() => SiteSelectListenerW(site)}
                                     style={{ cursor: "pointer", 
-                                              backgroundColor: site === selectedSite ? setColor(theme) : "transparent" }}>
+                                              backgroundColor: site === selectedSite ? setColor(theme) : "transparent" }}
+                                              aria-label={`Select site ${site}`}    >
                                     {site}
                                 </TableCell>
                             </TableRow>
