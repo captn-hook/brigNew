@@ -1,57 +1,49 @@
 "use client";
-import { title } from "@/components/primitives";
-import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/table";
+import { useEffect, useState } from "react";
+
+import LemmeIn from "@/components/adminTools";
 
 export default function AdminPage() {
-	
-	const userlist = [
-		{
-			"username": "Admin 1",
-			"email": "example@gmail.com",
-			"role": "Admin",
-			"sites": -1
-		},
-		{
-			"username": "User 2",
-			"email": "example2@gmail.com",
-			"role": "User",
-			"sites": 4
-		},
-		{
-			"username": "User 3",
-			"email": "fake@gmail.com",
-			"role": "User",
-			"sites": 2
-		},
-		{
-			"username": "Admin 4",
-			"email": "ddwda@gmail.com",
-			"role": "Admin",
-			"sites": -1
-		},
-	];
+
+	const [report, setReport] = useState<any[] | null>(null);
+
+	useEffect(() => {
+		LemmeIn().then((report) => {
+			setReport(report);
+		})
+	}, []);
 
 	return (
 		<div>
-			<h1 className={title()}>User Manager</h1>
-			<Table>
-				<TableHeader>
-					<TableColumn>Username</TableColumn>
-					<TableColumn>Email</TableColumn>
-					<TableColumn>Role</TableColumn>
-					<TableColumn>Sites</TableColumn>
-				</TableHeader>
-				<TableBody>
-					{userlist.map((user, index) => (
-						<TableRow key={`${user.username}-${index}`}>
-							<TableCell>{user.username}</TableCell>
-							<TableCell>{user.email}</TableCell>
-							<TableCell>{user.role}</TableCell>
-							<TableCell>{user.sites}</TableCell>
-						</TableRow>
-					))}
-				</TableBody>
-			</Table>
+			<ul>
+				{
+					// sites is an obj with fields: name, storageUsers[], and firestoreUsers[]
+					report?.map((site, index) => (
+						<li key={index} style={{border: "1px solid gray", margin: "1em", padding: "1em"}}>
+							<div style={{display: "flex", flexDirection: "column"}}>
+								<h1 style={{fontSize: "1.5em"}}>{site.name}</h1>
+								<h2>Storage Users</h2>
+								<ul style={{backgroundColor: "darkgray"}}>
+									{
+										site.storageUsers.map((user: any, index: number) => (
+											<li key={index}>{user}</li>
+										))
+									}
+								</ul>
+								<h2>Firestore Users</h2>
+								<ul style={{backgroundColor: "darkgray"}}>
+									{
+										site.firestoreUsers.map((user: any, index: number) => (
+											<li key={index}>{user}</li>
+										))
+									}
+								</ul>
+							</div>
+						</li>
+					))
+				}
+			</ul>
 		</div>
 	);
+	
 }
