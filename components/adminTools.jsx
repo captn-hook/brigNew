@@ -1,10 +1,11 @@
 import { getSiteUsers } from "./userlist";
 
 import { httpsCallable } from "firebase/functions";
-import { ref, getMetadata, listAll, list } from 'firebase/storage';
+import { ref, getMetadata, listAll, updateMetadata } from 'firebase/storage';
 import { collection, getDocs } from "firebase/firestore";
 
 import { storage, functions, db } from "./auth";
+import { use } from "react";
 
 
 function userSitesUID(uid) {
@@ -118,6 +119,38 @@ export default async function LemmeIn() {
                 }
             }
         }
+
+        // for every site, if no firestoreUsers and no storageUsers, remove it from the report
+        let rm = [];
+        for (let site of siteReports) {
+            if (site.firestoreUsers.length == 0 && site.storageUsers.length == 0) {
+                rm.push(site);
+            }
+        }
+        for (let r of rm) {
+            siteReports.splice(siteReports.indexOf(r), 1);
+        }
+
+        // now we have to fix the discrepancy between storageUsers and firestoreUsers, firestore > storage
+
+        // for every site, if a user has access in storage but not in firestore, set the files metadata to null
+        
+        for (let site of siteReports) {
+            for (let user of site.storageUsers) {
+                if (!site.firestoreUsers.includes(user)) {
+                    // set the customMedata email key to null
+                    const siteRef = ref(storage, '/Sites/' + site.name + '/' + site.name + '.glb');
+                    console.log('siteRef: ', siteRef, 'user: ', user);
+                    let email = user.email;
+                    updateMetadata(siteRef, { customMetadata: { [email]: null } }).then(() => {
+                        console.log('metadata updated');
+                    }).catch((error) => {
+                        console.log('updateMetadata error: ', error);
+                    });
+                } 
+            }
+        }              
+
          
         resolve(siteReports);
     });

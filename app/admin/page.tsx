@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 
+import { auth } from "@/components/auth";
 import LemmeIn from "@/components/adminTools";
 
 export default function AdminPage() {
+
 
 	const [report, setReport] = useState<any[] | null>(null);
 
@@ -13,8 +15,11 @@ export default function AdminPage() {
 		})
 	}, []);
 
+	console.log(auth.currentUser);
+
 	return (
 		<div>
+			{ auth.currentUser ? 
 			<ul>
 				{
 					// sites is an obj with fields: name, storageUsers[], and firestoreUsers[]
@@ -43,7 +48,8 @@ export default function AdminPage() {
 					))
 				}
 			</ul>
+			: <h1>No Access</h1> }
 		</div>
 	);
-	
+
 }

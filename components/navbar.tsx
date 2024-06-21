@@ -22,7 +22,7 @@ import { PoppyIconSmall } from "@/components/images";
 
 import { SmallAccountStatus } from "@/components/authClient";
 
-import { SignOutListener } from "@/components/auth";
+import { auth, SignOutListener } from "@/components/auth";
 
 import "./navbar.css";
 
@@ -63,7 +63,7 @@ export const Navbar = () => {
 
 			<NavbarMenu>
 				<div className="mx-4 mt-2 flex flex-col gap-2">
-					{siteConfig.navMenuItems.map((item, index) => (
+					{auth.currentUser ? siteConfig.navMenuItems.map((item, index) => (
 						<NavbarMenuItem key={`${item}-${index}`}>
 							<Link
 								color={
@@ -85,7 +85,7 @@ export const Navbar = () => {
 								{item.label}
 							</Link>
 						</NavbarMenuItem>
-					))}
+					)) : null}
 				</div>
 			</NavbarMenu>
 		</NextUINavbar>
