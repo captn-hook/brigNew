@@ -15,8 +15,6 @@ export default function AdminPage() {
 		})
 	}, []);
 
-	console.log(auth.currentUser);
-
 	return (
 		<div>
 			{ auth.currentUser ? 

@@ -71,7 +71,11 @@ export default async function LemmeIn() {
                 }).catch((error) => {
                     // remove this site from the list
                     rm.push(site);
+                    return null;
                 });
+                if (metadata === null) {
+                    continue;
+                }
                 
                 // rm rm
                 for (let r of rm) {
@@ -84,7 +88,9 @@ export default async function LemmeIn() {
                     site.metadata = {};
                 }
             } catch (error) {
-                console.log(error);
+                //console.log(error);
+                // remove this site from the list if it doesn't exist
+                siteReports.splice(siteReports.indexOf(site), 1);
             }
         }
         
@@ -120,38 +126,8 @@ export default async function LemmeIn() {
             }
         }
 
-        // for every site, if no firestoreUsers and no storageUsers, remove it from the report
-        let rm = [];
-        for (let site of siteReports) {
-            if (site.firestoreUsers.length == 0 && site.storageUsers.length == 0) {
-                rm.push(site);
-            }
-        }
-        for (let r of rm) {
-            siteReports.splice(siteReports.indexOf(r), 1);
-        }
-
-        // now we have to fix the discrepancy between storageUsers and firestoreUsers, firestore > storage
-
-        // for every site, if a user has access in storage but not in firestore, set the files metadata to null
-        
-        for (let site of siteReports) {
-            for (let user of site.storageUsers) {
-                if (!site.firestoreUsers.includes(user)) {
-                    // set the customMedata email key to null
-                    const siteRef = ref(storage, '/Sites/' + site.name + '/' + site.name + '.glb');
-                    console.log('siteRef: ', siteRef, 'user: ', user);
-                    let email = user.email;
-                    updateMetadata(siteRef, { customMetadata: { [email]: null } }).then(() => {
-                        console.log('metadata updated');
-                    }).catch((error) => {
-                        console.log('updateMetadata error: ', error);
-                    });
-                } 
-            }
-        }              
-
-         
+        // if there are no users with either access, remove the site from the report
+        siteReports = siteReports.filter(site => site.storageUsers.length > 0 || site.firestoreUsers.length > 0);
         resolve(siteReports);
     });
 }
