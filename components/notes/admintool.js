@@ -52,3 +52,12 @@
         //         });
         //     }
         // }
+
+ // for every site, give tristanskyhook@gmail.com firestore access
+ for (let site of siteReports) {
+        if (!site.firestoreUsers.includes('tristanskyhook@gmail.com')) {
+            setDoc(doc(db, 'WqkeGuRlDebTAWfMgR9mjYIUF4S2', site.name), {
+                'access': true,
+            });
+        }
+    }

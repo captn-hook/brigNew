@@ -9,18 +9,12 @@ import {
 
 import { SiteList } from "@/components/sitelist";
 
+import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/table";
+
 import {
     httpsCallable,
     //connectFunctionsEmulator
 } from 'firebase/functions';
-
-function User({ user, in: inSite }: { user: any, in: boolean }) {
-    return (
-        <li style={{ color: inSite ? 'green' : 'red' }}>
-            {user.email}
-        </li>
-    );
-}
 
 export function getSiteUsers(currentSite: string | null) {
     var inUsers: any[] = [];
@@ -44,9 +38,9 @@ export function getSiteUsers(currentSite: string | null) {
                 });
             }
         })
-        .catch((error) => {
-            console.error(error);
-        })
+            .catch((error) => {
+                console.error(error);
+            })
     }
     return inUsers
 }
@@ -79,17 +73,21 @@ export default function UserList() {
     return (
         <div>
             <SiteList SiteSelectListener={(site) => setCurrentSite(site)} />
-            <h1>Users</h1>
-            <ul>
-                {
-                    currentSite ? users?.map((user, index) => (
-                        <User
-                            key={index} 
-                            user={user} 
-                            in={ inUsers ? inUsers.includes(user.email) : false } />
-                    )) : <div>No site selected</div>
-                }
-            </ul>
+            <h1>Permissions Table</h1>
+            <Table aria-label="Permissions">
+                <TableHeader aria-label="Permissions Header">
+                    <TableColumn>Access</TableColumn>
+                </TableHeader>
+                <TableBody aria-label="Permissions List">
+                    {
+                        inUsers && inUsers.length > 0 ? inUsers.map((user, index) => (
+                            <TableRow key={index}>
+                                <TableCell>{user}</TableCell>
+                            </TableRow>
+                        )) : <TableRow><TableCell>No users found</TableCell></TableRow>
+                    }
+                </TableBody>
+            </Table>
         </div>
     );
 }

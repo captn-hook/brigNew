@@ -5,10 +5,10 @@ import { ref, getMetadata, listAll, updateMetadata } from 'firebase/storage';
 import { collection, getDocs } from "firebase/firestore";
 
 import { storage, functions, db } from "./auth";
-import { use } from "react";
+import exp from "constants";
 
 
-function userSitesUID(uid) {
+export function userSitesUID(uid) {
     return new Promise(async function (resolve, reject) {
         const userSites = [];
         getDocs(collection(db, uid)).then((querySnapshot) => {
@@ -25,31 +25,44 @@ function userSitesUID(uid) {
         } );
     } );
 }            
-    
-export default async function LemmeIn() {
+
+export function getUsers() {
+    const listUsers = httpsCallable(functions, 'listUsers');
+
     return new Promise(async function (resolve, reject) {
-        
-        // get all users
-        const listUsers = httpsCallable(functions, 'listUsers');
-        const users = await listUsers().then((result) => {
-            return result.data.users;
+        listUsers().then((result) => {
+            resolve(result.data.users);
         }).catch((error) => {
             console.log('listUsers error: ', error);
             reject(error);
         });
+    });
+}      
 
-        // get all sites
-        //listAll to get /Sites/*
+export function getSites() {
+    return new Promise(async function (resolve, reject) {
         const storageRef = ref(storage, '/Sites/');
-        const sites = await listAll(storageRef).then((res) => {
-            // get res.prefixes.name
-            return res.prefixes.map((prefix) => {
-                return prefix.name;
-            });
+        listAll(storageRef).then((res) => {
+            const siteNames = res.prefixes.map((prefix) => prefix.name);
+            resolve(siteNames); 
         }).catch((error) => {
             console.log('listAll error: ', error);
             reject(error);
         });
+    });
+}
+
+export default async function LemmeIn() {
+    return new Promise(async function (resolve, reject) {
+        
+        // get all users
+        const users = await getUsers()
+        console.log('got all users');
+        // get all sites
+        //listAll to get /Sites/*
+        const sites = await getSites();
+        console.log('got all sites');
+
         // generate report frameworks
         let siteReports = [];
         for (let site of sites) {
@@ -60,6 +73,7 @@ export default async function LemmeIn() {
                 firestoreUsers: []
             });
         }
+        console.log('generated report frameworks for all sites');
         // does a user have access to the site in firebase storage? 
         // determined by file metadata
         for (let site of siteReports) {
@@ -93,7 +107,7 @@ export default async function LemmeIn() {
                 siteReports.splice(siteReports.indexOf(site), 1);
             }
         }
-        
+        console.log('finished checking metadata for all sites');
         // does a user have access to the site in firestore?
         // for every user get their uid collection
         let collectionInfo = [];
@@ -107,7 +121,7 @@ export default async function LemmeIn() {
                 console.log('userSitesUID error: ', error);
             });
         }
-            
+        console.log('finished checking firestore for all users');
         // fill out storageUsers according to site.metadata
         for (let site of siteReports) {
             for (let user of collectionInfo) {
@@ -116,7 +130,7 @@ export default async function LemmeIn() {
                 }
             }
         }
-
+        console.log('finished checking storage for all users');
         // fill out firestoreUsers according to collectionInfo
         for (let user of collectionInfo) {
             for (let site of siteReports) {
@@ -125,10 +139,7 @@ export default async function LemmeIn() {
                 }
             }
         }
-
-        // if there are no users with either access, remove the site from the report
-        siteReports = siteReports.filter(site => site.storageUsers.length > 0 || site.firestoreUsers.length > 0);
+        console.log('finished generating report');
         resolve(siteReports);
     });
 }
-

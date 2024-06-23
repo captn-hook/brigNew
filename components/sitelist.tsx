@@ -44,6 +44,8 @@ export const SiteList = ( { SiteSelectListener }: { SiteSelectListener: (site: s
         }
     }
 
+    const [isTableHovered, setIsTableHovered] = useState(false);
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -53,18 +55,26 @@ export const SiteList = ( { SiteSelectListener }: { SiteSelectListener: (site: s
     } else {
         return (
             <div style={{ marginTop: "1rem" }}>
-                <Table aria-label="Sites">
+                <Table aria-label="Sites"
+                          onMouseEnter={() => setIsTableHovered(true)}
+                          onMouseLeave={() => setIsTableHovered(false)}>
                     <TableHeader aria-label="Site List Header">
-                        <TableColumn>Site Name</TableColumn>
+                        <TableColumn style={ isTableHovered ?
+                            { fontSize: "1em", padding: "0.2em", paddingLeft: "0.5em", transition: "all 0.15s ease-out" } :
+                            { fontSize: "2em", padding: "0.7em", paddingLeft: "0.4em", transition: "all 0.15s ease-in" }}
+                        >{ selectedSite ? selectedSite : "Select Site" }</TableColumn>
                     </TableHeader>
-                    <TableBody aria-label="Site List">
+                    <TableBody aria-label="Site List" 
+                        style={ isTableHovered ? 
+                            { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", maxHeight: "20em", opacity: 1, transition: "all 0.2s ease-out" } :
+                            { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", maxHeight: "3em", opacity: 0.5, overflowY: "hidden", transition: "all 0.2s ease-in" }}>
                         {sites.map((site, index) => (
                             <TableRow key={index}>
                                 <TableCell 
                                     onClick={() => SiteSelectListenerW(site)}
                                     style={{ cursor: "pointer", 
-                                              backgroundColor: site === selectedSite ? setColor(theme) : "transparent" }}
-                                              aria-label={`Select site ${site}`}    >
+                                            backgroundColor: site === selectedSite ? setColor(theme) : "transparent" }}
+                                            aria-label={`Select site ${site}`}    >
                                     {site}
                                 </TableCell>
                             </TableRow>

@@ -7,7 +7,7 @@ export default function ManagerPage() {
 
 	return (
 		<div>
-			<h1 className={title()}>Site Manager</h1>
+			<h1 className={title()}>Permission Manager</h1>
 			<UserList />
 		</div>
 	);
