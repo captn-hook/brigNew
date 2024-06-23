@@ -1,12 +1,9 @@
-import { getSiteUsers } from "./userlist";
-
 import { httpsCallable } from "firebase/functions";
 import { ref, getMetadata, listAll, updateMetadata } from 'firebase/storage';
 import { collection, getDocs } from "firebase/firestore";
 
 import { storage, functions, db } from "./auth";
-import exp from "constants";
-
+import { doc, setDoc } from "firebase/firestore";
 
 export function userSitesUID(uid) {
     return new Promise(async function (resolve, reject) {
@@ -46,22 +43,118 @@ export function getSites() {
             const siteNames = res.prefixes.map((prefix) => prefix.name);
             resolve(siteNames); 
         }).catch((error) => {
-            console.log('listAll error: ', error);
+            resolve([]);
+        });
+    });
+}
+
+export function getSiteUsers(site) {
+    return new Promise(async function (resolve, reject) {
+        const siteRef = ref(storage, '/Sites/' + site + '/' + site + '.glb');
+        getMetadata(siteRef).then((metadata) => {
+            if (metadata.customMetadata) {
+                resolve(Object.keys(metadata.customMetadata));
+            } else {
+                resolve({});
+            }
+        }).catch((error) => {
             reject(error);
         });
     });
 }
 
+export function removeUser(site, email, uid) {
+    // removes from storage and firestore
+    return new Promise(async function (resolve, reject) {
+        // storage: set customMetadata[email] to null
+        const siteRef = ref(storage, '/Sites/' + site + '/' + site + '.glb');
+        getMetadata(siteRef).then((metadata) => {
+            if (metadata.customMetadata) {
+                metadata.customMetadata[email] = null;
+                updateMetadata(siteRef, {customMetadata: metadata.customMetadata}).then(() => {
+                    // firestore: set access to false by uid
+                    setDoc(doc(db, uid, site), {access: false}).then(() => {
+                        resolve();
+                    }).catch((error) => {
+                        reject(error);
+                    });
+                }).catch((error) => {
+                    reject(error);
+                });
+            } else {
+                resolve();
+            }
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+
+function addUserToStorage(site, email, uid) {
+    return new Promise(async function (resolve, reject) {
+        const siteRef = ref(storage, '/Sites/' + site + '/' + site + '.glb');
+        updateMetadata(siteRef, {customMetadata: {[email]: uid}}).then(() => {
+            resolve();
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+
+function addUserToFirestore(site, uid) {
+    return new Promise(async function (resolve, reject) {
+        setDoc(doc(db, uid, site), {access: true}).then(() => {
+            resolve();
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+
+export function addUser(site, email, uid) {
+    // adds to storage and firestore
+    return new Promise(async function (resolve, reject) {
+
+        if (!site || !email || !uid) {
+            reject('missing parameters');
+        } else if (site === '' || email === '' || uid === '') {
+            reject('empty parameters');
+        }
+        
+        addUserToStorage(site, email, uid).then(() => {
+            addUserToFirestore(site, uid).then(() => {
+                resolve();
+            }).catch((error) => {
+                reject(error);
+            });
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+
+
 export default async function LemmeIn() {
     return new Promise(async function (resolve, reject) {
         
         // get all users
-        const users = await getUsers()
-        console.log('got all users');
+        const users = await getUsers().catch((error) => {
+            reject(error);
+            return;
+        });
+
         // get all sites
         //listAll to get /Sites/*
-        const sites = await getSites();
-        console.log('got all sites');
+        const sites = await getSites().catch((error) => {
+            reject(error);
+            return;
+        });
+
+
+        if (!users || !sites) {
+            reject('users or sites not found');
+            return;
+        }
 
         // generate report frameworks
         let siteReports = [];
@@ -73,7 +166,6 @@ export default async function LemmeIn() {
                 firestoreUsers: []
             });
         }
-        console.log('generated report frameworks for all sites');
         // does a user have access to the site in firebase storage? 
         // determined by file metadata
         for (let site of siteReports) {
@@ -121,7 +213,6 @@ export default async function LemmeIn() {
                 console.log('userSitesUID error: ', error);
             });
         }
-        console.log('finished checking firestore for all users');
         // fill out storageUsers according to site.metadata
         for (let site of siteReports) {
             for (let user of collectionInfo) {
@@ -130,7 +221,6 @@ export default async function LemmeIn() {
                 }
             }
         }
-        console.log('finished checking storage for all users');
         // fill out firestoreUsers according to collectionInfo
         for (let user of collectionInfo) {
             for (let site of siteReports) {
@@ -142,4 +232,5 @@ export default async function LemmeIn() {
         console.log('finished generating report');
         resolve(siteReports);
     });
+    
 }
