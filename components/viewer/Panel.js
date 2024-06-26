@@ -52,6 +52,8 @@ class Panel {
 
         this.siteheader = '';
 
+        this.clickCallback = undefined;
+
     }
 
     setPanelRef(spreadsheetcanvas) {
@@ -170,6 +172,10 @@ class Panel {
 
                 //this is for linking to a specific location
                 window.location.hash = (this.siteheader + '&X=' + this.cellX + '&Y=' + this.cellY);
+
+                if (this.clickCallback != undefined) {
+                    this.clickCallback(this.cellX, this.cellY)
+                }
             }
         } else if (this.spreadsheet == this.state[1]) {
             if (this.gi != this.cellY - 1) {

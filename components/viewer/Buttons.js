@@ -112,8 +112,3 @@ export function ToggleButton(mode, leftPanel, ms, ts, tracers) {
         })
     }
 }
-
-//group button texts: Groups, Areas, tracers
-export function GroupButton(leftPanel) {
-    leftPanel.next();
-}

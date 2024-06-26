@@ -256,7 +256,11 @@ class Tracer2d extends Tracer {
         }
     };
 
-
+    updateValue(value) {
+        this.value = parseFloat(value);
+        [this.r, this.g, this.b, this.a] = this.rgb(this.value);
+        this.color = this.rgbToHex(this.r, this.g, this.b);
+    }
 
     monitor() {
         return this.m;

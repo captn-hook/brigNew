@@ -1,11 +1,8 @@
-import React, { use, useEffect, useRef, useState } from "react";
-import { Button, ButtonGroup } from "@nextui-org/button";
+import React, { useEffect, useRef } from "react";
+import { ButtonGroup } from "@nextui-org/button";
 import { SwitchButton, ThreeStateButton } from "./Button";
-import { FlipButton, CamButton, ResetButton, ToggleButton, GroupButton } from "./Buttons";
 import { Props } from "./Context";
 import * as Viewer from "./viewer";
-import * as siteChange from "./siteChange";
-import { ViewerContext, ViewerMode } from "./viewerProps";
 import { Tracer2d } from "./Tracer";
 import { Point2d } from "./Point";
 import siteList from "./siteList";
@@ -82,7 +79,7 @@ export const Viewport = (props: Props) => {
 }
 
 
-export const ViewportControl = (props: Props) => {
+export function ViewportControl(props: any) {
     const spreadsheetRef = useRef<HTMLCanvasElement>(null);
     const dropdownRef = useRef<HTMLSelectElement>(null);
 
@@ -131,8 +128,10 @@ export const ViewportControl = (props: Props) => {
         return () => unsubscribe();
     }, [dropdownRef]);
 
+    const [sheetState, setSheetState] = React.useState(props.leftPanel.spreadsheet);
+
     return (
-        <div style={{ display: 'flex', justifyContent: 'flex-start', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-start', flexDirection: 'column', alignItems: 'center', gap: '1rem' }} className="viewportControl">
 
             <div id="siteButtons" title="Site Dropdown">
                 <label id="tx" style={{ marginRight: '1rem' }}>Choose a site:</label>
@@ -141,8 +140,19 @@ export const ViewportControl = (props: Props) => {
                 }}>
                     <option value="Empty">Example</option>
                 </select>
-                <Button style={{ display: 'none' }} size="sm" id="groups" title="Groups Menu" onPress={() => GroupButton(props.leftPanel)}>Groups</Button>
             </div>
+
+            <ButtonGroup id="switchDisplayType">
+                <ThreeStateButton id="swapper" title="Switch Display Type"
+                    onPress={async () => {
+                        props.leftPanel.next();
+                        setSheetState(props.leftPanel.spreadsheet);
+                    }} 
+                    text1="Groups"
+                    text2="Tracers"
+                    text3="Areas"
+                ></ThreeStateButton>
+            </ButtonGroup>
 
             <ButtonGroup id="bug1">
                 <SwitchButton id="valueBtnS" title="Show values"
@@ -187,7 +197,7 @@ export const ViewportControl = (props: Props) => {
                             })
 
                             if (minx == 0) {
-                                props.ms.forEach((m) => {
+                                props.ms.forEach((m: Point2d) => {
                                     if (m.i >= miny && m.i <= y) {
                                         m.visible = !m.visible;
                                     }
@@ -195,7 +205,7 @@ export const ViewportControl = (props: Props) => {
                             }
 
                             if (miny == 0) {
-                                props.ts.forEach((d) => {
+                                props.ts.forEach((d: Point2d) => {
                                     if (d.i >= minx && d.i <= x) {
                                         d.visible = !d.visible;
                                     }
@@ -241,13 +251,13 @@ export const ViewportControl = (props: Props) => {
                         async () => {
                             props.bools[4] = !props.bools[4]
 
-                            props.ms.forEach((m) => {
+                            props.ms.forEach((m: Point2d) => {
                                 m.visible = !props.bools[4];
                             })
-                            props.ts.forEach((t) => {
+                            props.ts.forEach((t: Point2d) => {
                                 t.visible = !props.bools[4];
                             })
-                            props.tracers.forEach((t) => {
+                            props.tracers.forEach((t: Tracer2d) => {
                                 t.visible = !props.bools[4];
                             })
 
@@ -277,7 +287,7 @@ export const ViewportControl = (props: Props) => {
                             });
 
                             if (minx == 0) {
-                                props.ms.forEach((m) => {
+                                props.ms.forEach((m: Point2d) => {
                                     if (m.i >= miny && m.i <= y) {
                                         m.visible = !props.bools[5];
                                     }
@@ -285,7 +295,7 @@ export const ViewportControl = (props: Props) => {
                             }
 
                             if (miny == 0) {
-                                props.ts.forEach((d) => {
+                                props.ts.forEach((d: Point2d) => {
                                     if (d.i >= minx && d.i <= x) {
                                         d.visible = !props.bools[5];
                                     }
@@ -312,6 +322,12 @@ export const ViewportControl = (props: Props) => {
                     }}
                 ></canvas>
             </div>
+            { sheetState == 'spreadsheet' ?
+                props.childOne : null
+            }
+            { sheetState == 'areas' ?
+                props.childTwo : null
+            }
             <div id="texcontainer" style={{ display: 'none' }}>
                 <textarea id="textbox" style={{ backgroundColor: 'grey', color: 'white' }} readOnly></textarea>
             </div>
