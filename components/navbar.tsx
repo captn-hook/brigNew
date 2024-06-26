@@ -29,6 +29,21 @@ import "./navbar.css";
 export const Navbar = () => {
 	const [isMenuOpen, setIsMenuOpen] = React.useReducer((current) => !current, false);
 
+	let navItems = auth.currentUser ? siteConfig.navItems : siteConfig.navItems.filter((item) => item.label == "Viewer");
+	let navMenuItems = auth.currentUser ? siteConfig.navMenuItems : [];
+
+	const [signedIn, setSignedIn] = React.useState(false);
+
+	React.useEffect(() => {
+		auth.onAuthStateChanged((user) => {
+			if (user) {
+				setSignedIn(true);
+			} else {
+				setSignedIn(false);
+			}
+		});
+	}, []);
+
 	return (
 		<NextUINavbar maxWidth="xl" position="sticky" isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen} height='var(--header-height)'>
 			<NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -39,7 +54,7 @@ export const Navbar = () => {
 					</NextLink>
 				</NavbarBrand>
 				<ul className="hidden lg:flex gap-4 justify-start ml-2">
-					{siteConfig.navItems.map((item) => (
+					{navItems.map((item) => (
 						<NavbarItem key={item.href}>
 							<NextLink
 								className={clsx(
@@ -63,7 +78,7 @@ export const Navbar = () => {
 
 			<NavbarMenu>
 				<div className="mx-4 mt-2 flex flex-col gap-2">
-					{auth.currentUser ? siteConfig.navMenuItems.map((item, index) => (
+					{navMenuItems.map((item, index) => (
 						<NavbarMenuItem key={`${item}-${index}`}>
 							<Link
 								color={
@@ -85,7 +100,7 @@ export const Navbar = () => {
 								{item.label}
 							</Link>
 						</NavbarMenuItem>
-					)) : null}
+					))}
 				</div>
 			</NavbarMenu>
 		</NextUINavbar>

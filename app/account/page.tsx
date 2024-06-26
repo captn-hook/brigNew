@@ -9,7 +9,7 @@ export default function AccountPage() {
 		<div>
 			<h1 className={title()}>Account</h1>
 
-			<ButtonGroup className="content-center">
+			<ButtonGroup className="content-center" style={{ marginTop: '2rem' }}>
 				<Button onPress={() => {
 					const auth = getAuth();
 					if (auth.currentUser && auth.currentUser.email) {
