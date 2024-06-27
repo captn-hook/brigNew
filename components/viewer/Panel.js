@@ -398,6 +398,10 @@ class Panel {
     }
 
     spreadsheetFrame() {
+        // clear the 0, 0 cell
+        var [x, y, w, h] = this.bounds(1, 1, 1, 1);
+        this.ctx.clearRect(x, y, w, h);
+
 
         //click 1
         //this.ctx.fillRect(0, 0, this.cellWidth, this.cellHeight);

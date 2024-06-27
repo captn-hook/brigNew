@@ -13,16 +13,44 @@ import { stoplookin, storePos, windowResizeFunc, changeSceneBG } from "./listene
 
 import "./canvas.css";
 
-export const Viewport = (props: Props) => {
+export const Viewport = (props: any) => {
 
-    const div3dRef = useRef<HTMLDivElement>(null);
-    const webglRef = useRef<HTMLCanvasElement>(null);
-    const canvas2dRef = useRef<HTMLCanvasElement>(null);
+    var div3dRef: any = undefined;
+    var webglRef: any = undefined;
+    var canvas2dRef: any = undefined;
+
+    if (props.refs != null) {
+        if (props.refs.div3dRef != null) {
+            div3dRef = props.refs.div3dRef;
+        } else {
+            div3dRef = useRef<HTMLDivElement>(null);
+        }
+
+        if (props.refs.webglRef != null) {
+            webglRef = props.refs.webglRef;
+        } else {
+            webglRef = useRef<HTMLCanvasElement>(null);
+        }
+
+        if (props.refs.canvas2dRef != null) {
+            canvas2dRef = props.refs.canvas2dRef;
+        } else {
+            canvas2dRef = useRef<HTMLCanvasElement>(null);
+        }
+
+    } else {
+        div3dRef = useRef<HTMLDivElement>(null);
+        webglRef = useRef<HTMLCanvasElement>(null);
+        canvas2dRef = useRef<HTMLCanvasElement>(null);
+    } 
 
     useEffect(() => {
         if (props && props.window && div3dRef.current && canvas2dRef.current) {
             props.screenSizes.setViewerRefs(div3dRef.current, canvas2dRef.current, webglRef.current);
             //props.screenSizes.updateSizes();
+            if (props.refs == null && props.refs.refReturner != null) {
+                props.refs.refReturner(div3dRef, webglRef, canvas2dRef);
+            }
             Viewer.open(props);
         }
     }, [props, div3dRef, canvas2dRef, webglRef]);
