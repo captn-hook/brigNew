@@ -208,6 +208,10 @@ export default function EditorControl(props: Props, canvas2d: React.RefObject<HT
 
             <ButtonGroup aria-label="Point Control">
                 <Image src="/m.svg" width={40} height={40} draggable={true}
+                    style={{ 
+                        cursor: 'pointer',
+                        marginRight: '1rem'
+                    }}
                     onDragStart={(e) => { e.dataTransfer.setData("text", "M") }}
                     onTouchEnd={(e) => {
                         let xi = e.changedTouches[0].pageX;
@@ -219,6 +223,10 @@ export default function EditorControl(props: Props, canvas2d: React.RefObject<HT
                     }}
                     alt="M" />
                 <Image src="/d.svg" width={40} height={40} draggable={true}
+                    style={{ 
+                        cursor: 'pointer',
+                        marginLeft: '1rem'
+                    }}
                     onDragStart={(e) => { e.dataTransfer.setData("text", "D") }}
                     onTouchEnd={(e) => {
                         let xi = e.changedTouches[0].pageX;
