@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 
-import { camera, controls, state } from './viewer';
+import { camera, state } from './viewer';
 
 import {
     updateCam,
@@ -60,7 +60,9 @@ export default function interpHash(props) {
                 setTargPos(pos);
                 camera.rotation.set(parseFloat(params[3]), parseFloat(params[4]), parseFloat(params[5]))
 
-                controls.update();
+                if (props.leftPanel && props.leftPanel.controls) {
+                    props.leftPanel.controls.update();
+                }
                 updateCam(props);
 
             }

@@ -48,7 +48,7 @@ export const Viewport = (props: any) => {
         if (props && props.window && div3dRef.current && canvas2dRef.current) {
             props.screenSizes.setViewerRefs(div3dRef.current, canvas2dRef.current, webglRef.current);
             //props.screenSizes.updateSizes();
-            if (props.refs == null && props.refs.refReturner != null) {
+            if (props.refs != null && props.refs.refReturner != null) {
                 props.refs.refReturner(div3dRef, webglRef, canvas2dRef);
             }
             Viewer.open(props);

@@ -117,31 +117,36 @@ class Tracer2d extends Tracer {
 
         super(m, t, value, headroom, lift);
 
-        const maxwidth = 10;
+        this.maxwidth = 10;
 
-        const minwidth = 3;
+        this.minwidth = 3;
 
         this.rgbval = this.hexToRgb(this.color);
 
+        this.setOutline(this.value);
+
+        //this.outline = this.rescale(Math.min(value, 10), 0, 25, minwidth, maxwidth);
+
+        //console.log(this.value, this.a)
+    }
+
+    setOutline(value) {
         var minp = 0;
         var maxp = 1;
 
-        var minv = Math.log(minwidth);
-        var maxv = Math.log(maxwidth);
+        var minv = Math.log(this.minwidth);
+        var maxv = Math.log(this.maxwidth);
 
         var scale = (maxv - minv) / (maxp - minp);
         
         var rangedvalue = Math.max(Math.min(value, maxp), minp);
         
         if (value > 5) {
-            this.outline = maxwidth + 10;
+            this.outline = this.maxwidth + 10;
         } else {
 
                 this.outline = Math.exp(minv + scale * (rangedvalue - minp));
         }
-        //this.outline = this.rescale(Math.min(value, 10), 0, 25, minwidth, maxwidth);
-
-        //console.log(this.value, this.a)
     }
 
     drawTracer(leftPanel, camera, sizes, alpha, doVals) {
@@ -260,6 +265,7 @@ class Tracer2d extends Tracer {
         this.value = parseFloat(value);
         [this.r, this.g, this.b, this.a] = this.rgb(this.value);
         this.color = this.rgbToHex(this.r, this.g, this.b);
+        this.setOutline(this.value);
     }
 
     monitor() {

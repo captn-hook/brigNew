@@ -60,6 +60,11 @@ export default function dropdListener(event, props) {
             Animate
             */
             props.leftPanel.siteheader = 'Example';
+
+            if (props.setProps != null) {
+                console.log("setProps from dropdListener");
+                props.setProps(props);
+            }
         }
 
     });

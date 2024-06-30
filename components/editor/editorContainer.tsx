@@ -76,15 +76,18 @@ function appendNewTTracers(props: Props, t: Point2d) {
     }
 }
 
-function newPoint(props: Props, bool = true, pos = new Vector3(0, 0, 0)) {
+function newPoint(props: any, bool = true, pos = new Vector3(0, 0, 0)) {
+        
     if (bool) {
         let i = props.ms.length;
         props.ms.push(new Point2d("M", i + 1, 'red', pos, 7));
         appendNewMTracers(props, props.ms[props.ms.length - 1]);
+        props.setMs(props.ms);
     } else {
         let i = props.ts.length;
         props.ts.push(new Point2d("D", i + 1, 'blue', pos, 3.5));
         appendNewTTracers(props, props.ts[props.ts.length - 1]);
+        props.setTs(props.ts);
     }
     props.screenSizes.updateSizes(props);
 }
@@ -143,8 +146,8 @@ function getIntersects(xi: number, yi: number, props: Props) {
     return intersects;
 }
 
-function canvasDropListener(e: any, props: Props) {
-    console.log("dropped", e);
+function canvasDropListener(e: any, props: any) {
+
     e.preventDefault();
     let data = e.dataTransfer.getData("text");
     let xi = e.clientX;
@@ -159,7 +162,7 @@ function canvasDropListener(e: any, props: Props) {
     }
 }
 
-export default function EditorControl(props: Props, canvas2d: React.RefObject<HTMLCanvasElement> | null = null) {
+export default function EditorControl(props: any) {
 
 
     const leftPanel = useContext(LeftPanelContext);
@@ -167,7 +170,6 @@ export default function EditorControl(props: Props, canvas2d: React.RefObject<HT
     // add ref callback to canvas2d 
 
     const [currentClickedValue, setCurrentClickedValue] = useState(-1);
-    const [index, setIndex] = useState(-1);
     const [coords, setCoords] = useState({ x: 0, y: 0 });
 
     leftPanel.clickCallback = (x: number, y: number) => {
@@ -175,13 +177,26 @@ export default function EditorControl(props: Props, canvas2d: React.RefObject<HT
         // two dimensions to 1d array
         const m = y - 2;
         const t = x - 2;
-        const index = m * props.ts.length + t;
+        console.log('clicked on: ', m, t);
         setCoords({ x: x, y: y });
-        if (props.tracers[index]) {
-            setIndex(index);
-            setCurrentClickedValue(props.tracers[index].value);
+        let tracer = props.tracers.find((e: any) => e.m.i === m + 1 && e.t.i === t + 1);
+        if (tracer) {
+            setCurrentClickedValue(tracer.value);
+        } else {
+            setCurrentClickedValue(-1);
         }
     }
+
+    useEffect(() => {
+        console.log('canvas2dRef: ', props.canvas2dRef);
+        if (props.canvas2dRef.current != null) {
+            props.canvas2dRef.current.addEventListener('drop', (e: any) => {
+                console.log('dropped: ', props.ms, props.ts);
+                canvasDropListener(e, props);
+            });
+            props.canvas2dRef.current.addEventListener('dragover', (e: any) => e.preventDefault());
+        }
+    }, [props.canvas2dRef]);
 
     return (
         <div style={{
@@ -195,9 +210,11 @@ export default function EditorControl(props: Props, canvas2d: React.RefObject<HT
             <h2>Data Control</h2>
             <input type="text" placeholder={currentClickedValue === -1 ? "Click on a point to edit" : currentClickedValue.toString()}
                 onChange={(e) => {
+                    let tracer = props.tracers.find((e: any) => e.m.i === coords.y - 1 && e.t.i === coords.x - 1);
+                    console.log('found tracer: ', tracer);
                     // if the value is a number greater than or equal to 0, and less than or equal to 100 update the value of the clicked point
-                    if (index != -1 && typeof parseFloat(e.target.value) === "number" && parseFloat(e.target.value) <= 100 && parseFloat(e.target.value) >= 0) {
-                        props.tracers[index].updateValue(parseFloat(e.target.value));
+                    if (tracer && typeof parseFloat(e.target.value) === "number" && parseFloat(e.target.value) <= 100 && parseFloat(e.target.value) >= 0) {
+                        tracer.updateValue(parseFloat(e.target.value));
                         props.screenSizes.updateSizes(props);
                     }
                 }} />
@@ -260,7 +277,7 @@ export const EditorContainer = () => {
     var webglRef = useRef<HTMLCanvasElement>(null);
     var canvas2dRef = useRef<HTMLCanvasElement>(null);
 
-    const [props, setProps] = useState<Props>({
+    const [props, setProps] = useState<any>({
         sheetState: [leftPanel.spreadsheet],
         bools: [false, false, false, false, false, false, theme === "dark"],
         leftPanel: leftPanel,
@@ -275,6 +292,8 @@ export const EditorContainer = () => {
         window: null,
         screenSizes: screenSizes
     });
+
+    props.canvas2dRef = canvas2dRef;
 
     useEffect(() => {
         setProps({
@@ -302,19 +321,22 @@ export const EditorContainer = () => {
         webglRef = webgl;
     }
 
-    useEffect(() => {
-        if (canvas2dRef.current != null) {
-            canvas2dRef.current.addEventListener('drop', (e: any) => canvasDropListener(e, props));
-            canvas2dRef.current.addEventListener('dragover', (e: any) => e.preventDefault());
-        }
-    }, [props, canvas2dRef]);
+
+    const [myMs, setMyMs] = useState(props.ms);
+    const [myTs, setMyTs] = useState(props.ts);
+
+    props.setMs = setMyMs;
+    props.setTs = setMyTs;
+
+    useEffect(() => { props.setMs(myMs); }, [myMs]);
+    useEffect(() => { props.setTs(myTs); }, [myTs]);
 
 
     return (
         <Sidebar
             firstChild={
                 <div>
-                    <ViewportControl {...{ ...props, childOne: <EditorControl {...props} />, childTwo: <AreaControl {...props} />, canvas2d: canvas2dRef }} />
+                    <ViewportControl {...{ ...props, childOne: <EditorControl {...props} />, childTwo: <AreaControl {...props} />, setTs: setMyTs, setMs: setMyMs }} />
                 </div>
             }
             secondChild={

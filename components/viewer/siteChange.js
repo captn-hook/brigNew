@@ -53,7 +53,7 @@ export function loadSite(targ, props, db) {
 }
 
 export function loadRefAndDoc(ref, doc, props, db) {
-    console.log('loading ref and doc');
+    console.log('loading model and data');
     getBlobe(ref)
         .then((blob) => {
             import('./modelHandler.js').then((module) => {

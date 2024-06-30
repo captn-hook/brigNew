@@ -174,6 +174,7 @@ class Panel {
                 window.location.hash = (this.siteheader + '&X=' + this.cellX + '&Y=' + this.cellY);
 
                 if (this.clickCallback != undefined) {
+                    // index is 1 dim so: x + y * width
                     this.clickCallback(this.cellX, this.cellY)
                 }
             }
