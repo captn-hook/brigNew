@@ -1,4 +1,4 @@
-import { Props, LeftPanelContext, ScreenSizesContext } from "../viewer/Context";
+import { EditorProps, LeftPanelContext, ScreenSizesContext } from "../viewer/Context";
 import { useCallback, useRef, useContext, useState, useEffect } from 'react';
 import { useTheme } from "next-themes";
 import { Sidebar } from "@/components/sidebar";
@@ -15,7 +15,7 @@ import { Tracer2d } from '../viewer/Tracer';
 import { renderer, camera } from "../viewer/viewer";
 import { sceneMeshes } from "../viewer/modelHandler";
 
-export function AreaControl(props: Props) {
+export function AreaControl(props: EditorProps) {
 
     return (
         <div style={{
@@ -39,14 +39,14 @@ export function AreaControl(props: Props) {
     );
 }
 
-function appendNewMTracers(props: Props, m: Point2d) {
+function appendNewMTracers(props: EditorProps, m: Point2d) {
     //ez just append new row
     props.ts.forEach((e) => {
         props.tracers.push(new Tracer2d(m, e, 1));
     })
 }
 
-function appendNewTTracers(props: Props, t: Point2d) {
+function appendNewTTracers(props: EditorProps, t: Point2d) {
     //get rows append one tracer to each row and rejoin
     var temp: Tracer2d[] = [];
     props.ms.forEach((e) => {
@@ -76,7 +76,7 @@ function appendNewTTracers(props: Props, t: Point2d) {
     }
 }
 
-function newPoint(props: any, bool = true, pos = new Vector3(0, 0, 0)) {
+function newPoint(props: EditorProps, bool = true, pos = new Vector3(0, 0, 0)) {
         
     if (bool) {
         let i = props.ms.length;
@@ -92,7 +92,7 @@ function newPoint(props: any, bool = true, pos = new Vector3(0, 0, 0)) {
     props.screenSizes.updateSizes(props);
 }
 
-function deleteTracers(point: Point2d, props: Props) {
+function deleteTracers(point: Point2d, props: EditorProps) {
     // delete all tracers with the given point
     for (let i = props.tracers.length - 1; i >= 0; i--) {
         if (props.tracers[i].m as unknown as Point2d == point || props.tracers[i].t as unknown as Point2d == point) {
@@ -101,7 +101,7 @@ function deleteTracers(point: Point2d, props: Props) {
     }
 }
 
-function propagatePointDelete(bool: boolean, index: number, props: Props) {
+function propagatePointDelete(bool: boolean, index: number, props: EditorProps) {
     // -1 to evey index greater than index and rename
     // index is the real index from zero, name and i are index + 1
     if (bool) {
@@ -119,7 +119,7 @@ function propagatePointDelete(bool: boolean, index: number, props: Props) {
     }
 }
 
-function deleteSelectedPoint(coords: { x: number, y: number }, props: Props) {
+function deleteSelectedPoint(coords: { x: number, y: number }, props: EditorProps) {
     // if a point is selected, delete it, (x or y will be 1, but not both)
     if (coords.x === 1) {
         // delete the row
@@ -137,7 +137,7 @@ function deleteSelectedPoint(coords: { x: number, y: number }, props: Props) {
     props.screenSizes.updateSizes(props);
 }
 
-function getIntersects(xi: number, yi: number, props: Props) {
+function getIntersects(xi: number, yi: number, props: EditorProps) {
     var raycaster = new Raycaster();
     var mouse = new Vector2((xi - props.leftPanel.canvas.innerWidth) / renderer.domElement.clientWidth * 2 - 1, -(yi / renderer.domElement.clientHeight) * 2 + 1);
 
@@ -146,7 +146,7 @@ function getIntersects(xi: number, yi: number, props: Props) {
     return intersects;
 }
 
-function canvasDropListener(e: any, props: any) {
+function canvasDropListener(e: any, props: EditorProps) {
 
     e.preventDefault();
     let data = e.dataTransfer.getData("text");
@@ -162,7 +162,7 @@ function canvasDropListener(e: any, props: any) {
     }
 }
 
-export default function EditorControl(props: any) {
+export default function EditorControl(props: EditorProps) {
 
 
     const leftPanel = useContext(LeftPanelContext);
@@ -177,7 +177,6 @@ export default function EditorControl(props: any) {
         // two dimensions to 1d array
         const m = y - 2;
         const t = x - 2;
-        console.log('clicked on: ', m, t);
         setCoords({ x: x, y: y });
         let tracer = props.tracers.find((e: any) => e.m.i === m + 1 && e.t.i === t + 1);
         if (tracer) {
@@ -186,17 +185,6 @@ export default function EditorControl(props: any) {
             setCurrentClickedValue(-1);
         }
     }
-
-    useEffect(() => {
-        console.log('canvas2dRef: ', props.canvas2dRef);
-        if (props.canvas2dRef.current != null) {
-            props.canvas2dRef.current.addEventListener('drop', (e: any) => {
-                console.log('dropped: ', props.ms, props.ts);
-                canvasDropListener(e, props);
-            });
-            props.canvas2dRef.current.addEventListener('dragover', (e: any) => e.preventDefault());
-        }
-    }, [props.canvas2dRef]);
 
     return (
         <div style={{
@@ -211,7 +199,6 @@ export default function EditorControl(props: any) {
             <input type="text" placeholder={currentClickedValue === -1 ? "Click on a point to edit" : currentClickedValue.toString()}
                 onChange={(e) => {
                     let tracer = props.tracers.find((e: any) => e.m.i === coords.y - 1 && e.t.i === coords.x - 1);
-                    console.log('found tracer: ', tracer);
                     // if the value is a number greater than or equal to 0, and less than or equal to 100 update the value of the clicked point
                     if (tracer && typeof parseFloat(e.target.value) === "number" && parseFloat(e.target.value) <= 100 && parseFloat(e.target.value) >= 0) {
                         tracer.updateValue(parseFloat(e.target.value));
@@ -272,10 +259,6 @@ export const EditorContainer = () => {
     const { theme, setTheme } = useTheme();
     const screenSizes = useContext(ScreenSizesContext);
     const leftPanel = useContext(LeftPanelContext);
-    
-    var div3dRef = useRef<HTMLDivElement>(null);
-    var webglRef = useRef<HTMLCanvasElement>(null);
-    var canvas2dRef = useRef<HTMLCanvasElement>(null);
 
     const [props, setProps] = useState<any>({
         sheetState: [leftPanel.spreadsheet],
@@ -292,8 +275,6 @@ export const EditorContainer = () => {
         window: null,
         screenSizes: screenSizes
     });
-
-    props.canvas2dRef = canvas2dRef;
 
     useEffect(() => {
         setProps({
@@ -312,15 +293,7 @@ export const EditorContainer = () => {
             screenSizes: screenSizes
         });
 
-    }, [theme]);
-
-    // gets the refs out of viewport so everything can use them
-    function refReturner(div3d: any, canvas2d: any, webgl: any) {
-        div3dRef = div3d;
-        canvas2dRef = canvas2d;
-        webglRef = webgl;
-    }
-
+    }, []);
 
     const [myMs, setMyMs] = useState(props.ms);
     const [myTs, setMyTs] = useState(props.ts);
@@ -328,9 +301,10 @@ export const EditorContainer = () => {
     props.setMs = setMyMs;
     props.setTs = setMyTs;
 
-    useEffect(() => { props.setMs(myMs); }, [myMs]);
-    useEffect(() => { props.setTs(myTs); }, [myTs]);
-
+    useEffect(() => {
+        props.ms = myMs;
+        props.ts = myTs;
+    }, [myMs, myTs]);
 
     return (
         <Sidebar
@@ -340,7 +314,7 @@ export const EditorContainer = () => {
                 </div>
             }
             secondChild={
-                <Viewport {...{ ...props, refs: { div3dRef, webglRef, canvas2dRef, refReturner } }} />
+                <Viewport {...{ ...props, canvasDropListener }} />
             }
         />
     );

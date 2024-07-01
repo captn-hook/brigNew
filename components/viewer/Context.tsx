@@ -29,6 +29,25 @@ export interface Props {
     screenSizes: ScreenSizes;
 }
 
+export interface EditorProps {
+    sheetState: string[];
+    bools: boolean[];
+    leftPanel: Panel;
+    ms: Point2d[];
+    ts: Point2d[];
+    tracers: Tracer2d[];
+    areas: Area[];
+    views: string[];
+    insights: string[];
+    site: string;
+    sitelist: string[];
+    window: Window | null;
+    screenSizes: ScreenSizes;
+    canvasDropListener: (e: React.DragEvent<HTMLCanvasElement>, props: EditorProps) => void | undefined;
+    setTs: (ts: Point2d[]) => void;
+    setMs: (ms: Point2d[]) => void;
+}
+
 export const ViewportContainer = () => {
     const { theme, setTheme } = useTheme();
     const screenSizes = useContext(ScreenSizesContext);

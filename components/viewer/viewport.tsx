@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { ButtonGroup } from "@nextui-org/button";
 import { SwitchButton, ThreeStateButton } from "./Button";
-import { Props } from "./Context";
+import { Props, EditorProps } from "./Context";
 import * as Viewer from "./viewer";
 import { Tracer2d } from "./Tracer";
 import { Point2d } from "./Point";
@@ -13,44 +13,17 @@ import { stoplookin, storePos, windowResizeFunc, changeSceneBG } from "./listene
 
 import "./canvas.css";
 
-export const Viewport = (props: any) => {
+export const Viewport = (props: Props | EditorProps) => {
 
-    var div3dRef: any = undefined;
-    var webglRef: any = undefined;
-    var canvas2dRef: any = undefined;
-
-    if (props.refs != null) {
-        if (props.refs.div3dRef != null) {
-            div3dRef = props.refs.div3dRef;
-        } else {
-            div3dRef = useRef<HTMLDivElement>(null);
-        }
-
-        if (props.refs.webglRef != null) {
-            webglRef = props.refs.webglRef;
-        } else {
-            webglRef = useRef<HTMLCanvasElement>(null);
-        }
-
-        if (props.refs.canvas2dRef != null) {
-            canvas2dRef = props.refs.canvas2dRef;
-        } else {
-            canvas2dRef = useRef<HTMLCanvasElement>(null);
-        }
-
-    } else {
-        div3dRef = useRef<HTMLDivElement>(null);
-        webglRef = useRef<HTMLCanvasElement>(null);
-        canvas2dRef = useRef<HTMLCanvasElement>(null);
-    } 
+    var div3dRef = useRef<HTMLDivElement>(null);
+    var webglRef = useRef<HTMLCanvasElement>(null);
+    var canvas2dRef = useRef<HTMLCanvasElement>(null);
+    
 
     useEffect(() => {
         if (props && props.window && div3dRef.current && canvas2dRef.current) {
             props.screenSizes.setViewerRefs(div3dRef.current, canvas2dRef.current, webglRef.current);
             //props.screenSizes.updateSizes();
-            if (props.refs != null && props.refs.refReturner != null) {
-                props.refs.refReturner(div3dRef, webglRef, canvas2dRef);
-            }
             Viewer.open(props);
         }
     }, [props, div3dRef, canvas2dRef, webglRef]);
@@ -85,7 +58,7 @@ export const Viewport = (props: any) => {
 
     return (
         <div id="3d" className="viewport" ref={div3dRef}>
-            <canvas className="webgl" id="threejs" ref={webglRef}></canvas>
+            <canvas className="webgl" id="threejs" ref={webglRef}/>
             <canvas className="tracers" id="2d" ref={canvas2dRef}
                 onContextMenu={(e) => {
                     stoplookin(props);
@@ -101,6 +74,19 @@ export const Viewport = (props: any) => {
                     stoplookin(props);
                     storePos(props);
                 }}
+                onDragStart={(e) => {
+                    // dont
+                    e.preventDefault();
+                }}
+                onDragOver={(e) => {
+                    e.preventDefault();
+                }}
+                onDrop={(e) => {
+                    e.preventDefault();
+                    if ('canvasDropListener' in props) {
+                        props.canvasDropListener(e, props);
+                    }
+                }} 
             />
         </div>
     );
