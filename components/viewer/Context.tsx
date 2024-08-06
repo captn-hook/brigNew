@@ -13,6 +13,19 @@ import { Viewport, ViewportControl } from "@/components/viewer/viewport";
 export const ScreenSizesContext = createContext(new ScreenSizes());
 export const LeftPanelContext = createContext(new Panel());
 
+
+export class EditorData {
+    ms: Point2d[] = [];
+    ts: Point2d[] = [];
+    tracers: Tracer2d[] = [];
+    areas: Area[] = [];
+    views: string[] = [];
+    insights: string[] = [];
+}
+
+export const EditorContext = createContext(new EditorData());
+
+
 export interface Props {
     sheetState: string[];
     bools: boolean[];
@@ -43,9 +56,7 @@ export interface EditorProps {
     sitelist: string[];
     window: Window | null;
     screenSizes: ScreenSizes;
-    canvasDropListener: (e: React.DragEvent<HTMLCanvasElement>, props: EditorProps) => void | undefined;
-    setTs: (ts: Point2d[]) => void;
-    setMs: (ms: Point2d[]) => void;
+    setProps: (props: EditorProps) => void;
 }
 
 export const ViewportContainer = () => {

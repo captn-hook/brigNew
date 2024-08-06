@@ -1,4 +1,4 @@
-import { EditorProps, LeftPanelContext, ScreenSizesContext } from "../viewer/Context";
+import { EditorProps, LeftPanelContext, ScreenSizesContext, EditorContext } from "../viewer/Context";
 import { useCallback, useRef, useContext, useState, useEffect } from 'react';
 import { useTheme } from "next-themes";
 import { Sidebar } from "@/components/sidebar";
@@ -82,12 +82,14 @@ function newPoint(props: EditorProps, bool = true, pos = new Vector3(0, 0, 0)) {
         let i = props.ms.length;
         props.ms.push(new Point2d("M", i + 1, 'red', pos, 7));
         appendNewMTracers(props, props.ms[props.ms.length - 1]);
-        props.setMs(props.ms);
+        console.log("updated ms: ", props);
+        props.setProps(props);
     } else {
         let i = props.ts.length;
         props.ts.push(new Point2d("D", i + 1, 'blue', pos, 3.5));
         appendNewTTracers(props, props.ts[props.ts.length - 1]);
-        props.setTs(props.ts);
+        console.log("updated ts: ", props);
+        props.setProps(props);
     }
     props.screenSizes.updateSizes(props);
 }
@@ -165,14 +167,12 @@ function canvasDropListener(e: any, props: EditorProps) {
 export default function EditorControl(props: EditorProps) {
 
 
-    const leftPanel = useContext(LeftPanelContext);
-
     // add ref callback to canvas2d 
 
     const [currentClickedValue, setCurrentClickedValue] = useState(-1);
     const [coords, setCoords] = useState({ x: 0, y: 0 });
 
-    leftPanel.clickCallback = (x: number, y: number) => {
+    props.leftPanel.clickCallback = (x: number, y: number) => {
         // get the tracer at the clicked position from props.ts and props.ms -> props.tracers[index]
         // two dimensions to 1d array
         const m = y - 2;
@@ -254,29 +254,53 @@ export default function EditorControl(props: EditorProps) {
     );
 }
 
-export const EditorContainer = () => {
+export function EditorContainer() {
 
+    // const { theme, setTheme } = useTheme();
+    // const screenSizes = useContext(ScreenSizesContext);
+    // const leftPanel = useContext(LeftPanelContext);
+
+    // const [props, setProps] = useState<any>({
+    //     sheetState: [leftPanel.spreadsheet],
+    //     bools: [false, false, false, false, false, false, theme === "dark"],
+    //     leftPanel: leftPanel,
+    //     ms: [],
+    //     ts: [],
+    //     tracers: [],
+    //     areas: [],
+    //     views: [],
+    //     insights: [],
+    //     site: "",
+    //     sitelist: [""],
+    //     window: null,
+    //     screenSizes: screenSizes
+    // });
+    
+    
     const { theme, setTheme } = useTheme();
     const screenSizes = useContext(ScreenSizesContext);
     const leftPanel = useContext(LeftPanelContext);
+    const editorData = useContext(EditorContext);
 
-    const [props, setProps] = useState<any>({
+    const [props, setProps] = useState<EditorProps>({
         sheetState: [leftPanel.spreadsheet],
         bools: [false, false, false, false, false, false, theme === "dark"],
         leftPanel: leftPanel,
-        ms: [],
-        ts: [],
-        tracers: [],
-        areas: [],
-        views: [],
-        insights: [],
+        ms: editorData.ms,
+        ts: editorData.ts,
+        tracers: editorData.tracers,
+        areas: editorData.areas,
+        views: editorData.views,
+        insights: editorData.insights,
         site: "",
         sitelist: [""],
         window: null,
-        screenSizes: screenSizes
+        screenSizes: screenSizes,
+        setProps: (props: EditorProps) => setProps(props),
     });
 
     useEffect(() => {
+        console.log("props updated 1: ", props);
         setProps({
             sheetState: [leftPanel.spreadsheet],
             bools: [false, false, false, false, false, false, theme === "dark"],
@@ -290,27 +314,23 @@ export const EditorContainer = () => {
             site: "",
             sitelist: [""],
             window: window,
-            screenSizes: screenSizes
+            screenSizes: screenSizes,
+            setProps: (props: EditorProps) => setProps(props),   
         });
-
+        
     }, []);
 
-    const [myMs, setMyMs] = useState(props.ms);
-    const [myTs, setMyTs] = useState(props.ts);
-
-    props.setMs = setMyMs;
-    props.setTs = setMyTs;
-
     useEffect(() => {
-        props.ms = myMs;
-        props.ts = myTs;
-    }, [myMs, myTs]);
+        console.log("props updated: ", props);
+    }, [props]);
+
+
 
     return (
         <Sidebar
             firstChild={
                 <div>
-                    <ViewportControl {...{ ...props, childOne: <EditorControl {...props} />, childTwo: <AreaControl {...props} />, setTs: setMyTs, setMs: setMyMs }} />
+                    <ViewportControl {...{ ...props, childOne: <EditorControl {...props} />, childTwo: <AreaControl {...props} /> }} />
                 </div>
             }
             secondChild={
