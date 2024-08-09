@@ -36,11 +36,11 @@ export const Viewport = (props: Props | EditorProps) => {
     }, [props.window]);
 
     useEffect(() => {
-        // window.addEventListener('hashchange', (e) => {
-        //     if (props.window != null && props.leftPanel.dropd != null) {
-        //         interpHash(props);
-        //     }
-        // });
+        window.addEventListener('hashchange', (e) => {
+            if (props.window != null && props.leftPanel.dropd != null) {
+                interpHash(props);
+            }
+        });
         
         if (props.window != null && props.leftPanel.dropd != null) {
             interpHash(props);
@@ -71,10 +71,14 @@ export const Viewport = (props: Props | EditorProps) => {
                 }}
                 onClick={(e) => {
                     stoplookin(props);
-                    storePos(props);
+                    //storePos(props);
+                    if ('canvasClickListener' in props) {
+                        props.canvasClickListener(e, props); // idc abt this yodam ts error
+                    }
                 }}
                 onDragStart={(e) => {
                     // dont
+                    stoplookin(props);
                     e.preventDefault();
                 }}
                 onDragOver={(e) => {
@@ -241,13 +245,16 @@ export function ViewportControl(props: any) {
                             //free = controls.enabled = true, camFree = false
                             if (Viewer.controls.enabled && props.leftPanel.camFree) {
                                 // combo -> locked
+                                //console.log("combo -> locked");
                                 Viewer.controls.enabled = false;
                                 props.leftPanel.camFree = true;
                             } else if (!Viewer.controls.enabled && props.leftPanel.camFree) {
                                 // locked -> free
+                                //console.log("locked -> free");
                                 Viewer.controls.enabled = true;
                                 props.leftPanel.camFree = false;
                             } else {
+                                //console.log("combo -> free");
                                 // free -> combo
                                 Viewer.controls.enabled = true;
                                 props.leftPanel.camFree = true;

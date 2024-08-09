@@ -52,8 +52,6 @@ export const camera = new PerspectiveCamera(75, 1 / 1, 1, 500);
 export var scene;
 export var controls;
 
-export var stupid = null;
-
 export function open(props) {
     //prop bools
     let pb = {
@@ -100,8 +98,18 @@ export function open(props) {
     const canvas3d = props.screenSizes.webgl;
     const canvas2d = props.screenSizes.canvas2d; //tracers
 
-    controls = null;
+    //console.log('gorbit controls', controls);
     controls = new OrbitControls(camera, canvas2d);
+    controls.enableDamping = true;
+    // cam settings
+    controls.screenSpacePanning = true;
+    controls.enablePan = true;
+    controls.minDistance = 1;
+    controls.maxDistance = 100;
+    controls.maxPolarAngle = Math.PI / 2;
+    controls.minTargetDistance = 1;
+    controls.maxTargetDistance = 100;
+
 
     renderer = new WebGLRenderer({
         canvas: canvas3d
@@ -133,28 +141,34 @@ export function open(props) {
     }
 
     windowResizeFunc(props);
-    interpHash(props);
+    //interpHash(props);
 
     const tick = () => {
 
         const elapsedTime = clock.getElapsedTime();
         if (props.leftPanel) {
-            if (props.leftPanel.looking || props.leftPanel.state == state[1]) {
+            if ((camera.position.distanceTo(cameraTargPos) < .05 && controls.target.distanceTo(cameraTargView) < .05) && (props.leftPanel.looking || props.leftPanel.state == state[0])) {
+                //console.log('looking', props.leftPanel.looking, 'state', props.leftPanel.state);
                 updateCam(props);
             }
 
 
             //if camera.position isnt cameraTargPos, move camera towards point
             if (props.leftPanel.looking && camera.position.distanceTo(cameraTargPos) > .05) {
+               // console.log('looking', props.leftPanel.looking, 'distance', camera.position.distanceTo(cameraTargPos));
                 camera.position.lerp(cameraTargPos, .03)
             } else if (props.leftPanel.looking && controls && controls.target.distanceTo(cameraTargView) < .05) {
+                //console.log('looking', props.leftPanel.looking, 'distance', controls.target.distanceTo(cameraTargView));
                 props.leftPanel.looking = false;
             }
 
             //if controls.target isnt cameraTargView, turn camera towards point
             if (props.leftPanel.looking && controls && controls.target.distanceTo(cameraTargView) > .05) {
+                //console.log('looking', props.leftPanel.looking, 'distance', controls.target.distanceTo(cameraTargView));
                 controls.target.lerp(cameraTargView, .03)
+                controls.cursor.lerp(cameraTargView, .03)
             } else if (props.leftPanel.looking && camera.position.distanceTo(cameraTargPos) < .05) {
+                //console.log('looking', props.leftPanel.looking, 'distance', camera.position.distanceTo(cameraTargPos));
                 props.leftPanel.looking = false;
             }
         }
@@ -162,7 +176,7 @@ export function open(props) {
 
         if (controls) {
             controls.update();
-        }
+        } 
         // Render
         renderer.render(scene, camera);
 

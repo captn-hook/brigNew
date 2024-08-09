@@ -6,6 +6,9 @@ import { Panel } from './Panel';
 import { Point2d } from "./Point";
 import { Tracer2d } from "./Tracer";
 import { Area } from "./Area";
+import {
+    Vector3,
+} from 'three';
 
 import { Sidebar } from "@/components/sidebar";
 import { Viewport, ViewportControl } from "@/components/viewer/viewport";
@@ -62,6 +65,10 @@ export interface EditorProps {
     canvasDropListener: (e: React.DragEvent<HTMLCanvasElement>, props: EditorProps) => void;
     loading: boolean;
     setLoading: (loading: boolean) => void;
+    moveMode: boolean;
+    setMoveMode: (moveMode: boolean) => void;
+    clickedLocation: Vector3 | null;
+    setClickedLocation: (clickedLocation: Vector3) => void;
 }
 
 export const ViewportContainer = () => {

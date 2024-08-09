@@ -82,13 +82,11 @@ function newPoint(props: EditorProps, bool = true, pos = new Vector3(0, 0, 0)) {
         let i = props.ms.length;
         props.ms.push(new Point2d("M", i + 1, 'red', pos, 7));
         appendNewMTracers(props, props.ms[props.ms.length - 1]);
-        console.log("updated ms: ", props);
         props.setProps(props);
     } else {
         let i = props.ts.length;
         props.ts.push(new Point2d("D", i + 1, 'blue', pos, 3.5));
         appendNewTTracers(props, props.ts[props.ts.length - 1]);
-        console.log("updated ts: ", props);
         props.setProps(props);
     }
     props.screenSizes.updateSizes(props);
@@ -164,6 +162,22 @@ function canvasDropListener(e: any, props: EditorProps) {
     }
 }
 
+function movePoint(coords: { x: number, y: number }, props: EditorProps) {
+    // on click, if editState is true and valid selected point, update location of selected point
+    
+    let xi = coords.x;
+    let yi = coords.y;
+    let intersects = getIntersects(xi, yi, props);
+    if (intersects.length > 0) {
+        if (coords.x === 1) {
+            props.ms[coords.y - 2].pos = new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y);
+        } else if (coords.y === 1) {
+            props.ts[coords.x - 2].pos = new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y);
+        }
+    }
+}
+
+
 export default function EditorControl(props: EditorProps) {
 
 
@@ -196,7 +210,7 @@ export default function EditorControl(props: EditorProps) {
             gap: '1rem'
         }}>
             <h2>Data Control</h2>
-            <input type="text" placeholder={currentClickedValue === -1 ? "Click on a point to edit" : currentClickedValue.toString()}
+            <input type="text" placeholder={currentClickedValue === -1 ? "Click on a value to edit" : currentClickedValue.toString()}
                 onChange={(e) => {
                     let tracer = props.tracers.find((e: any) => e.m.i === coords.y - 1 && e.t.i === coords.x - 1);
                     // if the value is a number greater than or equal to 0, and less than or equal to 100 update the value of the clicked point
@@ -205,6 +219,11 @@ export default function EditorControl(props: EditorProps) {
                         props.screenSizes.updateSizes(props);
                     }
                 }} />
+
+            <ButtonGroup aria-label="Move Mode">
+                <Button onClick={() => props.setMoveMode(!props.moveMode)}>{props.moveMode ? "Move Mode On" : "Move Mode: Off"}</Button>
+            </ButtonGroup>
+
             <ButtonGroup aria-label="Data Control">
                 <Button onClick={() => newPoint(props, true)}>New Row</Button>
                 <Button onClick={() => newPoint(props, false)}>New Column</Button>
@@ -283,6 +302,11 @@ export function EditorContainer() {
     const leftPanel = useContext(LeftPanelContext);
     const editorData = useContext(EditorContext);
 
+    
+
+    const [moveMode, setMoveMode] = useState(false);
+    const [clickedLocation, setClickedLocation] = useState(new Vector3(0, 0, 0));
+
     const [props, setProps] = useState<EditorProps>({
         sheetState: [leftPanel.spreadsheet],
         bools: [false, false, false, false, false, false, theme === "dark"],
@@ -300,9 +324,13 @@ export function EditorContainer() {
         setProps: (props: EditorProps) => setProps(props),
         loading: loading,
         setLoading: setLoading,
-        canvasDropListener: canvasDropListener
+        canvasDropListener: canvasDropListener,
+        moveMode: moveMode,
+        setMoveMode: setMoveMode,
+        clickedLocation: clickedLocation,
+        setClickedLocation: setClickedLocation
     });
-
+    
     useEffect(() => {
         setProps({
             sheetState: [leftPanel.spreadsheet],
@@ -321,11 +349,19 @@ export function EditorContainer() {
             setProps: (props: EditorProps) => setProps(props),
             loading: loading,
             setLoading: setLoading,
-            canvasDropListener: canvasDropListener
+            canvasDropListener: canvasDropListener,
+            moveMode: moveMode,
+            setMoveMode: setMoveMode,
+            clickedLocation: clickedLocation,
+            setClickedLocation: setClickedLocation
         });
 
     }, []);
 
+    useEffect(() => {
+        console.log("clicked location", clickedLocation);
+    }, [clickedLocation]);
+    
     return (
         <Sidebar
             firstChild={
@@ -336,7 +372,14 @@ export function EditorContainer() {
             secondChild={
                 <div>
                     {loading ? <div className="loading">Loading...</div> : null}
-                    <Viewport {...{ ...props, canvasDropListener }} />
+                    <Viewport {...{ ...props, canvasDropListener, canvasClickListener: (e: any) => { 
+                        if (moveMode) {
+                            let i = getIntersects(e.clientX, e.clientY, props);
+                            if (i.length > 0) {
+                                setClickedLocation(i[0].point);
+                            } 
+                        } 
+                    } }} />
                 </div>
             }
         />

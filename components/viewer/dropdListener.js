@@ -34,7 +34,7 @@ export default function dropdListener(event, props) {
         //console.log("TARG", targ);
 
         if (targ != defaultDropd) {
-
+            props.window.location.hash = targ + '&';
             loadSite(targ, props, db);
 
             var modelRef = '/Sites/' + targ + '/' + targ + '.glb';
