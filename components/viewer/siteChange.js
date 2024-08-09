@@ -53,33 +53,24 @@ export function loadSite(targ, props, db) {
 }
 
 export function loadRefAndDoc(ref, doc, props, db) {
-    console.log('loading model and data');
     getBlobe(ref)
         .then((blob) => {
             import('./modelHandler.js').then((module) => {
-                console.log('model transfered, loading...');
-                module.handleModels(blob, scene);
+                module.handleModels(blob, scene, props.setLoading);
             })
         })
         .catch((err) => {
-            console.error('transfer error...');
             console.error(err);
         })
 
     RemoteData(db, doc).then((data) => {
-        console.log('data transfered, loading...');
 
         refillAll(props, data);
-
-        if (stupid != null) {
-            props.leftPanel.gi = stupid;
-            stupid = null;
-        }
 
         props.screenSizes.updateSizes(props);
 
     }).catch((err) => {
-        //console.error(err);
+        console.error(err);
     })
 
 
@@ -90,8 +81,7 @@ export function loadRefs(ref1, ref2, props) {
     getBlobe(ref1)
         .then((blob) => {
             import('./modelHandler.js').then((module) => {
-                console.log('model transfered, loading...');
-                module.handleModels(blob, scene);
+                module.handleModels(blob, scene, props.setLoading);
             })
 
         })
@@ -124,7 +114,6 @@ export function handleFiles(input, props) {
     read.readAsBinaryString(input);
 
     read.onloadend = function () {
-        console.log('loaded');
         
         refillAll(props, Data(read.result));
 

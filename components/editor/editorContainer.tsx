@@ -77,7 +77,7 @@ function appendNewTTracers(props: EditorProps, t: Point2d) {
 }
 
 function newPoint(props: EditorProps, bool = true, pos = new Vector3(0, 0, 0)) {
-        
+
     if (bool) {
         let i = props.ms.length;
         props.ms.push(new Point2d("M", i + 1, 'red', pos, 7));
@@ -212,7 +212,7 @@ export default function EditorControl(props: EditorProps) {
 
             <ButtonGroup aria-label="Point Control">
                 <Image src="/m.svg" width={40} height={40} draggable={true}
-                    style={{ 
+                    style={{
                         cursor: 'pointer',
                         marginRight: '1rem'
                     }}
@@ -227,7 +227,7 @@ export default function EditorControl(props: EditorProps) {
                     }}
                     alt="M" />
                 <Image src="/d.svg" width={40} height={40} draggable={true}
-                    style={{ 
+                    style={{
                         cursor: 'pointer',
                         marginLeft: '1rem'
                     }}
@@ -275,9 +275,10 @@ export function EditorContainer() {
     //     window: null,
     //     screenSizes: screenSizes
     // });
-    
-    
+
+
     const { theme, setTheme } = useTheme();
+    const [loading, setLoading] = useState(true);
     const screenSizes = useContext(ScreenSizesContext);
     const leftPanel = useContext(LeftPanelContext);
     const editorData = useContext(EditorContext);
@@ -297,10 +298,12 @@ export function EditorContainer() {
         window: null,
         screenSizes: screenSizes,
         setProps: (props: EditorProps) => setProps(props),
+        loading: loading,
+        setLoading: setLoading,
+        canvasDropListener: canvasDropListener
     });
 
     useEffect(() => {
-        console.log("props updated 1: ", props);
         setProps({
             sheetState: [leftPanel.spreadsheet],
             bools: [false, false, false, false, false, false, theme === "dark"],
@@ -315,16 +318,13 @@ export function EditorContainer() {
             sitelist: [""],
             window: window,
             screenSizes: screenSizes,
-            setProps: (props: EditorProps) => setProps(props),   
+            setProps: (props: EditorProps) => setProps(props),
+            loading: loading,
+            setLoading: setLoading,
+            canvasDropListener: canvasDropListener
         });
-        
+
     }, []);
-
-    useEffect(() => {
-        console.log("props updated: ", props);
-    }, [props]);
-
-
 
     return (
         <Sidebar
@@ -334,7 +334,10 @@ export function EditorContainer() {
                 </div>
             }
             secondChild={
-                <Viewport {...{ ...props, canvasDropListener }} />
+                <div>
+                    {loading ? <div className="loading">Loading...</div> : null}
+                    <Viewport {...{ ...props, canvasDropListener }} />
+                </div>
             }
         />
     );

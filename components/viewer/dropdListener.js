@@ -12,6 +12,7 @@ import {
 } from './Data';
 
 export default function dropdListener(event, props) {
+    props.setLoading(true);
     let lists = [props.ms, props.ts, props.tracers, props.insights, props.views]
     lists.forEach((list) => {
         for (let i = list.length - 1; i >= 0; i--) {

@@ -40,6 +40,8 @@ export interface Props {
     sitelist: string[];
     window: Window | null;
     screenSizes: ScreenSizes;
+    loading: boolean;
+    setLoading: (loading: boolean) => void;
 }
 
 export interface EditorProps {
@@ -57,14 +59,18 @@ export interface EditorProps {
     window: Window | null;
     screenSizes: ScreenSizes;
     setProps: (props: EditorProps) => void;
+    canvasDropListener: (e: React.DragEvent<HTMLCanvasElement>, props: EditorProps) => void;
+    loading: boolean;
+    setLoading: (loading: boolean) => void;
 }
 
 export const ViewportContainer = () => {
     const { theme, setTheme } = useTheme();
+    const [loading, setLoading] = useState(true);
     const screenSizes = useContext(ScreenSizesContext);
     const leftPanel = useContext(LeftPanelContext);
 
-    const [props, setProps] = useState < Props > ({
+    const [props, setProps] = useState<Props>({
         sheetState: [leftPanel.spreadsheet],
         bools: [false, false, false, false, false, false, theme === "dark"],
         leftPanel: leftPanel,
@@ -77,7 +83,9 @@ export const ViewportContainer = () => {
         site: "",
         sitelist: [""],
         window: null,
-        screenSizes: screenSizes
+        screenSizes: screenSizes,
+        loading: loading,
+        setLoading: setLoading
     });
 
     useEffect(() => {
@@ -94,11 +102,12 @@ export const ViewportContainer = () => {
             site: "",
             sitelist: [""],
             window: window,
-            screenSizes: screenSizes
+            screenSizes: screenSizes,
+            loading: loading,
+            setLoading: setLoading
         });
-        
-    }, [theme]);
 
+    }, [theme]);
     return (
         <Sidebar
             firstChild={
@@ -107,7 +116,10 @@ export const ViewportContainer = () => {
                 </div>
             }
             secondChild={
-                <Viewport {...props} />
+                <div>
+                    {loading ? <div className="loading">Loading...</div> : null}
+                    <Viewport {...props} />
+                </div >
             }
         />
     );

@@ -28,7 +28,7 @@ function emptyS(scene) {
     }
 }
 
-export function handleModels(input, scene) {
+export function handleModels(input, scene, setLoading) {
     //remove old stuff first
     emptyS(scene);
     // if (globalObj != null) {
@@ -46,14 +46,16 @@ export function handleModels(input, scene) {
 
         getDRACOLoader().then((loader) => {
 
-            loader.parse(read.result, '', onLoadWrapper(scene), onErrorLog, onProgressLog);
-
+            loader.parse(read.result, '', onLoadWrapper(scene, setLoading), onErrorLog, (e) => {
+                console.log('loading ???', e);
+            });
+            setLoading(false);
         })
 
     }
 }
 
-export function exHandleModels(input, scene) {
+export function exHandleModels(input, scene, setLoading) {
     //remove old stuff first
     emptyS(scene);
 
@@ -64,14 +66,15 @@ export function exHandleModels(input, scene) {
     read.onloadend = function () {
 
         getDRACOLoader().then((loader) => {
-            loader.parse(read.result, '', onLoadWrapper(scene), onErrorLog, onProgressLog);
-
+            loader.parse(read.result, '', onLoadWrapper(scene, setLoading), onErrorLog, (e) => {
+                console.log('loading ???', e);
+            });
         })
 
     }
 }
 
-export function obHandleModels(input, inmat, texs, scene) {
+export function obHandleModels(input, inmat, texs, scene, setLoading) {
     emptyS(scene);
 
     var read = new FileReader();
@@ -87,12 +90,11 @@ export function obHandleModels(input, inmat, texs, scene) {
             var tex = [];
             for (let i = 0; i < texs.length; i++) {
                 var iread = new FileReader();
-                console.log('reading texture: ', texs[i]);
                 iread.readAsDataURL(texs[i]);
                 iread.onloadend = function () {
                     tex.push(iread.result);
                     if (tex.length == texs.length) {
-                        mid(obj, mat, tex, scene);
+                        mid(obj, mat, tex, scene, setLoading);
                     }
                 }
             }
@@ -100,7 +102,7 @@ export function obHandleModels(input, inmat, texs, scene) {
     }
 }
 
-function mid(obj, mat, texs, scene) {
+function mid(obj, mat, texs, scene, setLoading) {
     //now we have all the files
 
     getOBJLoaders().then((loaders) => {
@@ -108,46 +110,40 @@ function mid(obj, mat, texs, scene) {
         const objLoader = new loaders[1]();
         //load the textures
         var textures = [];
-        console.log('loading ', texs.length, ' textures');
         for (let i = 0; i < texs.length; i++) {
             const textureLoader = new TextureLoader();
             textureLoader.load(texs[i], (tex) => {
                 textures.push(tex);
-                console.log('loaded texture ', texs[i]);
                 if (textures.length == texs.length) {
-                    console.log('finished loading textures');
-                    finish(mtlLoader, objLoader, scene, mat, obj, textures);
+                    finish(mtlLoader, objLoader, scene, mat, obj, textures, setLoading);
                 }
             }, onProgressLog, onErrorLog);
         }
     });
 }
 
-function finish(mtlLoader, objLoader, scene, mat, obj, textures) {
+function finish(mtlLoader, objLoader, scene, mat, obj, textures, setLoading) {
     //set the textures
     //mtlLoader.setResourcePath(textures[0].image.src);
     var mtl = mtlLoader.parse(mat);
     //mtlLoader.load(mat, (mtl) => {
     //deep copy the mtl for logging
     //var newmtl = JSON.parse(JSON.stringify(mtl));
-    
+
     mtl.preload();
     var newmtl = JSON.parse(JSON.stringify(mtl));
-    console.log('mtl: ', newmtl);
-    console.log('textures: ', textures);
-    console.log('ad: ', mtl.materials);
     //for all keys in mtl.materials
     for (let i = 0; i < Object.keys(mtl.materials).length; i++) {
         //print i.map
         console.log('i: ', i, ' map: ', mtl.materials[Object.keys(mtl.materials)[i]].map);
         mtl.materials[Object.keys(mtl.materials)[i]].map = textures[i];
-    }   
+    }
     objLoader.setMaterials(mtl);
-    objLoader.load(obj, onLoadWrapper(scene, true), onProgressLog, onErrorLog);
+    objLoader.load(obj, onLoadWrapper(scene, setLoading, true), onProgressLog, onErrorLog);
     //});
 }
 
-function onLoadWrapper(scene, isObj = false) {
+function onLoadWrapper(scene, setLoading, isObj = false) {
 
     // onLoad callback
     function onLoadLoad(obj) {
@@ -161,6 +157,7 @@ function onLoadWrapper(scene, isObj = false) {
         })
 
         scene.add(obj.scene);
+        setLoading(false);
         //globalObj = scene.children[scene.children.length - 1];
     }
 
@@ -169,6 +166,7 @@ function onLoadWrapper(scene, isObj = false) {
         obj.children.forEach((e) => {
             scene.add(e);
         })
+        setLoading(false);
         //globalObj = scene.children[scene.children.length - 1];
     }
 

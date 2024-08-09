@@ -18,7 +18,6 @@ export const Viewport = (props: Props | EditorProps) => {
     var div3dRef = useRef<HTMLDivElement>(null);
     var webglRef = useRef<HTMLCanvasElement>(null);
     var canvas2dRef = useRef<HTMLCanvasElement>(null);
-    
 
     useEffect(() => {
         if (props && props.window && div3dRef.current && canvas2dRef.current) {
@@ -37,11 +36,11 @@ export const Viewport = (props: Props | EditorProps) => {
     }, [props.window]);
 
     useEffect(() => {
-        window.addEventListener('hashchange', (e) => {
-            if (props.window != null && props.leftPanel.dropd != null) {
-                interpHash(props);
-            }
-        });
+        // window.addEventListener('hashchange', (e) => {
+        //     if (props.window != null && props.leftPanel.dropd != null) {
+        //         interpHash(props);
+        //     }
+        // });
         
         if (props.window != null && props.leftPanel.dropd != null) {
             interpHash(props);
@@ -84,7 +83,7 @@ export const Viewport = (props: Props | EditorProps) => {
                 onDrop={(e) => {
                     e.preventDefault();
                     if ('canvasDropListener' in props) {
-                        props.canvasDropListener(e, props);
+                        props.canvasDropListener(e, props); // idc abt this yodam ts error
                     }
                 }} 
             />
