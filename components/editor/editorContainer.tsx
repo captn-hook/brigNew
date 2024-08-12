@@ -42,7 +42,7 @@ export function AreaControl(props: EditorProps) {
 function appendNewMTracers(props: EditorProps, m: Point2d) {
     //ez just append new row
     props.ts.forEach((e) => {
-        props.tracers.push(new Tracer2d(m, e, 1));
+        props.tracers.push(new Tracer2d(m, e, .1));
     })
 }
 
@@ -50,7 +50,7 @@ function appendNewTTracers(props: EditorProps, t: Point2d) {
     //get rows append one tracer to each row and rejoin
     var temp: Tracer2d[] = [];
     props.ms.forEach((e) => {
-        temp.push(new Tracer2d(e, t, 1));
+        temp.push(new Tracer2d(e, t, .1));
     })
     var temp2 = [];
     //slice tracers into rows

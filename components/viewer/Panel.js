@@ -1,3 +1,5 @@
+import { updateCam } from "./updateCam";
+
 class Panel {
     constructor() {
         this.state = {

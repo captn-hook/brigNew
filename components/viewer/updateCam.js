@@ -11,6 +11,7 @@ export function setTargPos(vec) {
 
 export function updateCam(props) {
 
+
     //console.log(props.leftPanel.camFree, props.leftPanel.looking, props.leftPanel.spreadsheet, props.leftPanel.n, props.leftPanel.gi)
 
     if (props.leftPanel.camFree && props.leftPanel.spreadsheet == state[0]) {
@@ -18,12 +19,14 @@ export function updateCam(props) {
             //fail quietly if cannot set camera
             if (props.leftPanel.mt == 0) {
 
+                //console.log('failed to set camera');
+
             } else if (props.leftPanel.mt == 2) {
                 //if y (row) == 1, ts
 
                 cameraTargPos = new Vector3(parseFloat(props.ts[props.leftPanel.n].pos.x) + 14, parseFloat(props.ts[props.leftPanel.n].pos.z) + 30, parseFloat(props.ts[props.leftPanel.n].pos.y) + 8);
                 cameraTargView = new Vector3(parseFloat(props.ts[props.leftPanel.n].pos.x), parseFloat(props.ts[props.leftPanel.n].pos.z), parseFloat(props.ts[props.leftPanel.n].pos.y));
-
+                //console.log('set camera to t ' + props.leftPanel.n)
                 //throws errors if it trys to select row before/after last
             } else if (props.leftPanel.mt == 1) {
                 //if x (column) == 1, ms
@@ -33,11 +36,11 @@ export function updateCam(props) {
                     cameraTargPos = new Vector3(parseFloat(views[props.leftPanel.n + 1][0]), parseFloat(views[props.leftPanel.n + 1][1]), parseFloat(views[props.leftPanel.n + 1][2]));
                 } else {
 
-                    cameraTargPos = new Vector3(parseFloat(props.ms[props.leftPanel.n].pos.x) + 14, parseFloat(props.ms[props.leftPanel.n].pos.z) + 30, parseFloat(props.ms[props.leftPanel.n].pos.y) + 8);
+                    cameraTargPos = new Vector3(parseFloat(props.ms[props.leftPanel.n].pos.x) + 7, parseFloat(props.ms[props.leftPanel.n].pos.z) + 15, parseFloat(props.ms[props.leftPanel.n].pos.y) + 5);
 
                 }
                 cameraTargView = new Vector3(parseFloat(props.ms[props.leftPanel.n].pos.x), parseFloat(props.ms[props.leftPanel.n].pos.z), parseFloat(props.ms[props.leftPanel.n].pos.y));
-
+                //console.log('set camera to m ' + props.leftPanel.n)
                 //insights
                 // if (props.leftPanel.spreadsheet) {
                 //     textbox.value = (insights[props.leftPanel.n + 2] == null) ? '' : decodeURI(insights[props.leftPanel.n + 2]).replaceAll('~', ',');
@@ -57,7 +60,10 @@ export function updateCam(props) {
                 // }
 
 
+            } else {
+                //console.log('failed to set camera 2');
             }
+
         } catch (e) {
             //console.log(e)
         }
@@ -69,9 +75,12 @@ export function updateCam(props) {
             var i = 0;
         }
         try {
-            cameraTargPos = new Vector3(props.leftPanel.groups[i]['pos'][0] + 5, props.leftPanel.groups[i]['pos'][2] + 10, props.leftPanel.groups[i]['pos'][1] + 3);
+            cameraTargPos = new Vector3(props.leftPanel.groups[i]['pos'][0] + 2, props.leftPanel.groups[i]['pos'][2] + 5, props.leftPanel.groups[i]['pos'][1] + 1);
             cameraTargView = new Vector3(props.leftPanel.groups[i]['pos'][0], props.leftPanel.groups[i]['pos'][2], props.leftPanel.groups[i]['pos'][1]);
-        } catch (e) { }
+            //console.log('set camera to g ' + i)
+        } catch (e) { 
+            //console.log(e)
+        }
 
         //console.log(cameraTargPos, cameraTargView)
 
@@ -83,8 +92,11 @@ export function updateCam(props) {
             var i = 0;
         }
         try {
-            cameraTargPos = new Vector3(props.leftPanel.areas[i].avgPos()[0] + 5, props.leftPanel.areas[i].avgPos()[2] + 10, props.leftPanel.areas[i].avgPos()[1] + 3);
+            cameraTargPos = new Vector3(props.leftPanel.areas[i].avgPos()[0] + 2, props.leftPanel.areas[i].avgPos()[2] + 5, props.leftPanel.areas[i].avgPos()[1] + 1);
             cameraTargView = new Vector3(props.leftPanel.areas[i].avgPos()[0], props.leftPanel.areas[i].avgPos()[2], props.leftPanel.areas[i].avgPos()[1]);
-        } catch (e) { }
+            //console.log('set camera to a ' + i)
+        } catch (e) {
+            //console.log(e)
+        }
     }
 }

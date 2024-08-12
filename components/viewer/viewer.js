@@ -8,9 +8,7 @@ import {
     Clock
 } from 'three';
 
-import {
-    OrbitControls
-} from 'three/examples/jsm/controls/OrbitControls.js';
+import { OrbitControls } from 'three-stdlib'
 
 import {
     Area
@@ -50,7 +48,16 @@ export var renderer; //seperate the renderer from the data  and data display
 export const camera = new PerspectiveCamera(75, 1 / 1, 1, 500);
 
 export var scene;
-export var controls;
+export var controls = new OrbitControls(camera, undefined);
+controls.enableDamping = true;
+// cam settings
+controls.screenSpacePanning = true;
+controls.enablePan = true;
+controls.minDistance = 1;
+controls.maxDistance = 100;
+controls.maxPolarAngle = Math.PI / 2;
+controls.minTargetDistance = 1;
+controls.maxTargetDistance = 100;
 
 export function open(props) {
     //prop bools
@@ -97,18 +104,8 @@ export function open(props) {
     // FLAG ++++++++++++++++++++++++++ FLAG ++++++++++++++++++++++++++ FLAG +++++++++++++++++++++++++ FLAG +++++++++++++++++
     const canvas3d = props.screenSizes.webgl;
     const canvas2d = props.screenSizes.canvas2d; //tracers
+    controls.connect(canvas2d);
 
-    //console.log('gorbit controls', controls);
-    controls = new OrbitControls(camera, canvas2d);
-    controls.enableDamping = true;
-    // cam settings
-    controls.screenSpacePanning = true;
-    controls.enablePan = true;
-    controls.minDistance = 1;
-    controls.maxDistance = 100;
-    controls.maxPolarAngle = Math.PI / 2;
-    controls.minTargetDistance = 1;
-    controls.maxTargetDistance = 100;
 
 
     renderer = new WebGLRenderer({
@@ -166,7 +163,8 @@ export function open(props) {
             if (props.leftPanel.looking && controls && controls.target.distanceTo(cameraTargView) > .05) {
                 //console.log('looking', props.leftPanel.looking, 'distance', controls.target.distanceTo(cameraTargView));
                 controls.target.lerp(cameraTargView, .03)
-                controls.cursor.lerp(cameraTargView, .03)
+                //console.log('enabled?', controls.enabled, enab);
+                //controls.cursor.lerp(cameraTargView, .03)
             } else if (props.leftPanel.looking && camera.position.distanceTo(cameraTargPos) < .05) {
                 //console.log('looking', props.leftPanel.looking, 'distance', camera.position.distanceTo(cameraTargPos));
                 props.leftPanel.looking = false;
