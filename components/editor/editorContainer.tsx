@@ -1,5 +1,5 @@
 import { EditorProps, LeftPanelContext, ScreenSizesContext, EditorContext } from "../viewer/Context";
-import { useCallback, useRef, useContext, useState, useEffect } from 'react';
+import { useCallback, useRef, useContext, useState, useEffect, use } from 'react';
 import { useTheme } from "next-themes";
 import { Sidebar } from "@/components/sidebar";
 import { Viewport, ViewportControl } from "@/components/viewer/viewport";
@@ -14,6 +14,9 @@ import { Point2d } from '../viewer/Point';
 import { Tracer2d } from '../viewer/Tracer';
 import { renderer, camera } from "../viewer/viewer";
 import { sceneMeshes } from "../viewer/modelHandler";
+import { saveArea, sendFile, saveFile } from "../viewer/Data";
+import { db } from "../auth";
+import { storePos } from "../viewer/listeners";
 
 export function AreaControl(props: EditorProps) {
 
@@ -32,7 +35,7 @@ export function AreaControl(props: EditorProps) {
                 <Button onClick={() => console.log("delete area")}>Delete Area</Button>
             </ButtonGroup>
             <ButtonGroup aria-label="Save">
-                <Button onClick={() => console.log("save")}>Save</Button>
+                <Button onClick={() => saveArea(props)}>Save</Button>
             </ButtonGroup>
         </div>
 
@@ -40,6 +43,7 @@ export function AreaControl(props: EditorProps) {
 }
 
 function appendNewMTracers(props: EditorProps, m: Point2d) {
+    storePos(props);
     //ez just append new row
     props.ts.forEach((e) => {
         props.tracers.push(new Tracer2d(m, e, .1));
@@ -162,20 +166,6 @@ function canvasDropListener(e: any, props: EditorProps) {
     }
 }
 
-function movePoint(coords: { x: number, y: number }, props: EditorProps) {
-    // on click, if editState is true and valid selected point, update location of selected point
-    
-    let xi = coords.x;
-    let yi = coords.y;
-    let intersects = getIntersects(xi, yi, props);
-    if (intersects.length > 0) {
-        if (coords.x === 1) {
-            props.ms[coords.y - 2].pos = new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y);
-        } else if (coords.y === 1) {
-            props.ts[coords.x - 2].pos = new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y);
-        }
-    }
-}
 
 
 export default function EditorControl(props: EditorProps) {
@@ -267,7 +257,8 @@ export default function EditorControl(props: EditorProps) {
             </ButtonGroup>
 
             <ButtonGroup aria-label="Save">
-                <Button onClick={() => console.log("save")}>Save</Button>
+                <Button onClick={() => sendFile(props, db, props.leftPanel.siteheader)}>Save</Button>
+                <Button onClick={() => saveFile(props)}>Download</Button>
             </ButtonGroup>
         </div>
     );
@@ -307,6 +298,15 @@ export function EditorContainer() {
     const [moveMode, setMoveMode] = useState(false);
     const [clickedLocation, setClickedLocation] = useState(new Vector3(0, 0, 0));
 
+    function clickListener(e: any) {
+        if (moveMode) {
+            let i = getIntersects(e.clientX, e.clientY, props);
+            if (i.length > 0) {
+                setClickedLocation(i[0].point);
+            }
+        }
+    }
+
     const [props, setProps] = useState<EditorProps>({
         sheetState: [leftPanel.spreadsheet],
         bools: [false, false, false, false, false, false, theme === "dark"],
@@ -328,20 +328,42 @@ export function EditorContainer() {
         moveMode: moveMode,
         setMoveMode: setMoveMode,
         clickedLocation: clickedLocation,
-        setClickedLocation: setClickedLocation
+        setClickedLocation: clickListener
     });
+
+    function fixPos(pos: Vector3) {
+        // y = -y
+        return new Vector3(pos.x, pos.z, pos.y);
+    }
     
+    function setPositionOfSelectedPoint(pos: Vector3, props: EditorProps) {
+        // get the selected point
+        let [x, y, _x, _y] = props.leftPanel.getClicks();
+        if (x != 0 && y != 0) {
+            return; // we only want to move one point at a time
+        } else if (x != 0) {
+            // move the column
+            let t = props.ts[x - 1];
+            t.pos = fixPos(pos);
+        } else if (y != 0) {
+            // move the row
+            let m = props.ms[y - 1];
+            m.pos = fixPos(pos);
+        }
+    }
+        
+
     useEffect(() => {
         setProps({
             sheetState: [leftPanel.spreadsheet],
             bools: [false, false, false, false, false, false, theme === "dark"],
             leftPanel: leftPanel,
-            ms: [],
-            ts: [],
-            tracers: [],
-            areas: [],
-            views: [],
-            insights: [],
+            ms: editorData.ms,
+            ts: editorData.ts,
+            tracers: editorData.tracers,
+            areas: editorData.areas,
+            views: editorData.views,
+            insights: editorData.insights,
             site: "",
             sitelist: [""],
             window: window,
@@ -353,13 +375,14 @@ export function EditorContainer() {
             moveMode: moveMode,
             setMoveMode: setMoveMode,
             clickedLocation: clickedLocation,
-            setClickedLocation: setClickedLocation
+            setClickedLocation: clickListener
         });
 
-    }, []);
+    }, [leftPanel, theme, screenSizes, loading, moveMode, clickedLocation]);
 
     useEffect(() => {
-        console.log("clicked location", clickedLocation);
+        //console.log("clicked location", clickedLocation);
+        setPositionOfSelectedPoint(clickedLocation, props);
     }, [clickedLocation]);
     
     return (
@@ -372,14 +395,7 @@ export function EditorContainer() {
             secondChild={
                 <div>
                     {loading ? <div className="loading">Loading...</div> : null}
-                    <Viewport {...{ ...props, canvasDropListener, canvasClickListener: (e: any) => { 
-                        if (moveMode) {
-                            let i = getIntersects(e.clientX, e.clientY, props);
-                            if (i.length > 0) {
-                                setClickedLocation(i[0].point);
-                            } 
-                        } 
-                    } }} />
+                    <Viewport {...props} />
                 </div>
             }
         />

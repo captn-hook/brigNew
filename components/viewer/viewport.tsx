@@ -34,7 +34,7 @@ export const Viewport = (props: Props | EditorProps) => {
                 windowResizeFunc(props);
             }
         });
-    }, [props.window]);
+    }, [props]);
 
     useEffect(() => {
         window.addEventListener('hashchange', (e) => {
@@ -47,12 +47,12 @@ export const Viewport = (props: Props | EditorProps) => {
             interpHash(props);
         }
 
-    }, [props.window, props.leftPanel.dropd]);    
+    }, [props]);    
 
     //listen for theme change
     useEffect(() => {
         changeSceneBG(props);
-    }, [props.bools[6]]);
+    }, [props]);
 
     
 
@@ -72,6 +72,9 @@ export const Viewport = (props: Props | EditorProps) => {
                 }}
                 onClick={(e) => {
                     stoplookin(props);
+                    if ('setClickedLocation' in props) {
+                        props.setClickedLocation(e);
+                    }
                 }}
                 onDragStart={(e) => {
                     // dont
@@ -80,6 +83,9 @@ export const Viewport = (props: Props | EditorProps) => {
                 }}
                 onDragOver={(e) => {
                     e.preventDefault();
+                }}
+                onMouseUp={(e) => {
+                    storePos(props);
                 }}
                 onDrop={(e) => {
                     e.preventDefault();
@@ -109,13 +115,13 @@ export function ViewportControl(props: any) {
             // props.leftPanel.canvas.addEventListener('mousemove', props.leftPanel.move.bind(props.leftPanel));
         }
     }
-        , [spreadsheetRef]);
+        , [spreadsheetRef, props]);
 
     useEffect(() => {
         if (props && props.leftPanel && dropdownRef.current) {
             props.leftPanel.setDropdRef(dropdownRef.current);
         }
-    }, [dropdownRef]);        
+    }, [dropdownRef, props]);        
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
@@ -140,7 +146,7 @@ export function ViewportControl(props: any) {
 
         // Cleanup subscription on unmount
         return () => unsubscribe();
-    }, [dropdownRef]);
+    }, [dropdownRef, props]);
 
     const [sheetState, setSheetState] = React.useState(props.leftPanel.spreadsheet);
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import { functions } from "./auth";
 
@@ -78,23 +78,24 @@ export default function UserList() {
         }).catch((error) => {
             console.error(error);
         });
-    }, []);
+    });
 
 
     const [inUsers, setInUsers] = useState<string[] | null>(null);
 
-    const fetchUsers = async () => {
-        if (users && currentSite)
+    const fetchUsers = useCallback(async () => {
+        if (users && currentSite) {
             setInUsers(await getSiteUsers(currentSite).catch((error) => {
                 return null;
             }));
-    }
+        }
+    }, [users, currentSite]);
 
     useEffect(() => {
         if (currentSite) {
             fetchUsers();
         }
-    }, [currentSite, users]);
+    }, [currentSite, users, fetchUsers]);
 
     return (
         <div>

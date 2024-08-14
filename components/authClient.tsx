@@ -145,6 +145,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose }) => 
             <ButtonGroup>
                 <Button radius="full" color={signInButtonColor} onPress={handleSignIn}>Sign In</Button>
                 <Button radius="full" color={signUpButtonColor} onPress={handleSignUp}>Sign Up</Button>
+                <Button radius="full" color="default" onPress={onClose}>Close</Button>
             </ButtonGroup>
         </div>
     );

@@ -17,14 +17,19 @@ import {
 import {
     setDoc,
     getDoc,
-    getDocs,
-    collection,
-    doc
+    doc,
 } from "firebase/firestore";
+
+import {
+    db,
+    storage
+} from '../auth';
 
 import {
     Vector3
 } from 'three';
+
+import { ref, uploadBytes } from 'firebase/storage';
 
 const MAX_GROUPS = 40;
 
@@ -113,7 +118,7 @@ export async function saveArea(db, name, i, area) {
         areaDoc['value'] = area.value;
         try {
             await setDoc(doc(db, name, 'area' + i), areaDoc);
-            console.log("Document written");
+            //console.log("Document written");
             return areaDoc;
         } catch (e) {
             console.error("Error adding document", e);
@@ -125,7 +130,7 @@ export async function saveArea(db, name, i, area) {
 export function GetGroups(db, name) {
 
     var groups = []
-    if (name != '') {  
+    if (name != '') {
 
         for (let i = 0; i < MAX_GROUPS; i++) {
 
@@ -226,6 +231,14 @@ export function Data(data) {
     /*
     Data
     */
+
+    // if the data is a TSV file, replace all tabs with commas
+    // count occurrences of tabs and commas
+    let tabs = data.split('\t').length;
+    let commas = data.split(',').length;
+    if (tabs > commas) {
+        data = data.replaceAll('\t', ',');
+    }
 
     const dataArray = parse(data)
 
@@ -364,6 +377,17 @@ function assemble(ms, ts, tracers, insights, views) {
         ["T0", "XYZ"]
     ];
 
+    // sort tracers by m and t, they are not always in order
+
+    tracers.sort((a, b) => {
+        return a.t.i - b.t.i;
+    });
+
+    tracers.sort((a, b) => {
+        return a.m.i - b.m.i;
+    });
+
+
     ms.forEach(e => {
         dataArray[0].push(e.name);
         dataArray[1].push(String(e.pos.x) + "/" + String(e.pos.y) + "/" + String(e.pos.z));
@@ -395,9 +419,15 @@ function assemble(ms, ts, tracers, insights, views) {
 
 }
 
-export async function sendFile(ms, ts, tracers, insights, views, db, name) {
-    console.log('sending file', name);
+export async function sendFile(props, db, name) {
+    let ms = props.ms;
+    let ts = props.ts;
+    let tracers = props.tracers;
+    let insights = props.insights;
+    let views = props.views;
+    let areas = props.areas;
 
+    //console.log('sending file with the following data', ms, ts, tracers, insights, views, areas);
     let dataArray = assemble(ms, ts, tracers, insights, views);
 
     let document = {};
@@ -412,13 +442,13 @@ export async function sendFile(ms, ts, tracers, insights, views, db, name) {
             document[i] = dataArray[i];
 
         }
-        
+
     }
 
     try {
-        console.log('sending file', document);
+        //console.log('sending file', document);
         await setDoc(doc(db, name, 'data'), document);
-        console.log("Document 1 written");
+        //console.log("Document 1 written");
     } catch (e) {
         console.error("Error adding document", e);
     }
@@ -449,14 +479,14 @@ export async function sendFile(ms, ts, tracers, insights, views, db, name) {
 
     try {
         await setDoc(doc(db, name, 'dist'), distance);
-        console.log("Document 2 written");
+        //console.log("Document 2 written");
     } catch (e) {
         console.error("Error adding document");
     }
 
     try {
         await setDoc(doc(db, name, 'group0'), group0);
-        console.log("Document 3 written");
+        //console.log("Document 3 written");
     } catch (e) {
         console.error("Error adding document");
     }
@@ -510,9 +540,17 @@ export async function sendFile(ms, ts, tracers, insights, views, db, name) {
 
 }
 
-export function saveFile(ms, ts, tracers, insights, views) {
+export function saveFile(props) {
 
-    
+    let ms = props.ms;
+    let ts = props.ts;
+    let tracers = props.tracers;
+    let insights = props.insights;
+    let views = props.views;
+    let areas = props.areas;
+    //console.log('downloading file');
+
+
     for (var i = 0; i < ms.length + 1; i++) {
         if (i == 0) {
             views[i] = 'VIEWS';
@@ -535,4 +573,50 @@ export function saveFile(ms, ts, tracers, insights, views) {
     var encodedUri = encodeURI(csvContent);
     window.open(encodedUri);
 
+}
+
+export function uploadFile(file, name) {
+    return new Promise((resolve, reject) => {
+        //console.log('loading file: ', file);
+        let reader = new FileReader();
+        reader.readAsText(file);
+
+        reader.onload = readerEvent => {
+            let content = readerEvent.target.result;
+
+            let data = Data(content);
+
+            let ms = data[0];
+            let ts = data[1];
+            let tracers = data[2];
+            let insights = data[3];
+            let views = data[4];
+
+            let props = {
+                ms: ms,
+                ts: ts,
+                tracers: tracers,
+                insights: insights,
+                views: views
+            }
+
+            sendFile(props, db, name)
+                .then(() => resolve())
+                .catch(error => reject(error));
+        };
+
+        reader.onerror = error => reject(error);
+    });
+}
+
+export function uploadToStorage(file, name) {
+    return new Promise((resolve, reject) => {
+        //create a folder, rename the file so it has the same name as the folder
+        
+        let r = ref(storage, 'Sites/' + name + '/' + name + '.glb')
+
+        uploadBytes(r, file)
+            .then(() => resolve())
+            .catch(error => reject(error));
+    });
 }

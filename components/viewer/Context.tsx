@@ -68,7 +68,7 @@ export interface EditorProps {
     moveMode: boolean;
     setMoveMode: (moveMode: boolean) => void;
     clickedLocation: Vector3 | null;
-    setClickedLocation: (clickedLocation: Vector3) => void;
+    setClickedLocation: (e: React.MouseEvent<HTMLCanvasElement>) => void;
 }
 
 export const ViewportContainer = () => {
@@ -115,6 +115,7 @@ export const ViewportContainer = () => {
         });
 
     }, [theme]);
+
     return (
         <Sidebar
             firstChild={

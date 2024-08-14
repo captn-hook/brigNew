@@ -91,8 +91,8 @@ export function open(props) {
         scene.add(light);
     }
 
-    camera.position.set(5, 5, 5);
-    camera.lookAt(new Vector3(0, 0, 0));
+    //camera.position.set(5, 5, 5);
+    //camera.lookAt(new Vector3(0, 0, 0));
 
     var lastgi = -1;
     var lastai = -1;
@@ -138,7 +138,7 @@ export function open(props) {
     }
 
     windowResizeFunc(props);
-    //interpHash(props);
+    interpHash(props);
 
     const tick = () => {
 

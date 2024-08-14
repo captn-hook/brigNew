@@ -33,6 +33,11 @@ export default function dropdListener(event, props) {
         const db = module.db;
         //console.log("TARG", targ);
 
+        if (!props.window) {
+            console.log("window not defined");
+            return;
+        }
+
         if (targ != defaultDropd) {
             props.window.location.hash = targ + '&';
             loadSite(targ, props, db);
@@ -63,7 +68,6 @@ export default function dropdListener(event, props) {
             props.leftPanel.siteheader = 'Example';
 
             if (props.setProps != null) {
-                console.log("setProps from dropdListener");
                 props.setProps(props);
             }
         }

@@ -10,10 +10,7 @@ export function setTargPos(vec) {
 }
 
 export function updateCam(props) {
-
-
-    //console.log(props.leftPanel.camFree, props.leftPanel.looking, props.leftPanel.spreadsheet, props.leftPanel.n, props.leftPanel.gi)
-
+    
     if (props.leftPanel.camFree && props.leftPanel.spreadsheet == state[0]) {
         try {
             //fail quietly if cannot set camera

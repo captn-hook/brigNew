@@ -1,18 +1,8 @@
-'use client';
-import { ScreenSizes } from "@/components/viewer/ScreenSizes";
-import { Panel } from "@/components/viewer/Panel"
-import { ScreenSizesContext, LeftPanelContext, ViewportContainer } from "@/components/viewer/Context";
-
+import Upload from '../../components/upload/upload';
 export default function CreatorPage() {
 	
-	const screenSizes = new ScreenSizes();
-	const leftPanel = new Panel();
 	
 	return (
-		<ScreenSizesContext.Provider value={screenSizes}>
-			<LeftPanelContext.Provider value={leftPanel}>
-				<ViewportContainer></ViewportContainer>
-			</LeftPanelContext.Provider>
-		</ScreenSizesContext.Provider>
+		<Upload/>
 	);
 }
