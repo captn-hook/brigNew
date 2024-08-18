@@ -1,6 +1,6 @@
 export class ScreenSizes {
 
-    constructor(divref = null, spreadsheetCanvasref = null, canvas2dref = null, ctxref = null, width = 650, height = 500) {
+    constructor(override = false, divref = null, spreadsheetCanvasref = null, canvas2dref = null, ctxref = null, width = 650, height = 500) {
         // all the refs of objects that need managed sizes
         // document.getElementById('3d')
         this.div = divref;
@@ -19,6 +19,8 @@ export class ScreenSizes {
         this.height = height;
 
         this.webgl = null;
+
+        this.override = override;
 
     }
 
@@ -45,7 +47,7 @@ export class ScreenSizes {
     }
 
     updateSizes(props) {
-        if (this.div === null || this.spreadsheetCanvas === null || this.canvas2d === null || this.ctx === null) {
+        if (!this.override && (this.div === null || this.spreadsheetCanvas === null || this.canvas2d === null || this.ctx === null)) {
             console.log('ScreenSizes: updateSizes: missing refs');
             console.log('div: ', this.div, ' spreadsheetCanvas: ', this.spreadsheetCanvas, ' canvas2d: ', this.canvas2d, ' ctx: ', this.ctx);
             return;

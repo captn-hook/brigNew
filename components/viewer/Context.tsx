@@ -132,3 +132,57 @@ export const ViewportContainer = () => {
         />
     );
 };
+
+
+export const ViewportS = () => {
+    const { theme, setTheme } = useTheme();
+    const [loading, setLoading] = useState(true);
+    const screenSizes = useContext(ScreenSizesContext);
+    const leftPanel = useContext(LeftPanelContext);
+
+    const [props, setProps] = useState<Props>({
+        sheetState: [leftPanel.spreadsheet],
+        bools: [false, false, false, false, false, false, theme === "dark"],
+        leftPanel: leftPanel,
+        ms: [],
+        ts: [],
+        tracers: [],
+        areas: [],
+        views: [],
+        insights: [],
+        site: "",
+        sitelist: [""],
+        window: null,
+        screenSizes: screenSizes,
+        loading: loading,
+        setLoading: setLoading
+    });
+
+    useEffect(() => {
+        setProps({
+            sheetState: [leftPanel.spreadsheet],
+            bools: [false, false, false, false, false, false, theme === "dark"],
+            leftPanel: leftPanel,
+            ms: [],
+            ts: [],
+            tracers: [],
+            areas: [],
+            views: [],
+            insights: [],
+            site: "",
+            sitelist: [""],
+            window: window,
+            screenSizes: screenSizes,
+            loading: loading,
+            setLoading: setLoading
+        });
+
+    }, [theme]);
+
+    return (
+        <div>
+            {loading ? <div className="loading">Loading...</div> : null}
+            <Viewport {...props} />
+        </div >
+    );
+};

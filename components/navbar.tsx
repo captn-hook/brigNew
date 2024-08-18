@@ -26,7 +26,13 @@ import { auth, SignOutListener } from "@/components/auth";
 
 import "./navbar.css";
 
+import { usePathname } from 'next/navigation'
+
 export const Navbar = () => {
+	if (usePathname().includes("embed")) {
+		return null;
+	}
+
 	const [isMenuOpen, setIsMenuOpen] = React.useReducer((current) => !current, false);
 
 	let navItems = auth.currentUser ? siteConfig.navItems : siteConfig.navItems.filter((item) => item.label == "Viewer");
