@@ -29,9 +29,6 @@ import "./navbar.css";
 import { usePathname } from 'next/navigation'
 
 export const Navbar = () => {
-	if (usePathname().includes("embed")) {
-		return null;
-	}
 
 	const [isMenuOpen, setIsMenuOpen] = React.useReducer((current) => !current, false);
 
@@ -49,7 +46,10 @@ export const Navbar = () => {
 			}
 		});
 	}, []);
-
+	
+	if (usePathname().includes("embed")) {
+		return null;
+	}
 	return (
 		<NextUINavbar maxWidth="xl" position="sticky" isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen} height='var(--header-height)'>
 			<NavbarContent className="basis-1/5 sm:basis-full" justify="start">
