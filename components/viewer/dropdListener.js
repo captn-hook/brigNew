@@ -47,6 +47,7 @@ export default function dropdListener(event, props) {
             loadRefAndDoc(modelRef, targ, props, db);
         } else {
             //load default
+            props.window.location.hash = defaultDropd + '&';
 
             /*
             load example

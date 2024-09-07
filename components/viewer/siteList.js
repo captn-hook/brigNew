@@ -1,5 +1,5 @@
 
-export const defaultDropd = 'Select a site';
+export const defaultDropd = 'Example';
 
 export default function siteList(props) { //AHHH
     //empty dropdown
@@ -9,7 +9,7 @@ export default function siteList(props) { //AHHH
     //console.log(s);
     //add default option
     var def = document.createElement('option');
-    def.text = props.leftPanel.siteheader == '' ? defaultDropd : props.leftPanel.siteheader;
+    def.text = defaultDropd
     props.leftPanel.dropd.add(def);
 
     props.sitelist.forEach((site) => {
