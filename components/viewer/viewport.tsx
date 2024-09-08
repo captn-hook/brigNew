@@ -158,7 +158,6 @@ export function ViewportControl(props: any) {
                 <select name="sites" id="dropdown" title="Dropdown" style={{ marginRight: '1rem' }} ref={dropdownRef} onChange={(event) => {
                     dropdListener(event, props);
                 }}>
-                    <option value="Empty">Example</option>
                 </select>
             </div>
 
