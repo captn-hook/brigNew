@@ -142,7 +142,7 @@ export const ViewportS = () => {
 
     const [props, setProps] = useState<Props>({
         sheetState: [leftPanel.spreadsheet],
-        bools: [false, false, false, false, false, false, theme === "dark"],
+        bools: [true, true, false, false, false, false, theme === "dark"],
         leftPanel: leftPanel,
         ms: [],
         ts: [],
@@ -161,7 +161,7 @@ export const ViewportS = () => {
     useEffect(() => {
         setProps({
             sheetState: [leftPanel.spreadsheet],
-            bools: [false, false, false, false, false, false, theme === "dark"],
+            bools: [true, true, false, false, false, false, theme === "dark"],
             leftPanel: leftPanel,
             ms: [],
             ts: [],

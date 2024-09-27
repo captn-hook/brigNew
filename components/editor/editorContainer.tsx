@@ -6,6 +6,7 @@ import { Viewport, ViewportControl } from "@/components/viewer/viewport";
 import { Button, ButtonGroup } from '@nextui-org/button';
 import Image from 'next/image';
 import {
+    Object3D,
     Raycaster,
     Vector2,
     Vector3,
@@ -144,9 +145,24 @@ function deleteSelectedPoint(coords: { x: number, y: number }, props: EditorProp
 function getIntersects(xi: number, yi: number, props: EditorProps) {
     var raycaster = new Raycaster();
     var mouse = new Vector2((xi - props.leftPanel.canvas.innerWidth) / renderer.domElement.clientWidth * 2 - 1, -(yi / renderer.domElement.clientHeight) * 2 + 1);
-
     raycaster.setFromCamera(mouse, camera);
     let intersects = raycaster.intersectObjects(sceneMeshes, true);
+
+    if (intersects.length > 0) {
+        return intersects;
+    }
+
+    if (intersects.length === 0 && sceneMeshes.length > 0) {
+        sceneMeshes.forEach((e) => {
+            e.traverseAncestors((a: Object3D) => {
+                intersects = raycaster.intersectObject(a, true);
+                if (intersects.length > 0) {
+                    return intersects;
+                }
+            });
+        });
+    }
+
     return intersects;
 }
 
@@ -189,6 +205,8 @@ export default function EditorControl(props: EditorProps) {
             setCurrentClickedValue(-1);
         }
     }
+
+    const [bg, setbg] = useState('blue');
 
     return (
         <div style={{
@@ -257,7 +275,7 @@ export default function EditorControl(props: EditorProps) {
             </ButtonGroup>
 
             <ButtonGroup aria-label="Save">
-                <Button onClick={() => sendFile(props, db, props.leftPanel.siteheader)}>Save</Button>
+                <Button onClick={() => sendFile(props, db, props.leftPanel.siteheader).then(() => { setbg('green') })} style={{ backgroundColor: bg }}>Save</Button>
                 <Button onClick={() => saveFile(props)}>Download</Button>
             </ButtonGroup>
         </div>
@@ -293,7 +311,7 @@ export function EditorContainer() {
     const leftPanel = useContext(LeftPanelContext);
     const editorData = useContext(EditorContext);
 
-    
+
 
     const [moveMode, setMoveMode] = useState(false);
     const [clickedLocation, setClickedLocation] = useState(new Vector3(0, 0, 0));
@@ -335,7 +353,7 @@ export function EditorContainer() {
         // y = -y
         return new Vector3(pos.x, pos.z, pos.y);
     }
-    
+
     function setPositionOfSelectedPoint(pos: Vector3, props: EditorProps) {
         // get the selected point
         let [x, y, _x, _y] = props.leftPanel.getClicks();
@@ -351,7 +369,7 @@ export function EditorContainer() {
             m.pos = fixPos(pos);
         }
     }
-        
+
 
     useEffect(() => {
         setProps({
@@ -384,7 +402,7 @@ export function EditorContainer() {
         //console.log("clicked location", clickedLocation);
         setPositionOfSelectedPoint(clickedLocation, props);
     }, [clickedLocation]);
-    
+
     return (
         <Sidebar
             firstChild={

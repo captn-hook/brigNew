@@ -47,7 +47,7 @@ export function handleModels(input, scene, setLoading) {
         getDRACOLoader().then((loader) => {
 
             loader.parse(read.result, '', onLoadWrapper(scene, setLoading), onErrorLog, (e) => {
-                console.log('loading ???', e);
+                //console.log('loading ???', e);
             });
             setLoading(false);
         })
@@ -67,7 +67,7 @@ export function exHandleModels(input, scene, setLoading) {
 
         getDRACOLoader().then((loader) => {
             loader.parse(read.result, '', onLoadWrapper(scene, setLoading), onErrorLog, (e) => {
-                console.log('loading ???', e);
+                //console.log('loading ???', e);
             });
         })
 
@@ -135,7 +135,7 @@ function finish(mtlLoader, objLoader, scene, mat, obj, textures, setLoading) {
     //for all keys in mtl.materials
     for (let i = 0; i < Object.keys(mtl.materials).length; i++) {
         //print i.map
-        console.log('i: ', i, ' map: ', mtl.materials[Object.keys(mtl.materials)[i]].map);
+        //console.log('i: ', i, ' map: ', mtl.materials[Object.keys(mtl.materials)[i]].map);
         mtl.materials[Object.keys(mtl.materials)[i]].map = textures[i];
     }
     objLoader.setMaterials(mtl);

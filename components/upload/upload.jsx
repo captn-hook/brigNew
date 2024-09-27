@@ -2,14 +2,18 @@
 import React from 'react';
 import styles from './upload.module.css';
 import { uploadFile, uploadToStorage } from '../viewer/Data';
+import { addUser } from '../adminTools';
+import { auth } from '../auth';
 
 export default function Upload() {
 
-    let named = '';
+    const [named, setNamed] = React.useState('');
 
     const [filelist, setFilelist] = React.useState([]);
 
     function valid() {
+        if (named === '') return false;
+        
         // need a csv and a glb
         let csv = false;
         let glb = false;
@@ -27,6 +31,8 @@ export default function Upload() {
 
     return (
         <div className={styles.upload}>
+        <p>Enter a name for new site:</p>
+        <input type="text" id="name" name="name" placeholder="Name" onChange={(e) => setNamed(e.target.value)} />
             <p>Upload a data file (formatted csv or tsv) and a 3D model file (glb) to create a new site</p>
             <input type="file" id="file" name="file" accept=".glb, .csv, .tsv" multiple
                 onChange={(e) => {
@@ -44,8 +50,6 @@ export default function Upload() {
             <button style={{ backgroundColor: valid() ? 'green' : 'red', pointerEvents: valid() ? 'auto' : 'none' }}
              onClick={async () => {
 
-                // get the name of new site
-                named = prompt('Name of new site?');
                 
                 // get the files in the correct order
                 let glb = filelist.find(file => file.name.split('.').pop() === 'glb');
@@ -57,9 +61,16 @@ export default function Upload() {
                         //upload csv
                         uploadFile(csv, named).
                             then((res) => {
-                                            
-                                // transfer to editor page
-                                window.location.href = '/editor#' + named;
+
+                                addUser(named, auth.currentUser.email, auth.currentUser.uid)
+                                    .then(() => {
+                                        console.log('added user to storage and firestore');
+                                        // transfer to editor page
+                                        window.location.href = '/editor#' + named;
+                                    })
+                                    .catch((error) => {
+                                        console.log('error adding user to storage and firestore: ' + error);
+                                    });
                             });
                     });
                     

@@ -46,7 +46,7 @@ function AddUserForm({ users, inUsers, currentSite, callback }: { users: any[], 
                         <TableRow key={index} style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
                             <TableCell key={index}>{user.email}</TableCell>
                             <TableCell><Button size="sm" onClick={() => { 
-                                console.log("adding user to site: ", user.email, user.uid, currentSite);
+                                // console.log("adding user to site: ", user.email, user.uid, currentSite);
                                 addUser(currentSite, user.email, user.uid).then(() => {
                                     // refresh the lists of users
                                     if (callback) {
