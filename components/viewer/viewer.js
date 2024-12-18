@@ -38,7 +38,7 @@ export function resetWorkingArea() {
 
 export const state = {
     0: 'spreadsheet',
-    1: 'groups',
+    1: 'both',
     2: 'areas'
 }
 
@@ -183,6 +183,25 @@ export function open(props) {
         if (props.leftPanel & props.leftPanel.ctx != undefined) {
             props.leftPanel.ctx.clearRect(0, 0, props.leftPanel.canvas.width, props.leftPanel.canvas.height);
         }
+        // areas
+        if (props.leftPanel && (props.leftPanel.spreadsheet == state[2] || props.leftPanel.spreadsheet == state[1])) {
+
+            if (props.leftPanel.ai != lastai && props.leftPanel.areas[lastai]) {
+                lastai = props.leftPanel.ai;
+
+                props.leftPanel.areas[lastai].visible = !props.leftPanel.areas[lastai].visible;
+            }
+
+            props.leftPanel.areas.forEach(a => {
+                if (a != undefined) {
+                    a.drawArea(camera, props.screenSizes, props.bools[0], props.bools[1]);
+                }
+            });
+            if (workingArea) {
+                workingArea.drawArea(camera, props.screenSizes, props.bools[0], true, 'last');
+            }
+
+        }
         //Tracers
         if (props.leftPanel.spreadsheet != state[2]) {
             props.tracers.forEach(t => t.drawTracer(props.leftPanel, camera, props.screenSizes, props.bools[1], props.bools[0]));
@@ -202,52 +221,33 @@ export function open(props) {
             props.leftPanel.frame();
         }
         //values
-        if (props.bools[0] && props.leftPanel.spreadsheet == state[0]) {
+        if (props.bools[0] && (props.leftPanel.spreadsheet == state[0] || props.leftPanel.spreadsheet == state[1])) {
             props.tracers.forEach(t => t.drawValues(props.leftPanel));
         }
 
 
-        if (props.leftPanel && props.leftPanel.spreadsheet == state[1] && props.leftPanel.gi) {
-            if (props.leftPanel.gi != lastgi) {
-                lastgi = props.leftPanel.gi;
+        // if (props.leftPanel && props.leftPanel.spreadsheet == state[1] && props.leftPanel.gi) {
+        //     if (props.leftPanel.gi != lastgi) {
+        //         lastgi = props.leftPanel.gi;
 
-                props.ms.forEach(pt => pt.visible = false);
-                props.ts.forEach(pt => pt.visible = false);
-                props.tracers.forEach((t) => {
-                    var label = String(t.m.i) + "/" + String(t.t.i);
+        //         props.ms.forEach(pt => pt.visible = false);
+        //         props.ts.forEach(pt => pt.visible = false);
+        //         props.tracers.forEach((t) => {
+        //             var label = String(t.m.i) + "/" + String(t.t.i);
 
-                    try {
-                        t.visible = props.leftPanel.groups[lastgi][label];
-                    } catch (e) {
-                        //console.log(props.leftPanel.groups0, lastgi, props.leftPanel.groups[lastgi], label)
-                    }
+        //             try {
+        //                 t.visible = props.leftPanel.groups[lastgi][label];
+        //             } catch (e) {
+        //                 //console.log(props.leftPanel.groups0, lastgi, props.leftPanel.groups[lastgi], label)
+        //             }
 
-                    if (t.visible) {
-                        t.m.visible = true;
-                        t.t.visible = true;
-                    }
-                })
-            }
-        }
-
-        if (props.leftPanel && props.leftPanel.spreadsheet == state[2]) {
-
-            if (props.leftPanel.ai != lastai && props.leftPanel.areas[lastai]) {
-                lastai = props.leftPanel.ai;
-
-                props.leftPanel.areas[lastai].visible = !props.leftPanel.areas[lastai].visible;
-            }
-
-            props.leftPanel.areas.forEach(a => {
-                if (a != undefined) {
-                    a.drawArea(camera, props.screenSizes, props.bools[0], props.bools[1]);
-                }
-            });
-            if (workingArea) {
-                workingArea.drawArea(camera, props.screenSizes, props.bools[0], true, 'last');
-            }
-
-        }
+        //             if (t.visible) {
+        //                 t.m.visible = true;
+        //                 t.t.visible = true;
+        //             }
+        //         })
+        //     }
+        // }
 
         // Call tick again on the next frame
         props.window.requestAnimationFrame(tick);

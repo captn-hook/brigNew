@@ -4,7 +4,7 @@ class Panel {
     constructor() {
         this.state = {
             0: 'spreadsheet',
-            1: 'groups',
+            1: 'both',
             2: 'areas'
         }
 
@@ -180,19 +180,7 @@ class Panel {
                     this.clickCallback(this.cellX, this.cellY)
                 }
             }
-        } else if (this.spreadsheet == this.state[1]) {
-            if (this.gi != this.cellY - 1) {
-                this.gi = this.cellY - 1
-
-                if (this.camFree) {
-                    this.looking = true;
-                }
-
-                window.location.hash = (this.siteheader + '&G=' + this.gi);
-            } else {
-                this.gi = -1;
-            }
-        } else if (this.spreadsheet == this.state[2]) {
+        } else if (this.spreadsheet == this.state[2] || this.spreadsheet == this.state[1]) {
             if (this.ai != this.cellY - 1) {
                 this.ai = this.cellY - 1
 

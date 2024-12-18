@@ -167,7 +167,7 @@ export function ViewportControl(props: any) {
                         props.leftPanel.next();
                         setSheetState(props.leftPanel.spreadsheet);
                     }} 
-                    text1="Groups"
+                    text1="Both"
                     text2="Tracers"
                     text3="Areas"
                 ></ThreeStateButton>
