@@ -32,8 +32,8 @@ export function AreaControl(props: EditorProps) {
         }}>
             <h2>Area Control</h2>
             <ButtonGroup aria-label="Area Control">
-                <Button onClick={() => console.log("new area")}>New Area</Button>
-                <Button onClick={() => console.log("delete area")}>Delete Area</Button>
+                <Button id="addArea">New Area</Button>
+                <Button id="deleteArea">Delete Area</Button>
             </ButtonGroup>
             <ButtonGroup aria-label="Save">
                 <Button onClick={() => saveArea(props)}>Save</Button>

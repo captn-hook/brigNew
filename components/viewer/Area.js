@@ -67,20 +67,16 @@ class Area extends CanvasObject {
     drawArea(camera, sizes, doVals, alpha = true, displayp = 'none') {
 
         if (this.visible) {
-            //start,     ctrl1,  ctrl2,    end   arw 1   arw 2
             var screenpts = [];
-
+    
             for (var p in this.points) {
-
                 var x = this.points[p].x;
                 var y = this.points[p].y;
                 var z = this.points[p].z / 100;
-
+    
                 screenpts.push(this.screenPts(camera, sizes.width / 2, sizes.height / 2, x, y, z));
-
             }
-
-            //display points
+    
             if (displayp == 'last' && screenpts.length > 0) {
                 this.drawCircle(sizes.ctx, screenpts[screenpts.length - 1][0], screenpts[screenpts.length - 1][1], 4);
             } else if (displayp == 'all') {
@@ -88,65 +84,66 @@ class Area extends CanvasObject {
                     this.drawCircle(sizes.ctx, screenpts[p][0], screenpts[p][1], 2);
                 }
             }
-
-            //if z1 and z2 magnitude is less than 1, then draw the tracer
+    
             sizes.ctx.lineWidth = this.outline;
-
-            if (alpha) {
-                var opac = this.opacity
-            } else {
-                var opac = 1;
-            }
-
-            
-            //or this.opacity
-
-            sizes.ctx.strokeStyle = "rgba(" + String(this.r / 5) + ", " + String(this.g / 5) + ", " + String(this.b / 5) + ", " + String(1) + ")";
-            //fill white but with opacity
-            sizes.ctx.fillStyle =  "rgba( 255, 255, 255, " + String(opac) + ")";
+    
+            var opac = alpha ? this.opacity : .8;
+    
+            sizes.ctx.strokeStyle = "rgba(" + String(this.r) + ", " + String(this.g) + ", " + String(this.b) + ", " + String(1) + ")";
+            sizes.ctx.fillStyle = "rgba(255, 255, 255, " + String(opac) + ")";
             sizes.ctx.lineWidth = this.thickness;
-            //area
+    
             if (screenpts.length > 0) {
                 sizes.ctx.beginPath();
-                sizes.ctx.moveTo(screenpts[0][0], screenpts[0][1]);
-
-                for (var i = 1; i < screenpts.length; i++) {
-                    sizes.ctx.lineTo(screenpts[i][0], screenpts[i][1]);
-                }
-
+                this.roundedPolygon(sizes.ctx, screenpts, 3); // 10 is the radius for rounded corners
                 sizes.ctx.closePath();
-
+    
                 sizes.ctx.fill();
                 sizes.ctx.stroke();
-
-
-                //label
-
+    
                 var avg = this.posAvg();
-
                 var [x, y] = this.screenPts(camera, sizes.width / 2, sizes.height / 2, avg.x, avg.y, avg.z / 100);
-                
+    
                 sizes.ctx.font = "12px Arial";
                 sizes.ctx.textAlign = "center";
-                //dark grey outline
                 sizes.ctx.strokeStyle = 'rgba(100, 100, 100, 1)';
-                sizes.ctx.lineWidth = 2;
+                sizes.ctx.lineWidth = 5;
                 sizes.ctx.lineJoin = "round";
                 sizes.ctx.strokeText(this.name, x, y + 4);
                 sizes.ctx.fillStyle = "white";
                 sizes.ctx.fillText(this.name, x, y + 4);
-
+    
                 if (doVals) {
-
                     sizes.ctx.strokeText((Math.round(this.value * 10) / 10) + ' eACH', x, y - 10);
                     sizes.ctx.fillStyle = this.color;
                     sizes.ctx.fillText(Math.round(this.value * 10) / 10 + ' eACH', x, y - 10);
-
                 }
             }
-
         }
-
+    }
+    
+    roundedPolygon(ctx, points, radius) {
+        let i, x, y, nextX, nextY;
+        for (i = 0; i < points.length; i++) {
+            x = points[i][0];
+            y = points[i][1];
+            nextX = points[(i + 1) % points.length][0];
+            nextY = points[(i + 1) % points.length][1];
+    
+            let angle = Math.atan2(nextY - y, nextX - x);
+            let x1 = x + radius * Math.cos(angle);
+            let y1 = y + radius * Math.sin(angle);
+            let x2 = nextX - radius * Math.cos(angle);
+            let y2 = nextY - radius * Math.sin(angle);
+    
+            if (i === 0) {
+                ctx.moveTo(x1, y1);
+            } else {
+                ctx.lineTo(x1, y1);
+            }
+    
+            ctx.quadraticCurveTo(nextX, nextY, x2, y2);
+        }
     }
     
     rgb(value) {

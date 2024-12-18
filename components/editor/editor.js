@@ -422,19 +422,20 @@ export function open(state, firebaseEnv) {
     })
 
     //areabtns
-    sArea.addEventListener('click', tnalp3);
+    // sArea.addEventListener('click', tnalp3);
 
-    async function tnalp3() {
-        if (V.leftPanel.ai != 0 && V.leftPanel.ai != -1) {
-            V.leftPanel.areas[V.leftPanel.ai].text = V.leftPanel.text;
-            //console.log("", leftPanel.ai)
-            saveArea(db, V.dropd.value, V.leftPanel.ai + 1, V.leftPanel.areas[leftPanel.ai])
-        }
-    }
+    // async function tnalp3() {
+    //     if (V.leftPanel.ai != 0 && V.leftPanel.ai != -1) {
+    //         V.leftPanel.areas[V.leftPanel.ai].text = V.leftPanel.text;
+    //         //console.log("", leftPanel.ai)
+    //         saveArea(db, V.dropd.value, V.leftPanel.ai + 1, V.leftPanel.areas[leftPanel.ai])
+    //     }
+    // }
 
     aArea.addEventListener('click', tnalp4)
 
     async function tnalp4() {
+        print(V.workingArea.points.length)
         if (V.workingArea.points.length > 2) {
             var i = 0;
             V.workingArea.text = V.leftPanel.text;
