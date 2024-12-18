@@ -221,7 +221,7 @@ export function open(props) {
             props.leftPanel.frame();
         }
         //values
-        if (props.bools[0] && (props.leftPanel.spreadsheet == state[0] || props.leftPanel.spreadsheet == state[1])) {
+        if (props.bools[0] && props.leftPanel.spreadsheet == state[0]) {
             props.tracers.forEach(t => t.drawValues(props.leftPanel));
         }
 

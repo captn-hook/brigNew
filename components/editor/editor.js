@@ -352,7 +352,7 @@ export function open(state, firebaseEnv) {
     V.sizes.canvas2d.addEventListener('contextmenu', (e) => {
         e.preventDefault();
 
-        if (editPos && V.leftPanel.spreadsheet == V.state[2]) {
+        if (editPos && (V.leftPanel.spreadsheet == V.state[2] || V.leftPanel.spreadsheet == V.state[1])) {
             V.workingArea.points.pop();
         }
 

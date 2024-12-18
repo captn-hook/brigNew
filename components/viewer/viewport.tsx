@@ -42,23 +42,23 @@ export const Viewport = (props: Props | EditorProps) => {
                 interpHash(props);
             }
         });
-        
+
         if (props.window != null && props.leftPanel.dropd != null) {
             interpHash(props);
         }
 
-    }, [props]);    
+    }, [props]);
 
     //listen for theme change
     useEffect(() => {
         changeSceneBG(props);
     }, [props]);
 
-    
+
 
     return (
         <div id="3d" className="viewport" ref={div3dRef}>
-            <canvas className="webgl" id="threejs" ref={webglRef}/>
+            <canvas className="webgl" id="threejs" ref={webglRef} />
             <canvas className="tracers" id="2d" ref={canvas2dRef}
                 onContextMenu={(e) => {
                     stoplookin(props);
@@ -92,7 +92,7 @@ export const Viewport = (props: Props | EditorProps) => {
                     if ('canvasDropListener' in props) {
                         props.canvasDropListener(e, props); // idc abt this yodam ts error
                     }
-                }} 
+                }}
             />
         </div>
     );
@@ -121,7 +121,7 @@ export function ViewportControl(props: any) {
         if (props && props.leftPanel && dropdownRef.current) {
             props.leftPanel.setDropdRef(dropdownRef.current);
         }
-    }, [dropdownRef, props]);        
+    }, [dropdownRef, props]);
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
@@ -164,9 +164,9 @@ export function ViewportControl(props: any) {
             <ButtonGroup id="switchDisplayType">
                 <ThreeStateButton id="swapper" title="Switch Display Type"
                     onPress={async () => {
-                        props.leftPanel.next();
+                        props.leftPanel.next(props);
                         setSheetState(props.leftPanel.spreadsheet);
-                    }} 
+                    }}
                     text1="Both"
                     text2="Tracers"
                     text3="Areas"
@@ -190,54 +190,10 @@ export function ViewportControl(props: any) {
 
                         }
                     }
-                    text1="Transparent"
+                    text1="Clear"
                     text2="Opaque"
                 ></SwitchButton>
-                <SwitchButton id="flipBtn" title="Flip selection visibility"
-                    onPress={
-                        async () => {
-                            props.bools[2] = !props.bools[2]
 
-                            //find the difference between click 1 and click 2
-
-
-                            let corv: number[] = props.leftPanel.getClicks();
-                            let minx = corv[0];
-                            let miny = corv[1];
-                            let x = corv[2];
-                            let y = corv[3];
-
-                            props.tracers.forEach((t: Tracer2d) => {
-                                const tPoint = t.t as unknown as Point2d;
-                                const mPoint = t.m as unknown as Point2d; //fuck typescript
-                                if (tPoint.i >= minx && tPoint.i <= x && mPoint.i >= miny && mPoint.i <= y) {
-                                    t.visible = !t.visible
-                                }
-                            })
-
-                            if (minx == 0) {
-                                props.ms.forEach((m: Point2d) => {
-                                    if (m.i >= miny && m.i <= y) {
-                                        m.visible = !m.visible;
-                                    }
-                                })
-                            }
-
-                            if (miny == 0) {
-                                props.ts.forEach((d: Point2d) => {
-                                    if (d.i >= minx && d.i <= x) {
-                                        d.visible = !d.visible;
-                                    }
-                                })
-                            }
-
-                        }
-                    }
-                    text1="Flip ◑"
-                    text2="Flip ◐"
-                ></SwitchButton>
-            </ButtonGroup>
-            <ButtonGroup id="bug1">
                 <ThreeStateButton id="camBtn" title="Camera Mode"
                     onPress={
                         async () => {
@@ -278,69 +234,119 @@ export function ViewportControl(props: any) {
                     text2="Locked 📷"
                     text3="Free 📹"
                 ></ThreeStateButton>
-                <SwitchButton id="resetBtn" title="Toggle all visibility"
-                    onPress={
-                        async () => {
-                            props.bools[4] = !props.bools[4]
 
-                            props.ms.forEach((m: Point2d) => {
-                                m.visible = !props.bools[4];
-                            })
-                            props.ts.forEach((t: Point2d) => {
-                                t.visible = !props.bools[4];
-                            })
-                            props.tracers.forEach((t: Tracer2d) => {
-                                t.visible = !props.bools[4];
-                            })
-
-                        }
-                    }
-                    text1="Toggle all ✔"
-                    text2="Toggle all ✘"
-                ></SwitchButton>
-                <SwitchButton id="toggleBtn" title="Toggle selection visibility"
-                    onPress={
-                        async () => {
-                            props.bools[5] = !props.bools[5]
-
-                            //find the difference between click 1 and click 2
-                            let corv: number[] = props.leftPanel.getClicks(); // i hate typescript
-                            let minx = corv[0];
-                            let miny = corv[1];
-                            let x = corv[2];
-                            let y = corv[3];
-
-                            props.tracers.forEach((t: Tracer2d) => {
-                                const tPoint = t.t as unknown as Point2d;
-                                const mPoint = t.m as unknown as Point2d; //fuck typescript
-                                if (tPoint.i >= minx && tPoint.i <= x && mPoint.i >= miny && mPoint.i <= y) {
-                                    t.visible = !props.bools[5];
-                                }
-                            });
-
-                            if (minx == 0) {
-                                props.ms.forEach((m: Point2d) => {
-                                    if (m.i >= miny && m.i <= y) {
-                                        m.visible = !props.bools[5];
-                                    }
-                                })
-                            }
-
-                            if (miny == 0) {
-                                props.ts.forEach((d: Point2d) => {
-                                    if (d.i >= minx && d.i <= x) {
-                                        d.visible = !props.bools[5];
-                                    }
-                                })
-                            }
-
-                        }
-                    }
-                    text1="Toggle ◨"
-                    text2="Toggle ◧"
-                ></SwitchButton>
             </ButtonGroup>
+            {sheetState == 'spreadsheet' ?
+                <ButtonGroup id="bug1">
 
+                    <SwitchButton id="flipBtn" title="Flip selection visibility"
+                        onPress={
+                            async () => {
+                                props.bools[2] = !props.bools[2]
+
+                                //find the difference between click 1 and click 2
+
+
+                                let corv: number[] = props.leftPanel.getClicks();
+                                let minx = corv[0];
+                                let miny = corv[1];
+                                let x = corv[2];
+                                let y = corv[3];
+
+                                props.tracers.forEach((t: Tracer2d) => {
+                                    const tPoint = t.t as unknown as Point2d;
+                                    const mPoint = t.m as unknown as Point2d; //fuck typescript
+                                    if (tPoint.i >= minx && tPoint.i <= x && mPoint.i >= miny && mPoint.i <= y) {
+                                        t.visible = !t.visible
+                                    }
+                                })
+
+                                if (minx == 0) {
+                                    props.ms.forEach((m: Point2d) => {
+                                        if (m.i >= miny && m.i <= y) {
+                                            m.visible = !m.visible;
+                                        }
+                                    })
+                                }
+
+                                if (miny == 0) {
+                                    props.ts.forEach((d: Point2d) => {
+                                        if (d.i >= minx && d.i <= x) {
+                                            d.visible = !d.visible;
+                                        }
+                                    })
+                                }
+
+                            }
+                        }
+                        text1="Flip ◑"
+                        text2="Flip ◐"
+                    ></SwitchButton>
+                    <SwitchButton id="resetBtn" title="Toggle all visibility"
+                        onPress={
+                            async () => {
+                                props.bools[4] = !props.bools[4]
+
+                                props.ms.forEach((m: Point2d) => {
+                                    m.visible = !props.bools[4];
+                                })
+                                props.ts.forEach((t: Point2d) => {
+                                    t.visible = !props.bools[4];
+                                })
+                                props.tracers.forEach((t: Tracer2d) => {
+                                    t.visible = !props.bools[4];
+                                })
+
+                            }
+                        }
+                        text1="Toggle all ✔"
+                        text2="Toggle all ✘"
+                    ></SwitchButton>
+                    <SwitchButton id="toggleBtn" title="Toggle selection visibility"
+                        onPress={
+                            async () => {
+                                props.bools[5] = !props.bools[5]
+
+                                //find the difference between click 1 and click 2
+                                let corv: number[] = props.leftPanel.getClicks(); // i hate typescript
+                                let minx = corv[0];
+                                let miny = corv[1];
+                                let x = corv[2];
+                                let y = corv[3];
+
+                                props.tracers.forEach((t: Tracer2d) => {
+                                    const tPoint = t.t as unknown as Point2d;
+                                    const mPoint = t.m as unknown as Point2d; //fuck typescript
+                                    if (tPoint.i >= minx && tPoint.i <= x && mPoint.i >= miny && mPoint.i <= y) {
+                                        t.visible = !props.bools[5];
+                                    }
+                                });
+
+                                if (minx == 0) {
+                                    props.ms.forEach((m: Point2d) => {
+                                        if (m.i >= miny && m.i <= y) {
+                                            m.visible = !props.bools[5];
+                                        }
+                                    })
+                                }
+
+                                if (miny == 0) {
+                                    props.ts.forEach((d: Point2d) => {
+                                        if (d.i >= minx && d.i <= x) {
+                                            d.visible = !props.bools[5];
+                                        }
+                                    })
+                                }
+
+                            }
+                        }
+                        text1="Toggle ◨"
+                        text2="Toggle ◧"
+                    ></SwitchButton>
+
+                </ButtonGroup>
+
+                : null}
             <div id="panel" className="panel">
                 <canvas id="spreadsheet" ref={spreadsheetRef} className="spreadsheet"
                     onMouseDown={(e) => {
@@ -355,10 +361,10 @@ export function ViewportControl(props: any) {
                     }}
                 ></canvas>
             </div>
-            { sheetState == 'spreadsheet' ?
+            {sheetState == 'spreadsheet' ?
                 props.childOne : null
             }
-            { sheetState == 'areas' ?
+            {(sheetState == 'both' || sheetState == 'areas') ?
                 props.childTwo : null
             }
             <div id="texcontainer" style={{ display: 'none' }}>

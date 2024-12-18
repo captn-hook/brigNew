@@ -97,7 +97,7 @@ class Panel {
         }
     }
 
-    next() {
+    next(props) {
         if (this.spreadsheet == this.state[0]) {
             this.spreadsheet = this.state[1];
 
@@ -107,6 +107,8 @@ class Panel {
         } else if (this.spreadsheet == this.state[2]) {
             this.spreadsheet = this.state[0];
         }
+        this.blankClicks();
+        this.cellSize(this.ctx.canvas.height, props);
     }
 
     // setTracers(ms, ts, tracers) {
@@ -148,15 +150,13 @@ class Panel {
     }
 
     cellSize(h, props) {
-        if (props.ms != undefined && props.ts != undefined) {
+        if (props != undefined && props.ms != undefined && props.ts != undefined && this.spreadsheet == this.state[0]) {
             this.cellWidth = (this.canvas.width / (props.ts.length + 1));
-
-            if (this.spreadsheet == this.state[0]) {
-                this.cellHeight = (this.canvas.height / (props.ms.length + 1));
-            } else {
-                this.cellHeight = (h / (props.ms.length + 1));
-            }
+            this.cellHeight = (this.canvas.height / (props.ms.length + 1));
+        } else if (this.areas != undefined) {
+            this.cellHeight = (h / (this.areas.length));
         }
+
         this.setFontsize(props)
     }
 
@@ -339,7 +339,7 @@ class Panel {
         if (this.spreadsheet == this.state[0]) {
             this.spreadsheetFrame();
         } else if (this.spreadsheet == this.state[1]) {
-            this.groupFrame();
+            this.areaFrame();
         } else if (this.spreadsheet == this.state[2]) {
             this.areaFrame();
         }
@@ -463,7 +463,8 @@ class Panel {
         for (var i in this.areas) { //plus scroll?
             if (this.areas[i]) { //safety check, omit first group
 
-                var h = Math.ceil(this.cellHeight)
+                // var h = Math.ceil(this.cellHeight)
+                var h = this.ctx.canvas.height / this.areas.length
 
                 i = parseInt(i)
                 if (i < this.cellY && this.cellY <= (i + 1)) {
@@ -477,7 +478,7 @@ class Panel {
                 this.ctx.fillRect(0, i * h, this.canvas.width, h);
 
                 this.ctx.lineJoin = "round";
-                this.ctx.font = String(this.fontsize) + "px Arial";
+                this.ctx.font = String(h / 2) + "px Arial";
                 this.ctx.textAlign = "center";
                 this.ctx.strokeStyle = 'black';
                 this.ctx.lineWidth = 2;
