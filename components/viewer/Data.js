@@ -427,6 +427,9 @@ export async function sendFile(props, db, name) {
     let views = props.views;
     let areas = props.areas;
 
+    if (name == '') {
+        name = 'Example';
+    }
     //console.log('sending file with the following data', ms, ts, tracers, insights, views, areas);
     let dataArray = assemble(ms, ts, tracers, insights, views);
 

@@ -14,8 +14,10 @@ export function windowResizeFunc(props) {
     camera.updateProjectionMatrix();
 
     // Update renderer
-    renderer.setSize(props.screenSizes.width, props.screenSizes.height);
-    renderer.setPixelRatio(Math.min(props.window.devicePixelRatio, 2));
+    if (renderer != undefined) {
+        renderer.setSize(props.screenSizes.width, props.screenSizes.height);
+        renderer.setPixelRatio(Math.min(props.window.devicePixelRatio, 2));
+    }
 }
 
 export function changeSceneBG(props) {

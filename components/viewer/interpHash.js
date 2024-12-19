@@ -11,6 +11,10 @@ import dropdListener from './dropdListener';
 
 export default function interpHash(props) {
 
+    if (!props.leftPanel.dropd) {
+        // probably not signed in
+        throw new Error('No Auth');
+    }
     var hash = props.window.location.hash.substring(1)
 
     if (hash[0] != '&') {

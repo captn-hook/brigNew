@@ -152,7 +152,7 @@ export function ViewportControl(props: any) {
 
     return (
         <div style={{ display: 'flex', justifyContent: 'flex-start', flexDirection: 'column', alignItems: 'center', gap: '1rem' }} className="viewportControl">
-
+            { auth.currentUser ?
             <div id="siteButtons" title="Site Dropdown">
                 <label id="tx" style={{ marginRight: '1rem' }}>Choose a site:</label>
                 <select name="sites" id="dropdown" title="Dropdown" style={{ marginRight: '1rem' }} ref={dropdownRef} onChange={(event) => {
@@ -160,6 +160,7 @@ export function ViewportControl(props: any) {
                 }}>
                 </select>
             </div>
+            : null }
 
             <ButtonGroup id="switchDisplayType">
                 <ThreeStateButton id="swapper" title="Switch Display Type"

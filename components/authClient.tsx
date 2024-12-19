@@ -71,6 +71,79 @@ export const SmallAccountStatus = () => {
     );
 }
 
+export const BigAccountStatus = () => {
+    const [user, setUser] = useState<FirebaseUser | null>(null);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setUser(user);
+            } else {
+                setUser(null);
+            }
+        });
+    }, []);
+
+    const handleSignIn = () => {
+        signInWithEmailAndPassword(auth, username, password)
+            .then((userCredential) => {
+                setUser(userCredential.user);
+            })
+            .catch((error) => {
+                console.error('Error signing in with password and email', error);
+            });
+    };
+
+    const handleGSignIn = () => {
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                setUser(result.user);
+            })
+            .catch((error) => {
+                console.error('Error signing in with Google', error);
+            });
+    };
+
+    return (
+        <div className="flex gap-2">
+            {user ? (
+                <div className="flex gap-2">
+                    <UserIcon size={24} />
+                    <p>{user.displayName ? user.displayName : user.email ? user.email.split('@')[0] : 'Signed In'}</p>
+                </div>
+            ) : (
+                <form className="flex flex-col gap-2">
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="input"
+                        autoComplete="username"
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="input"
+                        autoComplete="current-password"
+                    />
+                    <button onClick={handleSignIn} className="button text-lg">
+                        Sign In
+                    </button>
+                    <p style={{ textAlign: 'center' }} className="text-sm">or</p>
+                    <button onClick={handleGSignIn} className="button text-lg">
+                        Sign In with Google
+                        <GoogleIcon size={22} style={{ marginTop: '2px', marginLeft: 'auto', marginRight: 'auto' }} />
+                    </button>
+                </form>
+            )}
+        </div>
+    );
+};
 interface SignInModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -120,7 +193,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose }) => 
     }
 
     return (
-        <div className="flex flex-col gap-2 p-4 rounded-lg shadow-lg"
+        <form className="flex flex-col gap-2 p-4 rounded-lg shadow-lg"
             style={{
                 position: "fixed",
                 top: "150%", left: "75%",
@@ -134,6 +207,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose }) => 
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
             />
             <input
                 className="rounded-sm"
@@ -141,12 +215,13 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose }) => 
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
             />
             <ButtonGroup>
                 <Button radius="full" color={signInButtonColor} onPress={handleSignIn}>Sign In</Button>
                 <Button radius="full" color={signUpButtonColor} onPress={handleSignUp}>Sign Up</Button>
                 <Button radius="full" color="default" onPress={onClose}>Close</Button>
             </ButtonGroup>
-        </div>
+        </form>
     );
 }

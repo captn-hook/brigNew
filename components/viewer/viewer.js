@@ -138,7 +138,11 @@ export function open(props) {
     }
 
     windowResizeFunc(props);
-    interpHash(props);
+    try {
+        interpHash(props);
+    } catch (e) {
+        return e;
+    }
 
     const tick = () => {
 
