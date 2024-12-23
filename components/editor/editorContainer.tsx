@@ -18,7 +18,11 @@ import { db } from "../auth";
 
 import { newPoint, deleteSelectedPoint } from "./pointedit";
 
+import { addArea, deleteArea, getWorkingArea } from "./areaedit";
+
 export function AreaControl(props: EditorProps) {
+
+    const [bg, setbg] = useState('blue');
 
     return (
         <div style={{
@@ -31,12 +35,13 @@ export function AreaControl(props: EditorProps) {
         }}>
             <h2>Area Control</h2>
             <ButtonGroup aria-label="Area Control">
-                <Button id="addArea">New Area</Button>
-                <Button id="deleteArea">Delete Area</Button>
+                <Button onClick={() => addArea(props)}>New Area</Button>
+                <Button onClick={() => deleteArea(props)}>Delete Area</Button>
             </ButtonGroup>
-            <ButtonGroup aria-label="Save">
-                <Button onClick={() => saveArea(props)}>Save</Button>
-            </ButtonGroup>
+            {/* <ButtonGroup aria-label="Save">
+                <Button onClick={() => sendFile(props, db, props.leftPanel.siteheader).then(() => { setbg('green') })} style={{ backgroundColor: bg }}>Save</Button>
+                <Button onClick={() => saveFile(props)}>Download</Button>
+            </ButtonGroup> */}
         </div>
 
     );

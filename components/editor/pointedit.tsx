@@ -6,7 +6,7 @@ import { EditorProps } from "../viewer/Context";
 
 
 function appendNewMTracers(props: EditorProps, m: Point2d) {
-    storePos(props);
+    storePos(props); // <--- urg!
     //ez just append new row
     props.ts.forEach((e) => {
         props.tracers.push(new Tracer2d(m, e, .1));

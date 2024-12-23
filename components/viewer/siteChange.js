@@ -28,14 +28,16 @@ export function refillAll(props, data) {
     var tracers = [];
     var insights = [];
     var views = [];
+    var areas = [];
 
-    [ms, ts, tracers, insights, views] = data;
+    [ms, ts, tracers, insights, views, areas] = data;
 
     refill(props.ms, ms);
     refill(props.ts, ts);
     refill(props.tracers, tracers);
     refill(props.insights, insights);
     refill(props.views, views);
+    refill(props.areas, areas);
 
     props.screenSizes.updateSizes(props);
 
@@ -64,6 +66,8 @@ export function loadRefAndDoc(ref, doc, props, db) {
         })
 
     RemoteData(db, doc).then((data) => {
+
+        //console.log('RemoteData: ', data);
 
         refillAll(props, data);
 

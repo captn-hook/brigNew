@@ -6,38 +6,18 @@ import * as V from '../viewer/viewer.js';
 import { default as html } from "./editor.html";
 
 import {
-    saveModel,
     saveFile,
     sendFile,
-    saveArea,
 } from '../viewer/Data.js';
 
-import {
-    getStorage,
-    ref,
-    //listAll,
-    //getBlob,
-    //updateMetadata,
-    //getMetadata,
-} from 'firebase/storage';
+import { getStorage } from 'firebase/storage';
 
-import {
-    getFirestore,
-    //setDoc,
-    deleteDoc,
-    doc
-} from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 
 import {
     Raycaster,
     Vector3,
 } from 'three';
-
-import {
-    Area,
-} from '../shared/Area.js';
-
-import { navigate } from '../index';
 
 import {
     Point2d
@@ -373,7 +353,7 @@ export function open(state, firebaseEnv) {
                         V.ts[V.leftPanel.firstClickX - 2].pos = new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y);
                     }
                 } else {
-                    console.log(V.workingArea.points);
+                    console.log('adding a point to working ares:', V.workingArea.points);
                     V.workingArea.points.push(new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y));
                 }
             }
@@ -388,38 +368,38 @@ export function open(state, firebaseEnv) {
     },
         false);
 
-    sGroup.addEventListener('click', plant1);
+    // sGroup.addEventListener('click', plant1);
 
-    async function plant1() {
-        if (V.leftPanel.gi != 0 && V.leftPanel.gi != -1) {
-            // await saveGroup(db, V.dropd.value, V.leftPanel.gi, V.tracers, V.leftPanel.text)
-            import('../shared/saveGroup.js').then((module) => {
-                V.leftPanel.groups[V.leftPanel.gi] = module.default(db, V.dropd.value, V.leftPanel.gi, V.tracers, V.leftPanel.text)
-                console.log(V.leftPanel.groups[V.leftPanel.gi])
-            })
-        }
-    }
+    // async function plant1() {
+    //     if (V.leftPanel.gi != 0 && V.leftPanel.gi != -1) {
+    //         // await saveGroup(db, V.dropd.value, V.leftPanel.gi, V.tracers, V.leftPanel.text)
+    //         import('../shared/saveGroup.js').then((module) => {
+    //             V.leftPanel.groups[V.leftPanel.gi] = module.default(db, V.dropd.value, V.leftPanel.gi, V.tracers, V.leftPanel.text)
+    //             console.log(V.leftPanel.groups[V.leftPanel.gi])
+    //         })
+    //     }
+    // }
 
-    aGroup.addEventListener('click', plant2)
+    // aGroup.addEventListener('click', plant2)
 
-    async function plant2() {
-        var i = 0;
-        V.leftPanel.groups.forEach((e) => {
-            if (e != undefined) {
-                i++;
-            }
-        })
-        //await saveGroup(db, V.dropd.value, i, V.tracers, V.leftPanel.text)
-        import('../shared/saveGroup.js').then((module) => {
-            V.leftPanel.groups[i] = module.default(db, V.dropd.value, i, V.tracers, V.leftPanel.text)
-            console.log(V.leftPanel.groups[i])
-        })
-    }
+    // async function plant2() {
+    //     var i = 0;
+    //     V.leftPanel.groups.forEach((e) => {
+    //         if (e != undefined) {
+    //             i++;
+    //         }
+    //     })
+    //     //await saveGroup(db, V.dropd.value, i, V.tracers, V.leftPanel.text)
+    //     import('../shared/saveGroup.js').then((module) => {
+    //         V.leftPanel.groups[i] = module.default(db, V.dropd.value, i, V.tracers, V.leftPanel.text)
+    //         console.log(V.leftPanel.groups[i])
+    //     })
+    // }
 
-    dGroup.addEventListener('click', (e) => {
-        deleteDoc(doc(db, V.dropd.value, 'group' + V.leftPanel.gi));
-        V.leftPanel.groups[V.leftPanel.gi] = undefined;
-    })
+    // dGroup.addEventListener('click', (e) => {
+    //     deleteDoc(doc(db, V.dropd.value, 'group' + V.leftPanel.gi));
+    //     V.leftPanel.groups[V.leftPanel.gi] = undefined;
+    // })
 
     //areabtns
     // sArea.addEventListener('click', tnalp3);
@@ -432,51 +412,17 @@ export function open(state, firebaseEnv) {
     //     }
     // }
 
-    aArea.addEventListener('click', tnalp4)
 
-    async function tnalp4() {
-        print(V.workingArea.points.length)
-        if (V.workingArea.points.length > 2) {
-            var i = 0;
-            V.workingArea.text = V.leftPanel.text;
-            V.leftPanel.areas.forEach((e) => {
-                if (e != undefined) {
-                    i++;
-                }
-            })
-
-            var n = prompt("Enter Area Name");
-            V.workingArea.name = String(n);
-
-            var x = prompt("Enter Area Value");
-            V.workingArea.setValue(parseFloat(x));
-
-            var a = new Area(V.workingArea.points, V.workingArea.value, V.workingArea.name, V.workingArea.text)
-
-            V.leftPanel.areas.push(a);
-            //console.log("A", leftPanel.ai)
-            saveArea(db, V.dropd.value, i + 1, a)
-            V.resetWorkingArea();
-        }
-    }
-
-    dArea.addEventListener('click', (e) => {
-        //console.log("D", leftPanel.ai)
-        //console.log('deleting area', leftPanel.ai + 1)
-        deleteDoc(doc(db, V.dropd.value, 'area' + (V.leftPanel.ai + 1)));
-        V.leftPanel.areas[V.leftPanel.ai] = undefined;
-    })
-
-    V.textbox.addEventListener('input', e => {
-        if (V.textbox.readOnly == false) {
-            if (V.leftPanel.spreadsheet == state[0]) {
-                V.insights[leftPanel.firstClickY] = encodeURI(V.textbox.value.replaceAll(/,/g, '~'));
-            } else {
-                V.leftPanel.text = encodeURI(V.textbox.value.replaceAll(/,/g, '~'))
-                //console.log(leftPanel.text);
-            }
-        }
-    })
+    // V.textbox.addEventListener('input', e => {
+    //     if (V.textbox.readOnly == false) {
+    //         if (V.leftPanel.spreadsheet == state[0]) {
+    //             V.insights[leftPanel.firstClickY] = encodeURI(V.textbox.value.replaceAll(/,/g, '~'));
+    //         } else {
+    //             V.leftPanel.text = encodeURI(V.textbox.value.replaceAll(/,/g, '~'))
+    //             //console.log(leftPanel.text);
+    //         }
+    //     }
+    // })
 
     return Promise.resolve();
 }

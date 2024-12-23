@@ -23,19 +23,18 @@ export default function Home() {
 			</div>
 
 			<div className="flex gap-3">
-				<Link
-					href='/viewer'
+				<NextLink
+					href='/viewer/'
 					className={buttonStyles({ color: "primary", radius: "full" })}
 				>
 					View the Example Site
-				</Link>
-				<Link
-					isExternal
+				</NextLink>
+				<NextLink
 					className={buttonStyles({ variant: "bordered", radius: "full" })}
 					href={siteConfig.links.home}
 				>
 					<PoppyIconSmall size={24} /> Poppy Home Page
-				</Link>
+				</NextLink>
 			</div>
 
 			<div className="mt-8">

@@ -152,6 +152,7 @@ export async function RemoteData(db, name) {
     var tracers = []
     var insights = []
     var views = []
+    var areas = GetAreas(db, name);
 
 
     const docRef = doc(db, name, 'data');
@@ -223,7 +224,7 @@ export async function RemoteData(db, name) {
             }
         }))
 
-    return [ms, ts, tracers, insights, views]
+    return [ms, ts, tracers, insights, views, areas]
 }
 
 export function Data(data) {
@@ -364,7 +365,9 @@ export function Data(data) {
     });
     */
 
-    return [ms, ts, tracers, insights, views]
+    const areas = GetAreas(db, 'Example');
+
+    return [ms, ts, tracers, insights, views, areas];
 
 }
 

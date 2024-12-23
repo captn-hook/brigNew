@@ -69,6 +69,7 @@ export default function dropdListener(event, props) {
             props.leftPanel.siteheader = 'Example';
 
             if (props.setProps != null) {
+                print(props.areas);
                 props.setProps(props);
             }
         }

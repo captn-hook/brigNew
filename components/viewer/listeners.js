@@ -36,6 +36,7 @@ export function stoplookin(props) {
 
 export function storePos(props) {
     //store pos in link
+    // depricate this bitty
     var pos = String('P=' + Math.round(camera.position.x * 100) / 100) + '/' + String(Math.round(camera.position.y * 100) / 100) + '/' + String(Math.round(camera.position.z * 100) / 100) + '/' + String(Math.round(camera.rotation.x * 100) / 100) + '/' + String(Math.round(camera.rotation.y * 100) / 100) + '/' + String(Math.round(camera.rotation.z * 100) / 100)
 
     if (pos[0] != null) {
