@@ -30,12 +30,6 @@ import {
     updateCam 
 } from './updateCam';
 
-export var workingArea = new Area([]);
-
-export function resetWorkingArea() {
-    workingArea = new Area([]);
-}
-
 export const state = {
     0: 'spreadsheet',
     1: 'both',
@@ -201,8 +195,8 @@ export function open(props) {
                     a.drawArea(camera, props.screenSizes, props.bools[0], props.bools[1]);
                 }
             });
-            if (workingArea) {
-                workingArea.drawArea(camera, props.screenSizes, props.bools[0], true, 'last');
+            if (props.workingArea) {
+                props.workingArea.drawArea(camera, props.screenSizes, props.bools[0], true, 'last');
             }
 
         }

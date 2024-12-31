@@ -17,3 +17,9 @@ area editing
 fix switching from example to custom
 
 check uploads
+
+fix drag and drop
+
+doing area edit involves the convuluted listener method,
+we need a state in the component, that passes the state updating function through the props to the canvas
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

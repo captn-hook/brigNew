@@ -66,13 +66,13 @@ export function open(state, firebaseEnv) {
     }
 
 
-    const sGroup = document.getElementById('saveGroup');
-    const aGroup = document.getElementById('addGroup');
-    const dGroup = document.getElementById('deleteGroup');
+    // const sGroup = document.getElementById('saveGroup');
+    // const aGroup = document.getElementById('addGroup');
+    // const dGroup = document.getElementById('deleteGroup');
 
-    const sArea = document.getElementById('saveArea');
-    const aArea = document.getElementById('addArea');
-    const dArea = document.getElementById('deleteArea');
+    // const sArea = document.getElementById('saveArea');
+    // const aArea = document.getElementById('addArea');
+    // const dArea = document.getElementById('deleteArea');
 
     //this is here because it should respond as soon as data is input
 
@@ -329,44 +329,44 @@ export function open(state, firebaseEnv) {
 
 
 
-    V.sizes.canvas2d.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
+    // V.sizes.canvas2d.addEventListener('contextmenu', (e) => {
+    //     e.preventDefault();
 
-        if (editPos && (V.leftPanel.spreadsheet == V.state[2] || V.leftPanel.spreadsheet == V.state[1])) {
-            V.workingArea.points.pop();
-        }
+    //     if (editPos && (V.leftPanel.spreadsheet == V.state[2] || V.leftPanel.spreadsheet == V.state[1])) {
+    //         V.workingArea.points.pop();
+    //     }
 
-    })
+    // })
 
-    V.sizes.canvas2d.addEventListener('click', (e) => {
-        if (editPos) {
-            const intersects = getInteresects(e.clientX, e.clientY);    
+    // V.sizes.canvas2d.addEventListener('click', (e) => {
+    //     if (editPos) {
+    //         const intersects = getInteresects(e.clientX, e.clientY);    
 
-            var doP = (V.leftPanel.spreadsheet == V.state[0]) ? true : false;
+    //         var doP = (V.leftPanel.spreadsheet == V.state[0]) ? true : false;
 
-            if (intersects.length > 0) {
+    //         if (intersects.length > 0) {
               
-                if (doP) {
-                    if (V.leftPanel.firstClickX == 1) {
-                        V.ms[V.leftPanel.firstClickY - 2].pos = new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y);
-                    } else if (V.leftPanel.firstClickY == 1) {
-                        V.ts[V.leftPanel.firstClickX - 2].pos = new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y);
-                    }
-                } else {
-                    console.log('adding a point to working ares:', V.workingArea.points);
-                    V.workingArea.points.push(new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y));
-                }
-            }
-        }
+    //             if (doP) {
+    //                 if (V.leftPanel.firstClickX == 1) {
+    //                     V.ms[V.leftPanel.firstClickY - 2].pos = new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y);
+    //                 } else if (V.leftPanel.firstClickY == 1) {
+    //                     V.ts[V.leftPanel.firstClickX - 2].pos = new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y);
+    //                 }
+    //             } else {
+    //                 console.log('adding a point to working ares:', V.workingArea.points);
+    //                 V.workingArea.points.push(new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y));
+    //             }
+    //         }
+    //     }
 
-        //store pos in link
-        var pos = String('P=' + Math.round(V.camera.position.x * 100) / 100) + '/' + String(Math.round(V.camera.position.y * 100) / 100) + '/' + String(Math.round(V.camera.position.z * 100) / 100) + '/' + String(Math.round(V.camera.rotation.x * 100) / 100) + '/' + String(Math.round(V.camera.rotation.y * 100) / 100) + '/' + String(Math.round(V.camera.rotation.z * 100) / 100)
+    //     //store pos in link
+    //     var pos = String('P=' + Math.round(V.camera.position.x * 100) / 100) + '/' + String(Math.round(V.camera.position.y * 100) / 100) + '/' + String(Math.round(V.camera.position.z * 100) / 100) + '/' + String(Math.round(V.camera.rotation.x * 100) / 100) + '/' + String(Math.round(V.camera.rotation.y * 100) / 100) + '/' + String(Math.round(V.camera.rotation.z * 100) / 100)
 
-        if (pos[0] != null) {
-            window.location.hash = V.leftPanel.siteheader + '&' + pos;
-        }
-    },
-        false);
+    //     if (pos[0] != null) {
+    //         window.location.hash = V.leftPanel.siteheader + '&' + pos;
+    //     }
+    // },
+    //     false);
 
     // sGroup.addEventListener('click', plant1);
 

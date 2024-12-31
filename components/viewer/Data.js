@@ -79,14 +79,10 @@ export function GetAreas(db, name) {
                         name = 'area' + (i + 1);
                     }
 
-                    var area = new Area(points, value, name, text);
-
-                    areas.push(area);
                 }
             })
         }
     }
-
     return areas;
 }
 

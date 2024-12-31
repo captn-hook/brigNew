@@ -22,6 +22,7 @@ export class EditorData {
     ts: Point2d[] = [];
     tracers: Tracer2d[] = [];
     areas: Area[] = [];
+    workingArea: Area = new Area();
     views: string[] = [];
     insights: string[] = [];
 }
@@ -55,6 +56,7 @@ export interface EditorProps {
     ts: Point2d[];
     tracers: Tracer2d[];
     areas: Area[];
+    workingArea: Area;
     views: string[];
     insights: string[];
     site: string;

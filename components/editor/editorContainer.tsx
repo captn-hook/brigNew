@@ -18,11 +18,39 @@ import { db } from "../auth";
 
 import { newPoint, deleteSelectedPoint } from "./pointedit";
 
-import { addArea, deleteArea, getWorkingArea } from "./areaedit";
+import { addArea, deleteArea, addPoint, removePoint } from "./areaedit";
 
 export function AreaControl(props: EditorProps) {
 
     const [bg, setbg] = useState('blue');
+    const [editing, setEditing] = useState(false);
+
+    function addPointListener(e: any) {
+        if (editing) {
+            let intersects = getIntersects(e.clientX, e.clientY, props);
+            if (intersects.length > 0) {
+                console.log('adding point to area:', intersects[0].point);
+                addPoint(props, new Vector3(intersects[0].point.x, intersects[0].point.z, intersects[0].point.y));
+                console.log('area:', props.workingArea.points);
+            }
+        }
+    }
+
+    function removePointListener() {
+        if (editing) {
+            removePoint(props);
+        }
+    }
+
+    // add event listeners for adding and removing points to canvas2d
+    useEffect(() => {
+        props.leftPanel.canvas.addEventListener('click', addPointListener);
+        props.leftPanel.canvas.addEventListener('contextmenu', removePointListener);
+        return () => {
+            props.leftPanel.canvas.removeEventListener('click', addPointListener);
+            props.leftPanel.canvas.removeEventListener('contextmenu', removePointListener);
+        }
+    }, [editing]);
 
     return (
         <div style={{
@@ -34,6 +62,9 @@ export function AreaControl(props: EditorProps) {
             gap: '1rem'
         }}>
             <h2>Area Control</h2>
+            <ButtonGroup aria-label="Enable Area Edit">
+                <Button onClick={() => setEditing(!editing)}>{editing ? "Editing On" : "Editing Off"}</Button>
+            </ButtonGroup>
             <ButtonGroup aria-label="Area Control">
                 <Button onClick={() => addArea(props)}>New Area</Button>
                 <Button onClick={() => deleteArea(props)}>Delete Area</Button>
@@ -90,6 +121,7 @@ function canvasDropListener(e: any, props: EditorProps) {
 
 
 export default function EditorControl(props: EditorProps) {
+    console.log("EditorControl", props.areas);
 
 
     // add ref callback to canvas2d 
@@ -238,6 +270,7 @@ export function EditorContainer() {
         ts: editorData.ts,
         tracers: editorData.tracers,
         areas: editorData.areas,
+        workingArea: editorData.workingArea,
         views: editorData.views,
         insights: editorData.insights,
         site: "",
@@ -285,6 +318,7 @@ export function EditorContainer() {
             ts: editorData.ts,
             tracers: editorData.tracers,
             areas: editorData.areas,
+            workingArea: editorData.workingArea,
             views: editorData.views,
             insights: editorData.insights,
             site: "",
